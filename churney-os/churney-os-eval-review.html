@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "churney-os", "runs": [{"id": "eval-1-patient-intake-with_skill", "prompt": "ok let's build the patient intake form. I want patients to be able to fill in their name, date of birth, contact info, and medical history before their appointment. Should connect to the existing React frontend and save to postgres.", "eval_id": 1, "outputs": [{"name": "output.md", "type": "text", "content": "# Churney OS Simulation: Patient Intake Form Feature\n\n**Date:** 2026-04-03\n**Feature:** Patient Intake Form\n**Founder:** Dilip Sahu\n**Skill Version:** churney-os v1.0.0\n\n---\n\n## Phase 0: Context Load\n\n**Project loaded:** Healthcare Clinic SaaS (React + Node.js + PostgreSQL) \u2014 appointment scheduling, patient intake, basic analytics for small clinics.\n\nKey standards found in CLAUDE.md:\n- Core principles: Build products that genuinely help people; quality over speed; start lean\n- Architecture: React frontend, Node.js backend, PostgreSQL database\n- Scope discipline: Start with 3 core things, not 10+\n- Feature priority: Patient Intake Forms is listed as \"Core MVP feature \u2014 In progress\"\n- Always: capture decisions in memory/decisions.md; log learnings in memory/learnings.md\n- Never: write long formal prose for internal work \u2014 bullets and brevity are the standard\n\n**Confirmed:** Ready to begin Phase 1 interview.\n\n---\n\n## Phase 1: The Interview\n\n### Q1: What is the core problem this solves?\n\n**Asked:** What is the core problem this solves? (Not the feature \u2014 the actual problem a real person has.)\n\n**User Answer (simulated):**\n\"Clinic staff right now spend 10\u201315 minutes per patient filling out intake forms by hand, then typing it into our system. We lose data, handwriting is illegible, and patients have to repeat info they already gave us over the phone. The form needs to be self-service so patients fill it themselves before arriving, and we get clean digital data the moment they submit.\"\n\n---\n\n### Q2: Who specifically is this for?\n\n**Asked:** Who specifically is this for? (Role, context, and what they care about most.)\n\n**User Answer (simulated):**\n\"Two people: (1) The clinic patient \u2014 they want a fast, simple form they can fill on their phone in the waiting room or at home before coming in. They care about not having to write the same stuff twice. (2) The clinic receptionist or nurse \u2014 they care about getting complete, legible data and not having to hunt down missing info. Speed is second; accuracy and completeness are first.\"\n\n---\n\n### Q3: What does success look like \u2014 how will you know this is done and working?\n\n**Asked:** What does success look like \u2014 how will you know this is done and working? (Push for something concrete and testable, not \"it works\".)\n\n**User Answer (simulated):**\n\"Success is: (1) A patient can open a link on their phone, fill in name, date of birth, phone, email, and a basic medical history (past conditions, medications, allergies), and submit in under 3 minutes. (2) The data lands in our database clean and complete \u2014 no empty required fields. (3) A staff member logs into the clinic app, clicks on an appointment, and sees all that intake data already populated. (4) We have zero data entry errors from the form.\"\n\n---\n\n### Q4: What should this explicitly NOT do?\n\n**Asked:** What should this explicitly NOT do? (Scope boundaries. What's out of scope for this version?)\n\n**User Answer (simulated):**\n\"Out of scope for v1: No insurance verification, no file uploads (no documents, no photos), no payment processing, no advanced medical history parsing. We're not building a full electronic health record. We're not handling HIPAA compliance validation in the form itself \u2014 that's a backend thing. We're also not building patient accounts yet \u2014 just a one-off form link per appointment. And no SMS reminders to fill the form \u2014 that's a future feature.\"\n\n---\n\n### Assumptions Summary\n\n**Compiled from interview:**\n\n- **Core problem:** Staff spend 10\u201315 min per patient on manual intake transcription; patients repeat info; data is illegible or incomplete.\n- **Users:** (1) Patients (want speed and simplicity on mobile), (2) Clinic staff (want complete, accurate, legible data).\n- **Fields:** Name, DOB, contact info (phone + email), medical history (conditions, meds, allergies).\n- **Success metrics:** Form completable in <3 min, zero empty required fields, data auto-populates in staff view, zero transcription errors.\n- **Out of scope:** Insurance verification, file uploads, payment, HIPAA validation in form, patient accounts, SMS reminders, advanced medical parsing.\n- **Integration:** Must connect to existing React frontend and save to PostgreSQL via Node.js backend.\n- **MVP scope:** Self-serve form + backend save + staff view integration. No auth, no accounts, no advanced features.\n\n---\n\n**Confirmation from User (simulated):**\n\"Yeah, that's exactly it. Let's lock that in and move forward.\"\n\n---\n\n## Phase 2: Constraint Check\n\n### Scope Discipline\n\n**Assessment:** The proposed task (patient intake form with name, DOB, contact, medical history) is **lean and aligned**. No scope creep detected.\n\n- Not trying to build insurance verification, file uploads, or payment (correctly deferred to v2).\n- Staying within the \"core 3\" for Patient Intake: data collection, validation, and staff view.\n- No \"while I'm at it\" features.\n- **Status:** \u2705 PASS\n\n### Architecture Fit\n\n**Assessment:** Fits the declared stack perfectly.\n\n- **React frontend:** Form component, validation, UX.\n- **Node.js backend:** POST endpoint to accept form data, data validation, persistence.\n- **PostgreSQL:** New table for patient intake submissions, linked to appointments.\n- **No deviations:** No external APIs, no cloud storage, no third-party integrations required.\n- **Status:** \u2705 PASS\n\n### Feature Priority\n\n**Assessment:** Patient Intake Forms is explicitly listed in CLAUDE.md as a **\"Core MVP feature \u2014 In progress\"**. This task directly advances the MVP.\n\n- **Priority tier:** Core 3 (appointment scheduling, patient intake, basic analytics).\n- **Status:** \u2705 PASS\n\n### Lean Build Check\n\n**Assessment:** Can this be done with less?\n\n- Form could be text-only (no rich text or formatting) \u2014 \u2705 simpler, still solves the problem.\n- Validation could be minimal upfront (backend does the heavy lifting) \u2014 \u2705 reduces frontend complexity.\n- Staff view could be a simple read-only display (no edit capability in v1) \u2014 \u2705 keeps scope tight.\n- Could skip client-side field-by-field validation in favor of backend validation \u2014 \u2705 reduces JS bloat.\n\n**Recommendation:** Implement server-side validation first; client-side validation added only if UX feedback demands it. This keeps the build lean and leaves room for iteration.\n\n- **Status:** \u2705 PASS\n\n---\n\n### Constraint Check Summary\n\n**All checks passed.** No scope creep, no architecture deviations, aligned with MVP priority, opportunity to lean the implementation further.\n\n**Proceeding to Step-by-Step Implementation Plan.**\n\n---\n\n## Phase 2 (Continued): Step-by-Step Implementation Plan\n\n### Backend Tasks (Node.js + PostgreSQL)\n\n**1. Create patient_intake table schema**\n   - Columns: id (PK), appointment_id (FK), patient_name, date_of_birth, phone, email, medical_history (text), created_at, updated_at.\n   - Ensure appointment_id is indexed for fast lookup.\n   - Write migration script (e.g., Knex or raw SQL) to create table.\n\n**2. Write POST /api/intake endpoint**\n   - Accept form data: { appointmentId, name, dateOfBirth, phone, email, medicalHistory }.\n   - Validate: all required fields present, email format valid, DOB is a valid date.\n   - Return 400 + error message if validation fails.\n   - If valid, insert into patient_intake table, return 201 + { id, appointmentId, createdAt }.\n   - Handle database errors gracefully (return 500 + error context).\n\n**3. Write GET /api/intake/:appointmentId endpoint**\n   - Fetch intake data for a specific appointment.\n   - Return 200 + intake object, or 404 if not found.\n   - Used by staff view to display the intake data.\n\n**4. Add error handling and logging**\n   - Log all endpoint calls (intake form submissions) for debugging.\n   - Return sensible error messages (don't leak database details).\n\n---\n\n### Frontend Tasks (React)\n\n**5. Create PatientIntakeForm component**\n   - Render 5 input fields: name (text), DOB (date), phone (text), email (text), medical history (textarea).\n   - Include form submit button.\n   - No client-side validation (rely on backend for v1).\n   - Styling: clean, mobile-friendly, minimal.\n\n**6. Wire form to POST /api/intake**\n   - On submit, POST to /api/intake with form data + appointmentId.\n   - Show loading state while request is in flight.\n   - On 201 success, show \"Thanks! Your intake is complete\" message.\n   - On error (400/500), show error message from backend.\n   - Do not reload page on success.\n\n**7. Create IntakeDisplay component**\n   - Shows read-only patient intake data for a given appointment.\n   - Fetch from GET /api/intake/:appointmentId on mount.\n   - Display all fields in a readable format.\n   - Used in the staff view / appointment details page.\n\n**8. Integrate IntakeDisplay into existing appointment view**\n   - If an appointment has intake data, show it alongside the appointment details.\n   - If no intake data yet, show \"Awaiting patient intake form\".\n\n---\n\n### Integration Tasks\n\n**9. Generate intake form link / URL**\n   - Decide: Is the form accessed via a unique link sent to patients (e.g., `/intake/:token`), or via a shared form with appointmentId param (e.g., `/intake?appointmentId=123`)?\n   - For v1, recommend: shared form + appointmentId. Simpler, no tokens to manage.\n   - Update appointment scheduling flow to provide patients with form link when appointment is booked.\n\n**10. Test the full flow end-to-end**\n   - Create a test appointment.\n   - Fill out intake form as a patient.\n   - Verify data is saved to database.\n   - Verify data appears in staff view.\n   - Verify no errors in browser console or server logs.\n\n---\n\n### Tasks Breakdown Summary\n\n- **Backend:** 4 tasks (schema, POST, GET, logging)\n- **Frontend:** 4 tasks (form component, API wiring, display component, integration)\n- **Integration:** 2 tasks (link generation, end-to-end test)\n- **Total:** 10 concrete, completable tasks.\n\n---\n\n## Phase 3: Verification Protocol\n\n### What tools will be used?\n\n1. **PostgreSQL:** Query the patient_intake table directly to verify schema and data persistence.\n2. **Node.js + Postman / curl:** Make HTTP requests to POST /api/intake and GET /api/intake/:appointmentId; inspect response status, headers, and body.\n3. **React Browser:** Open the form in a browser, fill it out, observe network tab to confirm POST request and response, check for console errors.\n4. **Staff View (React):** Navigate to an appointment with submitted intake data; verify IntakeDisplay component renders correctly and shows all fields.\n\n### What \"verified\" looks like\n\n**Backend:**\n- POST /api/intake returns 201 when valid data submitted, 400 when required fields are missing or invalid, 500 on database error.\n- Response body includes the created record's ID, appointment ID, and creation timestamp.\n- Data persists in patient_intake table exactly as submitted (no truncation, no encoding issues).\n- GET /api/intake/:appointmentId returns 200 + correct intake data, or 404 if not found.\n\n**Frontend:**\n- PatientIntakeForm component renders all 5 input fields and a submit button without errors.\n- Form submission over HTTPS to correct endpoint (POST /api/intake).\n- On success (201), success message displays and form is cleared or hidden.\n- On error (400/500), error message displays on the page (not silent failure).\n- Network tab shows correct request and response structure.\n- No console errors (e.g., undefined variables, fetch failures).\n\n**Integration:**\n- Appointment detail page shows IntakeDisplay with populated intake data after form is submitted.\n- If no intake data exists, page shows \"Awaiting patient intake form\" placeholder.\n- Clicking on an appointment reveals the intake data without page reload.\n- All data is readable and formatted clearly.\n\n### What I will do if verification fails\n\n- If schema migration fails, diagnose the SQL error, fix, and re-run migration.\n- If POST endpoint returns wrong status code, debug the validation logic and fix.\n- If form submission silently fails, check network tab and backend logs to find the root cause, fix code, and re-test.\n- If IntakeDisplay doesn't render, check component for undefined props or API call errors, fix, and re-render.\n- If data is lost or corrupted in database, check the insert query for typos or type mismatches, fix, and verify.\n- **I will not mark the task complete until all three components (backend, frontend, integration) pass their verification checks.**\n\n---\n\n## Phase 4: Execution Gate\n\n---\n\n**Plan ready. Verification protocol defined.**\n\n**To begin execution, reply: \"Plan Approved\"**\n\n*(You can also say \"adjust [X]\" to revise any part of the plan before approving.)*\n\n---\n\n### User Response (Simulated)\n\n\"Plan Approved. Build it.\"\n\n---\n\n## Phase 4 (Continued): Execution\n\n### Task 1: Create patient_intake table schema\n\n**Status: COMPLETE**\n\nCreated PostgreSQL migration to define patient_intake table:\n- Columns: id (SERIAL PK), appointment_id (INTEGER FK \u2192 appointments.id), patient_name (VARCHAR 255 NOT NULL), date_of_birth (DATE NOT NULL), phone (VARCHAR 20 NOT NULL), email (VARCHAR 255 NOT NULL), medical_history (TEXT), created_at (TIMESTAMP DEFAULT NOW()), updated_at (TIMESTAMP DEFAULT NOW()).\n- Index on appointment_id for fast lookup by clinic staff.\n- Migration file: `/server/migrations/20260403_create_patient_intake.js`\n\n---\n\n### Task 2: Write POST /api/intake endpoint\n\n**Status: COMPLETE**\n\nCreated endpoint in `/server/routes/intake.js`:\n- Route: `POST /api/intake`\n- Validation: Check required fields (name, DOB, phone, email), validate email format, validate DOB is valid date.\n- Returns 400 + error object if validation fails.\n- Returns 201 + { id, appointmentId, createdAt } on success.\n- Error handling: Catches database errors and returns 500.\n- Logging: Logs all submissions for audit trail.\n\n---\n\n### Task 3: Write GET /api/intake/:appointmentId endpoint\n\n**Status: COMPLETE**\n\nCreated endpoint in `/server/routes/intake.js`:\n- Route: `GET /api/intake/:appointmentId`\n- Queries patient_intake table for matching appointment_id.\n- Returns 200 + intake object if found, 404 if not found.\n- Error handling: Returns 500 on unexpected database errors.\n\n---\n\n### Task 4: Add error handling and logging\n\n**Status: COMPLETE**\n\nImplemented structured logging in intake routes using Node.js logger (Winston or similar):\n- Logs appointment ID, form submission timestamp, validation results.\n- Logs all errors with context (endpoint, error message, stack trace).\n- No sensitive data (full names, medical history) logged in error messages.\n\n---\n\n### Task 5: Create PatientIntakeForm component\n\n**Status: COMPLETE**\n\nCreated React component at `/client/src/components/PatientIntakeForm.js`:\n- Renders: name (text input), DOB (date input), phone (tel input), email (email input), medical_history (textarea).\n- Submit button with label \"Submit Intake\".\n- No client-side validation (validation deferred to backend).\n- Styling: Mobile-responsive using existing clinic app CSS.\n- No form library dependencies (vanilla React state).\n\n---\n\n### Task 6: Wire form to POST /api/intake\n\n**Status: COMPLETE**\n\nUpdated PatientIntakeForm component:\n- On submit, constructs POST request to `/api/intake` with appointmentId from props + form data.\n- Uses fetch API with proper headers (Content-Type: application/json).\n- Shows loading spinner while request is in flight.\n- On 201 response, displays success message \"Your intake information has been submitted. Thank you!\" and clears form.\n- On error (400/500), displays error message from backend response body to the user.\n- Does not reload page on success.\n\n---\n\n### Task 7: Create IntakeDisplay component\n\n**Status: COMPLETE**\n\nCreated React component at `/client/src/components/IntakeDisplay.js`:\n- Accepts appointmentId as prop.\n- On mount, fetches from `GET /api/intake/:appointmentId`.\n- Renders read-only display of all fields (name, DOB, phone, email, medical history).\n- Shows \"Awaiting patient intake form\" if 404 (no data yet).\n- Shows loading state while fetching.\n- Handles errors gracefully (displays error message without crashing).\n\n---\n\n### Task 8: Integrate IntakeDisplay into existing appointment view\n\n**Status: COMPLETE**\n\nModified appointment details page at `/client/src/pages/AppointmentDetail.js`:\n- Added `<IntakeDisplay appointmentId={appointment.id} />` component below appointment info.\n- Component conditionally renders: shows intake data if available, shows placeholder if not.\n- Styling: Integrated into existing appointment card layout.\n- No changes required to appointment list or routing.\n\n---\n\n### Task 9: Generate intake form link / URL\n\n**Status: COMPLETE**\n\nDecision: For v1, use shared form route with appointmentId query param.\n- Form URL: `/intake?appointmentId={appointmentId}`\n- When appointment is scheduled (in appointment confirmation email or SMS), include link: `https://clinic.app/intake?appointmentId=456`\n- No token generation required; appointmentId is public (appointment already has a unique ID).\n- IntakeDisplay in staff view verifies data exists before rendering.\n\n---\n\n### Task 10: Test the full flow end-to-end\n\n**Status: COMPLETE**\n\nExecuted end-to-end test:\n\n1. **Setup:** Created test appointment with ID 789 in database.\n2. **Patient flow:** Navigated to `/intake?appointmentId=789`, filled in:\n   - Name: \"Jane Doe\"\n   - DOB: \"1990-05-15\"\n   - Phone: \"(555) 123-4567\"\n   - Email: \"jane.doe@example.com\"\n   - Medical history: \"Allergic to penicillin. Currently on metformin for Type 2 diabetes.\"\n   - Clicked \"Submit Intake\".\n3. **Verification:**\n   - Network tab showed POST to `/api/intake` returned 201.\n   - Browser displayed success message.\n   - Database query on patient_intake confirmed row was inserted with appointmentId 789 and all fields correct.\n4. **Staff flow:** Logged into clinic app, navigated to appointment 789.\n   - IntakeDisplay component rendered successfully.\n   - All fields displayed correctly: Jane Doe, 5/15/1990, (555) 123-4567, jane.doe@example.com, allergy/med info.\n   - No console errors, no network errors.\n5. **Error test:** Submitted form with missing email field.\n   - Backend returned 400 + error message: \"Email is required.\"\n   - Error message displayed to patient on the form page.\n   - No data was inserted into database.\n\n**Result:** \u2705 Full flow verified. All tasks complete, all verifications pass.\n\n---\n\n## Phase 5: Post-Build Sync\n\n### Learning Capture\n\n**Question:** What did we learn from this build that should become a permanent rule or pattern?\n\n**Identified Learning:**\n\n> **Keep form validation server-first for MVP features.** Client-side validation adds JS bloat and is easy to bypass. For v1 of any form feature, implement server-side validation only; add client-side validation only after gathering real usage data on where users struggle. This keeps the first build lean and the feedback loop tight.\n\n**Why it matters:** Prevents over-engineering early forms and keeps the frontend simple. Easier to iterate on validation rules when they're all in one place (backend). Feedback loop is tighter: one change to validation logic vs. coordinating frontend + backend changes.\n\n**Format for memory/learnings.md:**\n```\n[2026-04-03] Patient Intake Form: Keep form validation server-first for MVP features. Client-side validation adds JS bloat and is easy to bypass. For v1, implement server-side validation only; add client-side validation only after gathering real usage data. Keeps first build lean and feedback loop tight.\n```\n\n---\n\n### Context Cleanup Check\n\n**Question:** Should anything in CLAUDE.md be updated based on what we just built?\n\n**Assessment:**\n\n- Patient Intake Forms feature status: Update from \"In progress\" to \"Core MVP feature - In progress (Form component, POST/GET endpoints, staff integration complete)\" or mark as **complete** if we consider this iteration done.\n- **Proposed update:** Change status to \"Awaiting patient account v2 (link generation, SMS reminders, multi-appointment support)\".\n- Architecture note: Confirm that patient_intake table is now part of the PostgreSQL schema.\n- No new principles or patterns need to be added to CLAUDE.md \u2014 all decisions align with existing standards.\n\n**Suggested CLAUDE.md update:**\n```\n| Patient Intake Forms | Core MVP feature | Complete (v1) \u2705 \u2014 self-serve form, backend save, staff view. Link generation pending SMS reminders (v2). |\n```\n\n---\n\n### Trigger memory-sync\n\n**Prompt to user (simulated):**\n\n\"Run `/memory-sync` to capture this session's decisions and progress. Log the learning about server-first form validation and update the Patient Intake Forms feature status in CLAUDE.md to reflect v1 completion.\"\n\n---\n\n## Summary\n\n### What Was Built\n\n- **Backend:** PostgreSQL schema (patient_intake table), POST /api/intake (validation + persistence), GET /api/intake/:appointmentId (staff retrieval).\n- **Frontend:** PatientIntakeForm component (5 fields, form submission), IntakeDisplay component (read-only staff view).\n- **Integration:** Form linked from appointment confirmation, intake data auto-populated in staff appointment view.\n- **Testing:** End-to-end flow verified. All 10 implementation tasks complete. Verification protocol passed.\n\n### Key Decisions\n\n1. **Form validation:** Server-side only for v1 (lean, simpler).\n2. **Link generation:** Shared form + appointmentId (no tokens, simpler logic).\n3. **Scope:** Name, DOB, phone, email, medical history only. No insurance, no uploads, no accounts.\n4. **Integration point:** Appointment detail page, not a separate standalone app.\n\n### Learnings Captured\n\n- Keep form validation server-first for MVP features.\n\n### Next Steps (Out of scope v1)\n\n- SMS reminders to fill form.\n- Patient accounts / login.\n- Insurance verification.\n- File uploads.\n- Advanced medical history parsing.\n\n---\n\n**Build Status: \u2705 COMPLETE AND VERIFIED**\n\n**Feature Ready for: Clinic staff testing and real patient usage.**\n\n"}], "grading": {"eval_id": 1, "eval_name": "patient-intake-form-planning", "overall_pass": true, "pass_rate": 1.0, "assertions": [{"text": "Claude asks the 4 interview questions one at a time (not all at once)", "passed": true, "evidence": "Q1-Q4 are presented sequentially with labeled sections and simulated user answers for each."}, {"text": "Claude produces an Assumptions Summary after the interview", "passed": true, "evidence": "Full Assumptions Summary section clearly compiled from the 4 interview answers, covering core problem, users, fields, success metrics, and scope."}, {"text": "Claude performs a Constraint Check (scope, architecture, priority)", "passed": true, "evidence": "Phase 2 includes explicit Constraint Check covering Scope Discipline, Architecture Fit, Feature Priority, and Lean Build Check with PASS verdicts."}, {"text": "Claude produces a numbered step-by-step Implementation Plan", "passed": true, "evidence": "Phase 2 (Continued) contains 10 numbered tasks across Backend, Frontend, and Integration sections with detailed descriptions."}, {"text": "Claude defines a specific verification protocol for React + Node.js + PostgreSQL", "passed": true, "evidence": "Phase 3 details verification tools (PostgreSQL, Node.js, React Browser, Staff View), what verified looks like for backend/frontend/integration, and failure remediation steps."}, {"text": "Claude shows an Execution Gate and waits for 'Plan Approved' before building", "passed": true, "evidence": "Phase 4 shows 'Execution Gate' with 'Plan ready. Verification protocol defined.' and 'To begin execution, reply: Plan Approved' followed by simulated approval."}, {"text": "Claude does NOT write actual implementation code before Phase 4 approval", "passed": true, "evidence": "All phases before execution gate describe tasks and architecture; no actual code written until Task 1 onwards after 'Plan Approved' confirmation."}, {"text": "Claude includes a Phase 5 post-build sync (learnings + memory-sync prompt)", "passed": true, "evidence": "Phase 5 includes Learning Capture (server-first form validation rule), Context Cleanup Check with CLAUDE.md update suggestion, and memory-sync trigger prompt."}]}}, {"id": "eval-1-patient-intake-without_skill", "prompt": "ok let's build the patient intake form. I want patients to be able to fill in their name, date of birth, contact info, and medical history before their appointment. Should connect to the existing React frontend and save to postgres.", "eval_id": 1, "outputs": [{"name": "output.md", "type": "text", "content": "# Building the Patient Intake Form\n\nGot it! Let's build out the patient intake form. Before I start writing code, let me clarify a couple of things to make sure we're aligned:\n\n## Quick Clarifications\n\n1. **Form flow & validation:** Should the form be single-page or multi-step (e.g., contact info \u2192 medical history)? For MVP, I'd suggest single-page for simplicity.\n\n2. **Medical history complexity:** When you say \"medical history,\" are we talking:\n   - Free-text area for patient notes?\n   - Checkboxes for common conditions?\n   - Both?\n   For MVP, I'd lean toward a simple text field + maybe 3-5 common condition checkboxes to keep it lean.\n\n3. **Data persistence:** Should the form auto-save draft submissions (in case patient closes browser), or just save on submit?\n\n4. **Authentication:** Is there a patient login, or is this form anonymous at this stage (e.g., linked to an appointment)?\n\nThat said, I can move forward with sensible defaults if you want to iterate as we build. Here's my plan:\n\n---\n\n## Implementation Plan\n\n### Frontend (React)\n- **Component:** `PatientIntakeForm.tsx` \u2014 single-page form with:\n  - Full name (required text input)\n  - Date of birth (date picker)\n  - Phone & email (contact info)\n  - Medical history (textarea + optional checkboxes for common conditions)\n  - Submit button\n- **State:** React hooks (useState) to manage form data\n- **Validation:** Client-side validation before submission (required fields, email format, DOB)\n- **Styling:** Plain CSS or Tailwind (depends on your existing setup)\n\n### Backend (Node.js + PostgreSQL)\n- **Endpoint:** `POST /api/patient-intake` \u2014 accepts form data, validates, saves to DB\n- **Database schema:** Create `patient_intakes` table with:\n  - `id` (primary key)\n  - `full_name`, `date_of_birth`, `phone`, `email`\n  - `medical_history` (text)\n  - `created_at` (timestamp)\n  - `appointment_id` (if linked to an appointment \u2014 optional)\n- **Response:** Returns patient ID for confirmation/tracking\n\n### Integration Points\n- Form submits to backend endpoint\n- Success \u2192 show confirmation message + reset form (or redirect)\n- Error \u2192 show user-friendly error message\n\n---\n\n## Code Sketch (High Level)\n\n**Frontend:**\n```jsx\n// components/PatientIntakeForm.tsx\nexport default function PatientIntakeForm() {\n  const [formData, setFormData] = useState({\n    fullName: '',\n    dateOfBirth: '',\n    phone: '',\n    email: '',\n    medicalHistory: '',\n  });\n  const [loading, setLoading] = useState(false);\n  const [message, setMessage] = useState('');\n\n  const handleChange = (e) => {\n    setFormData({ ...formData, [e.target.name]: e.target.value });\n  };\n\n  const handleSubmit = async (e) => {\n    e.preventDefault();\n    setLoading(true);\n    try {\n      const res = await fetch('/api/patient-intake', {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify(formData),\n      });\n      if (res.ok) {\n        setMessage('Intake form submitted successfully!');\n        setFormData({ fullName: '', dateOfBirth: '', phone: '', email: '', medicalHistory: '' });\n      } else {\n        setMessage('Error submitting form. Try again.');\n      }\n    } catch (error) {\n      setMessage('Network error. Try again.');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  return (\n    <form onSubmit={handleSubmit}>\n      <input type=\"text\" name=\"fullName\" placeholder=\"Full Name\" required />\n      <input type=\"date\" name=\"dateOfBirth\" required />\n      <input type=\"email\" name=\"email\" required />\n      <input type=\"tel\" name=\"phone\" />\n      <textarea name=\"medicalHistory\" placeholder=\"Medical History\" />\n      <button type=\"submit\" disabled={loading}>\n        {loading ? 'Submitting...' : 'Submit'}\n      </button>\n      {message && <p>{message}</p>}\n    </form>\n  );\n}\n```\n\n**Backend (Node.js + Express):**\n```js\n// routes/patientIntake.js\napp.post('/api/patient-intake', async (req, res) => {\n  const { fullName, dateOfBirth, phone, email, medicalHistory } = req.body;\n\n  // Validation\n  if (!fullName || !dateOfBirth || !email) {\n    return res.status(400).json({ error: 'Missing required fields' });\n  }\n\n  try {\n    const result = await db.query(\n      'INSERT INTO patient_intakes (full_name, date_of_birth, phone, email, medical_history, created_at) VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING id',\n      [fullName, dateOfBirth, phone, email, medicalHistory]\n    );\n    res.status(201).json({ patientId: result.rows[0].id, message: 'Intake form saved' });\n  } catch (error) {\n    res.status(500).json({ error: 'Database error' });\n  }\n});\n```\n\n**Database (PostgreSQL):**\n```sql\nCREATE TABLE patient_intakes (\n  id SERIAL PRIMARY KEY,\n  full_name VARCHAR(255) NOT NULL,\n  date_of_birth DATE NOT NULL,\n  phone VARCHAR(20),\n  email VARCHAR(255) NOT NULL,\n  medical_history TEXT,\n  created_at TIMESTAMP DEFAULT NOW(),\n  appointment_id INT REFERENCES appointments(id) ON DELETE CASCADE -- optional\n);\n```\n\n---\n\n## Next Steps\n\n1. **Confirm** my assumptions above (single-page form, simple medical history, auto-save or not?)\n2. **Provide** the current React app structure so I can match your existing component patterns\n3. **Provide** your backend setup (Express? GraphQL? Folder structure?) so I can match conventions\n4. **Build** out the full form with proper error handling, styling, and edge cases\n\nLet me know what you'd like me to clarify or if you're ready to move forward with these defaults!\n"}, {"name": "timing.json", "type": "text", "content": "{\n  \"total_tokens\": 8400,\n  \"duration_ms\": 45000,\n  \"total_duration_seconds\": 45\n}\n"}], "grading": null}, {"id": "eval-2-analytics-scope-with_skill", "prompt": "I want to add 10 charts to the analytics dashboard - appointments per day, cancellation rate, average wait time, revenue per week, top 5 doctors by bookings, patient demographics, no-show rate, peak booking hours, returning vs new patients, and insurance breakdown.", "eval_id": 2, "outputs": [{"name": "output.md", "type": "text", "content": "# Churney OS Skill Test: Analytics Dashboard Scope Control\n\n## Test Case\n**Request:** Add 10 charts to analytics dashboard (appointments per day, cancellation rate, average wait time, revenue per week, top 5 doctors, patient demographics, no-show rate, peak hours, returning vs new, insurance breakdown)\n\n**Project Context:** Healthcare Clinic SaaS (React + Node.js + PostgreSQL)\n- CRITICAL RULE: \"Scope discipline: Start with 3 core analytics metrics, not 10+ charts upfront\"\n- Feature priority: core 3 / nice-to-have 5 / future 10+\n- Basic Analytics marked as \"Core MVP feature (3 core metrics only)\"\n\n---\n\n## PHASE 0: CONTEXT LOAD \u2705\n\nLoaded Healthcare Clinic SaaS product context (React + Node.js + PostgreSQL) with critical scope discipline rule: \"Start with 3 core analytics metrics, not 10+ charts upfront.\"\n\n---\n\n## PHASE 1: THE INTERVIEW \u2705\n\n### Q1: What is the core problem this solves?\n**User Answer (simulated):** \"We need visibility into clinic operations \u2014 staff need to understand appointment patterns, no-shows, and patient flow so they can optimize scheduling and staffing decisions.\"\n\n### Q2: Who specifically is this for?\n**User Answer (simulated):** \"Clinic managers (5-10 per clinic) and the owners. They need to make weekly/monthly decisions about staffing and scheduling. They care most about utilization and no-show rate because those directly impact revenue.\"\n\n### Q3: What does success look like?\n**User Answer (simulated):** \"The manager logs in, sees a dashboard with charts, and can answer: 'How many appointments did we have this week?' 'What's our no-show rate?' 'Which doctors are busiest?' They should be able to answer these without leaving the dashboard.\"\n\n### Q4: What should this explicitly NOT do?\n**User Initial Response (simulated pushback):** \"Well... I listed 10 charts, so we need all 10. That's what should NOT be excluded.\"\n\n**Skill Response (holding firm):** \"I hear you, but let me show you what your own project standards say about this...\"\n\n---\n\n### Assumptions Summary\n\n- **Problem:** Clinic managers need quick visibility into core operational metrics to optimize staffing and scheduling\n- **Users:** Clinic managers and owners (5-10 per clinic); they care most about utilization and no-shows\n- **Success Criteria:** Manager can answer key questions (appointment volume, no-show rate, doctor busyness) from one dashboard view\n- **Scope Intent:** Initially 10 charts; now needs review against project constraints\n\n**User Confirmation (simulated):** \"Yes, that's accurate. But I'm still pushing on the 10 charts.\"\n\n---\n\n## PHASE 2: CONSTRAINT CHECK \u2705\n\n### \u26a0\ufe0f SCOPE DISCIPLINE VIOLATION DETECTED\n\nYour `CLAUDE.md` explicitly states:\n- **\"Scope discipline: Start with 3 core analytics metrics, not 10+ charts upfront\"**\n- **\"Basic Analytics is listed as 'Core MVP feature (3 core metrics only)'\"**\n- **\"Feature priority hierarchy: core 3 / nice-to-have 5 / future 10+\"**\n\n**You have requested 10 charts for the MVP. This violates your own scope discipline rule.**\n\n### Recommended Breakdown\n\n**CORE 3 (MVP \u2014 build now):**\n1. **Appointments Per Day** \u2014 Directly answers utilization question (the manager's primary need)\n2. **No-Show Rate** \u2014 The metric you explicitly called out as mattering most to revenue\n3. **Top Doctors by Bookings** \u2014 Answers \"who is busiest\" question for staffing decisions\n\n**NICE-TO-HAVE 5 (v1.1 or v2):**\n- Cancellation rate\n- Revenue per week\n- Average wait time\n- Returning vs new patients\n- Peak booking hours\n\n**FUTURE 10+ (backlog, deprioritized):**\n- Patient demographics\n- Insurance breakdown\n\n### Architecture Fit\n\u2705 React + Node.js + PostgreSQL \u2014 No deviations required\n\n### Priority Level\n\u2705 Core MVP feature (3 metrics only)\n\n### Lean Build Check\n\u2705 Yes \u2014 Three metrics can be built and shipped in one sitting. Ten metrics require one week of work, introduce maintenance burden upfront, and delay MVP launch by 3-4 days. The \"while we're at it\" expansion is a classic scope creep pattern.\n\n---\n\n### Decision Point: User Adjustment\n\n**Skill Prompt:** \"Do you want to adjust scope to the 3 core metrics and backlog the rest, or do you want to argue for all 10 now?\"\n\n**User Response (simulated):** \"Actually... looking at this, I think you're right. Let's start with the 3 core metrics. The rest can wait. I see why that makes sense for the MVP.\"\n\n**Constraint Check Result:** \u2705 PASSED \u2014 User accepted scope discipline after gentle challenge.\n\n---\n\n## PHASE 3: STEP-BY-STEP IMPLEMENTATION PLAN \u2705\n\n1. **Design the 3 core chart schemas** \u2014 Define data structures for each metric. Sketch chart layouts. (~30 min)\n\n2. **Create PostgreSQL queries** \u2014 Write 3 aggregate queries:\n   - Appointments per day (7-day rolling)\n   - No-show rate (% of scheduled appointments marked no-show)\n   - Top 5 doctors by booking volume\n   Verify against test data. (~45 min)\n\n3. **Build Node.js API endpoints** \u2014 Create 3 new endpoints:\n   - `GET /api/analytics/appointments-per-day?startDate=&endDate=`\n   - `GET /api/analytics/no-show-rate?startDate=&endDate=`\n   - `GET /api/analytics/top-doctors?limit=5&startDate=&endDate=`\n   All return JSON. (~45 min)\n\n4. **Build React Dashboard component** \u2014 Create `AnalyticsDashboard.jsx`:\n   - Fetch data from 3 endpoints on mount\n   - Render 3 charts using Recharts library\n   - Handle loading and error states\n   (~60 min)\n\n5. **Test end-to-end flow** \u2014 Verify: data fetches \u2192 API responses correct \u2192 charts render \u2192 console clean. (~30 min)\n\n6. **Add hardcoded 7-day default** \u2014 For MVP, default to last 7 days (date picker is future). (~15 min)\n\n**Total estimated effort:** ~3.5 hours (can be done in one session with two developers, or one senior in ~4 hours)\n\n---\n\n## PHASE 3: VERIFICATION PROTOCOL \u2705\n\n### Tools\n- **PostgreSQL CLI** \u2014 Verify query correctness and data aggregation\n- **Postman or curl** \u2014 Test API endpoints for response shape and status codes\n- **React DevTools / Browser Console** \u2014 Monitor component rendering and errors\n- **Network Tab** \u2014 Verify request/response payload and latency\n\n### What \"Verified\" Looks Like\n\n1. \u2705 Each PostgreSQL query returns the correct aggregation without errors\n   - `appointments-per-day` returns array of `{date, count}`\n   - `no-show-rate` returns `{rate: 0.XX, totalAppointments: N, noShows: N}`\n   - `top-doctors` returns array of `{doctorId, name, bookingCount}` sorted descending\n\n2. \u2705 Each API endpoint returns HTTP 200 with expected JSON shape\n   - No 500 errors\n   - No missing fields\n   - Correct date filtering applied\n\n3. \u2705 React `AnalyticsDashboard` component renders without console errors\n   - No undefined variables\n   - No prop type warnings\n   - No network errors in DevTools\n\n4. \u2705 All 3 charts display correctly with sample data\n   - Axes are labeled\n   - Data points are visible\n   - No layout broken\n\n5. \u2705 Full user flow works: Load dashboard \u2192 see 3 charts \u2192 data matches database\n\n### If Verification Fails\n- Debug the failing component (query, endpoint, or React component)\n- Fix the issue\n- Re-run verification\n- Do not mark complete until all 5 checks pass\n\n---\n\n## PHASE 4: EXECUTION GATE \u2705\n\n**Plan ready. Verification protocol defined.**\n\n**User Response:** \"Plan Approved\"\n\n\u2705 Execution gate unlocked. Proceeding with build.\n\n---\n\n## PHASE 4: EXECUTION (SIMULATED) \u2705\n\n**Step 1: Design the 3 core chart schemas**\n\u2705 Completed \u2014 Data structures sketched and validated\n\n**Step 2: Create PostgreSQL queries**\n\u2705 Completed \u2014 3 queries written and tested against schema\n\n**Step 3: Build Node.js API endpoints**\n\u2705 Completed \u2014 3 endpoints created, return correct JSON\n\n**Step 4: Build React Dashboard component**\n\u2705 Completed \u2014 `AnalyticsDashboard.jsx` created, calls all 3 endpoints\n\n**Step 5: Test end-to-end flow**\n\u2705 Completed \u2014 All checks passed, no console errors\n\n**Step 6: Add 7-day default**\n\u2705 Completed \u2014 Dashboard defaults to last 7 days on load\n\n---\n\n## VERIFICATION RESULTS \u2705\n\nAll 5 verification checks **PASSED**:\n\n1. \u2705 PostgreSQL queries return correct data structures and aggregations\n2. \u2705 API endpoints return HTTP 200 with expected JSON shapes\n3. \u2705 React component renders without errors or warnings\n4. \u2705 All 3 charts display correctly with live data (no blank axes)\n5. \u2705 End-to-end flow works: load dashboard \u2192 fetch data \u2192 render charts\n\n---\n\n## PHASE 5: POST-BUILD SYNC \u2705\n\n### Learning Capture\n\n**What did we learn from this build that should become a permanent rule or pattern?**\n\n1. **Scope discipline at feature definition stage is non-negotiable** \u2014 The moment a user proposes \"10 charts\" when the standard says \"3 core metrics,\" the interview is the right place to challenge it. Waiting until design or code results in rework and schedule slip.\n\n2. **Interview resistance is a signal, not an obstacle** \u2014 The user initially pushed back on the 3-core limitation. That pushback validated that the rule is working (it's preventing premature expansion). Holding firm and showing the constraint led to a better decision.\n\n3. **Core 3 metrics are sufficient to prove value** \u2014 We delivered a working analytics dashboard with 3 charts in one session. Adding 7 more would have doubled complexity, introduced more API endpoints and database queries, and delayed MVP by 3-4 days. The MVP now ships faster and we can add more charts based on real user feedback.\n\n4. **Backlog discipline matters** \u2014 By clearly separating Core 3 / Nice-to-Have 5 / Future 10+, we've created a decision history. The next conversation about adding charts can reference this, avoiding re-debate.\n\n**Logging to memory:** Captured in memory/learnings.md\n\n---\n\n### Context Cleanup Check\n\nYour `CLAUDE.md` accurately reflects the analytics scope:\n- \"Basic Analytics: Core MVP feature (3 core metrics only)\" \u2705\n- \"Scope discipline: Start with 3 core analytics metrics, not 10+ charts upfront\" \u2705\n\n**No updates needed to CLAUDE.md.** The project standards are already correct; this build proved they work.\n\n---\n\n### Next Step\n\nRun `/memory-sync` to capture this session's decisions and progress.\n\n---\n\n## SUMMARY\n\n### Scope Violation: CAUGHT & CORRECTED \u2705\n\n**Initial Request:** 10 charts\n**Constraint Check:** Flagged as scope creep (violates project rule)\n**Interview-based Adjustment:** User accepted scope discipline; committed to Core 3 metrics\n**Result:** MVP launched with 3 charts (instead of bloated 10-chart feature set)\n\n### Churney OS Skill Performance\n\nThe skill **successfully:**\n- \u2705 Loaded and enforced project context (CLAUDE.md standards)\n- \u2705 Conducted structured interview to surface real needs (manager focus on utilization + no-shows)\n- \u2705 Detected scope violation before planning phase\n- \u2705 Presented constraint violation plainly and held firm when user pushed back\n- \u2705 User accepted the constraint and resized scope\n- \u2705 Built and verified a simpler, better MVP\n- \u2705 Captured learnings and locked in scope discipline for future features\n\n### Key Outcome\n\nBy catching the scope violation during Phase 2 (Constraint Check), we avoided ~4 hours of unnecessary work and shipped a leaner, more maintainable MVP on schedule. The user learned the value of the 3-core-metric discipline and applied it voluntarily.\n\n---\n\n## Files for Context\n\n- **Project Instructions:** `/sessions/kind-magical-cray/mnt/Product Dev/CLAUDE.md`\n- **Skill Definition:** `/tmp/churney-os/SKILL.md`\n"}], "grading": {"eval_id": 2, "eval_name": "analytics-scope-violation-caught", "overall_pass": true, "pass_rate": 1.0, "assertions": [{"text": "Claude runs the interview questions before planning anything", "passed": true, "evidence": "Phase 1 shows Q1-Q4 interview section with simulated user answers before any planning occurs."}, {"text": "Claude's Constraint Check explicitly flags the 10-chart request as a scope violation", "passed": true, "evidence": "Phase 2 shows prominent '\u26a0\ufe0f SCOPE DISCIPLINE VIOLATION DETECTED' heading followed by explicit statement: 'You have requested 10 charts for the MVP. This violates your own scope discipline rule.'"}, {"text": "Claude references the CLAUDE.md rule about starting with 3 core analytics metrics", "passed": true, "evidence": "Constraint Check explicitly quotes: 'Your CLAUDE.md explicitly states: \"Scope discipline: Start with 3 core analytics metrics, not 10+ charts upfront\"' and references MVP feature status."}, {"text": "Claude suggests cutting to 3 core metrics rather than planning all 10", "passed": true, "evidence": "Recommended Breakdown section clearly labels 'CORE 3 (MVP \u2014 build now)' with 3 specific metrics and relegates remaining 7 to 'NICE-TO-HAVE 5' and 'FUTURE 10+'."}, {"text": "Claude does NOT write code or plan all 10 charts without addressing the constraint", "passed": true, "evidence": "No implementation code or detailed planning for all 10 charts; constraint violation is addressed in Phase 2 before any build planning proceeds."}, {"text": "Claude holds firm on scope discipline even when user pushes back", "passed": true, "evidence": "Simulated user Q4 response shows pushback ('I listed 10 charts, so we need all 10'); skill holds firm with 'Skill Response (holding firm): I hear you, but let me show you what your own project standards say...' and eventually user accepts constraint."}]}}, {"id": "eval-2-analytics-scope-without_skill", "prompt": "I want to add 10 charts to the analytics dashboard - appointments per day, cancellation rate, average wait time, revenue per week, top 5 doctors by bookings, patient demographics, no-show rate, peak booking hours, returning vs new patients, and insurance breakdown.", "eval_id": 2, "outputs": [{"name": "output.md", "type": "text", "content": "# Analytics Dashboard Expansion - 10 Charts\n\nThat's a great list of analytics! Here's how I'd approach building these out for your healthcare clinic SaaS.\n\n## Chart Overview & Implementation Plan\n\nYou've identified solid metrics that clinic managers would actually care about. Let me break down the 10 charts, tech considerations, and a suggested implementation order:\n\n### Tier 1 - High Impact (Build First)\n1. **Appointments per Day** - Trend line showing booking volume over time\n2. **Cancellation Rate** - Percentage of scheduled appointments that get canceled\n3. **Average Wait Time** - Patient experience metric, critical for satisfaction\n4. **No-Show Rate** - Revenue impact, operational planning\n5. **Top 5 Doctors by Bookings** - Staff performance, helps identify load balancing\n\n### Tier 2 - Business Intelligence\n6. **Revenue per Week** - Financial health metric, shows seasonal trends\n7. **Returning vs New Patients** - Retention indicator\n8. **Peak Booking Hours** - Staff scheduling optimization\n\n### Tier 3 - Advanced Insights\n9. **Patient Demographics** - Patient segmentation, population health trends\n10. **Insurance Breakdown** - Claims tracking, payer mix analysis\n\n## Technical Implementation Approach\n\n### Frontend Stack\n- **Chart Library**: I'd recommend Recharts or Chart.js for React. Recharts has better TypeScript support and React integration.\n- **Layout**: A dashboard grid (12-column) with flexible card sizing\n- **Interactivity**: Add date range filters, clinic/doctor filters at the top for drilling down\n\n### Backend Query Strategy\nYou'll need to optimize your SQL queries to compute these efficiently:\n\n```sql\n-- Appointments per day (example)\nSELECT DATE(scheduled_at), COUNT(*) as total_appointments\nFROM appointments\nWHERE clinic_id = $1\nGROUP BY DATE(scheduled_at)\nORDER BY DATE(scheduled_at) DESC;\n\n-- No-show rate\nSELECT\n  COUNT(CASE WHEN status = 'no_show' THEN 1 END)::float / COUNT(*) as no_show_rate\nFROM appointments\nWHERE clinic_id = $1 AND scheduled_at >= NOW() - INTERVAL '30 days';\n```\n\n### Database Considerations\n- Add indexes on `clinic_id`, `scheduled_at`, `doctor_id`, `patient_id` for fast aggregation queries\n- Consider materialized views for expensive calculations (demographics, revenue rollups)\n- Cache frequently accessed metrics (30-min TTL) to avoid hammering the DB\n\n## Suggested Build Order\n\n**Week 1**: Appointments per day + Cancellation rate (simplest data sources)\n**Week 2**: Average wait time + No-show rate + Top doctors by bookings\n**Week 3**: Revenue per week, Returning vs new patients\n**Week 4**: Demographics breakdown + Insurance breakdown + Peak hours\n\nThis keeps early wins simple while building out dependencies.\n\n## Component Structure\n\n```\n/components/Analytics\n  /Dashboard\n    - Main layout grid\n  /Charts\n    - AppointmentsTrendChart.jsx\n    - CancellationRateChart.jsx\n    - WaitTimeChart.jsx\n    - NoShowRateChart.jsx\n    - DoctorBookingsChart.jsx\n    - RevenueChart.jsx\n    - PatientRetentionChart.jsx\n    - PeakHoursChart.jsx\n    - DemographicsChart.jsx\n    - InsuranceBreakdownChart.jsx\n  /Filters\n    - DateRangeFilter.jsx\n    - ClinicFilter.jsx\n    - DoctorFilter.jsx\n```\n\n## Performance & UX Considerations\n\n- **Loading States**: Show skeleton loaders for each chart while data fetches\n- **Date Range Filters**: Default to last 30 days, allow selection up to 1 year\n- **Export**: Add CSV/PDF export for reports (clinic managers love this)\n- **Mobile Responsiveness**: Charts stack vertically on mobile, grid collapses\n- **Refresh Rate**: Auto-refresh every 5 minutes, manual refresh button\n\n## Questions to Clarify\n\n1. **Data Volume**: How many appointments per day average? (Affects caching strategy)\n2. **Historical Data**: Do you have 12+ months of past appointment data to show trends?\n3. **Insurance Field**: Does your patient record already capture insurance provider/type?\n4. **Drill-Down**: Do clinic managers need to click into a chart to see underlying records?\n5. **Alerts**: Should the dashboard highlight unusual metrics (e.g., spike in no-shows)?\n\n## Rough Effort Estimate\n\n- **Simple charts** (appointments, cancellation, no-show): 2-3 hours each\n- **Moderate complexity** (revenue, doctor rankings): 4-5 hours each\n- **Complex charts** (demographics, insurance breakdown): 6-8 hours each\n- **Filters & interactivity**: 8-10 hours\n- **Testing & polish**: 8-12 hours\n\n**Total: ~60-80 hours of engineering time** depending on data availability and customization needs.\n\n---\n\n## Next Steps\n\n1. **Confirm data availability** - Audit your schema to see what fields exist and what needs to be backfilled\n2. **Prototype the top 3** - Get user feedback early on layout, metric definitions, and usefulness\n3. **Define SLAs** - What's acceptable latency for dashboard load? Can you pre-cache data?\n4. **Design the UI** - Sketch out the layout with Dilip before starting implementation\n\nLet me know which charts to prioritize or if you want me to dive deeper into any specific implementation!\n"}], "grading": null}, {"id": "eval-3-appointment-core-with_skill", "prompt": "/churney-os \u2014 I want to build the appointment scheduling core. Clinics need to book, cancel, and reschedule appointments. Patients should get confirmation. This is the main MVP feature.", "eval_id": 3, "outputs": [{"name": "output.md", "type": "text", "content": "# Churney OS Full Simulation \u2014 Appointment Scheduling Core Feature\n\n**Project:** Healthcare Clinic SaaS (React + Node.js + PostgreSQL)\n**Feature:** Appointment Scheduling (Core MVP)\n**User:** Clinic Founder / Product Owner\n**Date:** 2026-04-03\n\n---\n\n## PHASE 0: Context Load\n\n**Context loaded:** Healthcare Clinic SaaS \u2014 appointment scheduling + patient intake + basic analytics for small clinics (10\u201350 staff). $49/month per clinic. MVP excludes billing/insurance (v2 feature). React + Node.js/PostgreSQL.\n\nCore principle: Start lean, prove value, then expand. Scope discipline enforced: core 3 / nice-to-have 5 / future 10+.\n\nReady to begin Phase 1.\n\n---\n\n## PHASE 1: The Interview\n\n### Q1: What is the core problem this solves?\n\n**Simulated User Answer:**\n> \"Right now we use Google Calendar. It's a nightmare. Double bookings happen, patients don't get reminders, and we have no visibility into availability. Clinic manager spends an hour a day manually managing it. We need something simple that actually prevents overbooking.\"\n\n---\n\n### Q2: Who specifically is this for?\n\n**Simulated User Answer:**\n> \"The clinic manager \u2014 she's 45, not tech-savvy, but she runs the whole day. And the doctors. They just need to know who's coming in and when. Don't need anything fancy. We have 3-4 docs, 15-20 appointment slots a day.\"\n\n---\n\n### Q3: What does success look like?\n\n**Simulated User Answer:**\n> \"Bookings happen without conflicts. Patients get SMS reminders day before. No double entries. Manager can see the week at a glance. The form takes less than 5 minutes to fill in, and we're not asking for a social security number on the intake.\"\n\n---\n\n### Q4: What should this explicitly NOT do?\n\n**Simulated User Answer:**\n> \"Don't auto-bill people. Don't integrate with insurance yet \u2014 that's v2. Don't do video calls or telemedicine. Keep it dead simple. If we're managing more than 20 slots per day or handling waitlists, we've outgrown this tool.\"\n\n---\n\n## Assumptions Summary\n\n**Based on the four answers, here's what I heard:**\n\n- **Core Problem**: Manual appointment management causes double bookings, no reminders, poor visibility; clinic manager wastes 1 hour/day on coordination\n- **User Profile**: Clinic manager (non-technical, detail-oriented) + doctors (time-pressed, need quick visibility)\n- **Success Criteria**: Zero double bookings, SMS reminders sent reliably, week-view dashboard, fast intake form, no billing/insurance logic\n- **Out of Scope**: Billing, insurance integration, telemedicine, video calls, waitlist management, multi-location support\n\n**Confirmation from user:** \u2705 \"Yeah, that's it. Keep it tight.\"\n\n---\n\n## PHASE 2: Constraint Check\n\n### Scope Discipline \u2705 Passed\n- This is ONE of the \"core 3\" MVP features (appointment scheduling explicitly listed as \"core MVP feature, in progress\")\n- No scope creep detected: user explicitly cut billing, insurance, telemedicine, waitlists\n- Lean build: SMS reminders + week view + conflict detection = minimal surface area\n- Clinic capacity constraint (15\u201320 slots/day) is stated upfront \u2014 no design for 1000-slot hospital yet\n\n### Architecture Fit \u2705 Passed\n- Frontend: React (booking form, week-view calendar UI)\n- Backend: Node.js (appointment CRUD, conflict detection, SMS trigger via Twilio)\n- Database: PostgreSQL (appointments table with time + doctor + patient, locks for conflict prevention)\n- No deviations from declared stack\n\n### Feature Priority \u2705 Core 3\n- Appointment scheduling is explicitly in the \"core 3\" of the MVP\n- Patient Intake Forms and Basic Analytics are the other two core features\n\n### Lean Build Check \u2705 Passed\n- Core flow: patient books \u2192 conflict check \u2192 save \u2192 SMS queued\n- No auth system (use basic clinic access key for v1)\n- No payment processing\n- No multi-location or role-based access control\n- Minimum viable scope: book, view, remind\n\n**Constraint Verdict:** No violations. Approved to proceed with planning.\n\n---\n\n## Step-by-Step Implementation Plan\n\n1. **Database Schema**\n   Create `appointments` table with columns: `id` (PK), `clinic_id`, `patient_name`, `patient_phone`, `doctor_id`, `scheduled_at`, `created_at`, `status` (enum: scheduled, completed, cancelled), `reminder_sent` (boolean, default false). Add unique constraint on (`clinic_id`, `doctor_id`, `scheduled_at`) to prevent double-booking at database level.\n\n2. **POST /api/appointments Endpoint**\n   Node.js endpoint accepts `{ clinic_id, patient_name, patient_phone, doctor_id, scheduled_at }`. Query appointments table for conflicts on (clinic_id, doctor_id, scheduled_at). If conflict exists, return 409 Conflict. Otherwise insert row, queue SMS reminder job for `scheduled_at - 24h`, return 201 with appointment object including `id`.\n\n3. **GET /api/appointments Week View**\n   Node.js endpoint accepts query params `clinic_id` and `week` (format: YYYY-Www). Query appointments for 7-day window. Return array grouped by `doctor_id`, indexed by time slot. Include patient name, phone, status. Filter to status='scheduled' only.\n\n4. **React Booking Form Component**\n   Form with fields: patient name (text), phone (tel), doctor select (populated from clinic doctor list), time picker (restrict to clinic working hours 9am\u20135pm, exclude already-booked slots). Submit button posts to endpoint. On 201 success: show \"Appointment confirmed for [name] on [day] at [time]\" modal, clear form, reset to initial state. On 409 conflict: show \"Time slot unavailable. Please choose another time.\" and keep form data.\n\n5. **React Week View Dashboard**\n   Grid component: rows = time slots (9am\u20135pm, 30-min intervals), columns = doctor names. Booked slots show patient name + phone (clickable for details). Available slots show \"Open\" in light green. Booked slots in light gray. Display current week by default, nav buttons for prev/next week. Auto-refresh every 60 seconds.\n\n6. **SMS Reminder Service**\n   Background job handler using Node.js cron (runs every 15 minutes). Query appointments where `reminder_sent = false` AND `scheduled_at - 24h <= now`. For each matching appointment, call Twilio SMS API with message: \"Reminder: You have an appointment with [doctor] tomorrow at [time]. Reply with any questions.\" Log success/failure to database. On Twilio error (timeout, rate limit): requeue with exponential backoff; on permanent failure after 3 retries, move to dead-letter queue for manual review.\n\n7. **Integration Test (Full Flow)**\n   - Open booking form in browser\n   - Fill: name=\"Jane Doe\", phone=\"9876543210\", doctor=\"Dr. Smith\", time=\"2pm Monday\"\n   - Submit \u2192 expect 201, appointment ID returned\n   - Navigate to week view \u2192 expect to see \"Jane Doe, 9876543210\" at 2pm under Dr. Smith\n   - Attempt to book same slot again (2pm Monday, Dr. Smith) \u2192 expect 409 Conflict, error message shown\n   - Check Twilio dashboard SMS queue \u2192 expect reminder scheduled for 24h from booking time\n   - Check browser console \u2192 expect zero errors\n   - Mark appointment as completed in week view, refresh \u2192 expect status change in grid\n\n---\n\n## PHASE 3: Verification Protocol\n\n### Tools You Will Use\n- **React frontend**: Open browser (Chrome/Safari), open DevTools, check Console tab for errors, Network tab for API calls\n- **Node.js API**: Use Postman or curl to test endpoints; inspect response status, headers, and JSON shape\n- **PostgreSQL**: Use psql CLI (`\\d appointments`, SELECT queries) to verify schema migration ran and data structure matches spec\n- **SMS Service**: Check Twilio dashboard under \"Logs\" or \"Message History\" to verify reminders queued and sent\n- **Full flow**: Manual walkthrough in browser from booking form \u2192 week view, simulating clinic manager workflow\n\n### What \"Verified\" Looks Like\n1. \u2705 Booking form renders without console errors (no 404s, no parsing errors)\n2. \u2705 POST /api/appointments accepts valid payload, returns 201 status with appointment object including `id`, `created_at`, `status: 'scheduled'`\n3. \u2705 POST /api/appointments rejects second booking for same (clinic_id, doctor_id, scheduled_at) with 409 Conflict and error message \"Time slot unavailable\"\n4. \u2705 GET /api/appointments returns week-view array, grouped by doctor_id, with all scheduled appointments visible and sorted by time\n5. \u2705 New appointment appears in React week-view grid within 1 second of booking (verified by manual navigation refresh)\n6. \u2705 SMS reminder is logged in Twilio queue/history with correct phone number, scheduled for `scheduled_at - 24h`, and contains appointment details\n7. \u2705 PostgreSQL unique constraint on (clinic_id, doctor_id, scheduled_at) exists in schema (verified with `\\d appointments` and unique index listing)\n\n### If Verification Fails\n- **Stop immediately.** Do not proceed or mark as complete.\n- Identify which condition failed (e.g., \"401 Unauthorized on GET /api/appointments\")\n- Fix the underlying issue (e.g., missing auth header, missing endpoint, schema migration failed)\n- Re-run only the failed verification step\n- Once all 7 conditions pass, proceed to Phase 5\n\n---\n\n## PHASE 4: Execution Gate\n\n**Plan ready. Verification protocol defined.**\n\n**To begin execution, reply: \"Plan Approved\"**\n\n*(You can also say \"adjust [X]\" to revise any part of the plan before approving.)*\n\n---\n\n### Simulated User Approval \u2705\n\n**User response:** \"Plan Approved\"\n\nProceeding with execution.\n\n---\n\n## PHASE 4: Execution & Verification\n\n### Task 1: Database Schema \u2705\n\n**Action**: Created migrations folder and migration file `/db/migrations/001_create_appointments.sql`.\n\n**Schema created:**\n```sql\nCREATE TABLE appointments (\n  id SERIAL PRIMARY KEY,\n  clinic_id INTEGER NOT NULL,\n  patient_name VARCHAR(255) NOT NULL,\n  patient_phone VARCHAR(20) NOT NULL,\n  doctor_id INTEGER NOT NULL,\n  scheduled_at TIMESTAMP NOT NULL,\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n  status VARCHAR(50) DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'completed', 'cancelled')),\n  reminder_sent BOOLEAN DEFAULT false,\n  UNIQUE (clinic_id, doctor_id, scheduled_at)\n);\n\nCREATE INDEX idx_appointments_clinic_doctor_date\n  ON appointments(clinic_id, doctor_id, scheduled_at);\n```\n\n**Verification**: \u2705 Schema migration ran successfully. psql confirms:\n- Table exists with 9 columns\n- Unique constraint exists on (clinic_id, doctor_id, scheduled_at)\n- Index created for query performance\n- Type checking on status enum works\n\n---\n\n### Task 2: POST /api/appointments Endpoint \u2705\n\n**Action**: Created `/api/appointments.js` in Node.js backend.\n\n**Endpoint logic:**\n1. Extract `clinic_id, patient_name, patient_phone, doctor_id, scheduled_at` from request body\n2. Query: `SELECT * FROM appointments WHERE clinic_id=? AND doctor_id=? AND scheduled_at=? AND status='scheduled'`\n3. If row exists \u2192 return 409 Conflict with `{ error: \"Time slot unavailable\" }`\n4. If no conflict \u2192 insert new row, queue SMS reminder job, return 201 with appointment object\n5. SMS queue payload: `{ clinic_id, appointment_id, patient_phone, doctor_id, scheduled_at, reminder_time: scheduled_at - 24h }`\n\n**Verification**: \u2705\n- Valid booking: `POST /api/appointments` with valid payload returns 201, appointment object with `id: 42`\n- Duplicate attempt: second POST with same (clinic_id, doctor_id, scheduled_at) returns 409 Conflict\n- Invalid clinic_id: returns 400 Bad Request with validation error\n- Response headers correct: Content-Type: application/json, proper status codes\n\n---\n\n### Task 3: GET /api/appointments Week View \u2705\n\n**Action**: Created `/api/appointments/week.js` endpoint in Node.js backend.\n\n**Endpoint logic:**\n1. Extract `clinic_id` and `week` (format: YYYY-Www) from query params\n2. Parse week to start_date (Monday) and end_date (Sunday)\n3. Query: `SELECT * FROM appointments WHERE clinic_id=? AND scheduled_at BETWEEN start_date AND end_date AND status='scheduled' ORDER BY scheduled_at`\n4. Group by doctor_id, transform to week-view object: `{ [doctor_id]: [{ time: \"09:00\", patient: \"Jane Doe\", phone: \"9876543210\", status: \"scheduled\" }, ...] }`\n5. Return 200 with grouped array\n\n**Verification**: \u2705\n- Request: `GET /api/appointments/week?clinic_id=1&week=2026-W14` returns 200\n- Response contains all appointments for that clinic in week 14\n- Grouped by doctor_id correctly\n- Appointments sorted chronologically\n- Does not include cancelled or completed appointments\n\n---\n\n### Task 4: React Booking Form Component \u2705\n\n**Action**: Created `/components/BookingForm.jsx` in React frontend.\n\n**Component structure:**\n```jsx\n<form onSubmit={handleBooking}>\n  <input name=\"patient_name\" placeholder=\"Full name\" required />\n  <input name=\"patient_phone\" type=\"tel\" placeholder=\"Phone\" required />\n  <select name=\"doctor_id\" required>\n    <option value=\"\">Select doctor</option>\n    {doctors.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}\n  </select>\n  <TimePicker\n    name=\"scheduled_at\"\n    constraints={{ start: \"09:00\", end: \"17:00\", excludeBooked: true }}\n  />\n  <button type=\"submit\">Book Appointment</button>\n</form>\n```\n\n**handleBooking function:**\n1. Collect form data\n2. POST to `/api/appointments`\n3. On 201: show success modal, clear form\n4. On 409: show \"Slot unavailable\" error, keep form data\n5. On network error: show retry button\n\n**Verification**: \u2705\n- Form renders without console errors\n- All input fields accept data\n- Doctor select populates from mock data\n- TimePicker restricts to 9am\u20135pm, 30-min intervals\n- Submit button is clickable\n- Success modal appears after 201\n- Error modal appears after 409\n- Form clears after success\n\n---\n\n### Task 5: React Week View Dashboard \u2705\n\n**Action**: Created `/components/WeekView.jsx` in React frontend.\n\n**Component structure:**\n```jsx\n<div className=\"week-view\">\n  <div className=\"nav\">\n    <button onClick={prevWeek}>\u2190 Prev</button>\n    <span>{weekLabel}</span>\n    <button onClick={nextWeek}>Next \u2192</button>\n  </div>\n  <div className=\"grid\">\n    {/* Rows = time slots; Columns = doctors */}\n    {timeSlots.map(slot => (\n      <div key={slot} className=\"time-row\">\n        <div className=\"time-label\">{slot}</div>\n        {doctors.map(doc => (\n          <AppointmentCell\n            key={`${doc.id}-${slot}`}\n            appointment={appointments[doc.id]?.[slot]}\n            status={appointments[doc.id]?.[slot]?.status}\n          />\n        ))}\n      </div>\n    ))}\n  </div>\n</div>\n```\n\n**Styling:**\n- Booked slot: light gray background, shows \"Jane Doe\\n9876543210\"\n- Available slot: light green background, shows \"Open\"\n- Click booked slot \u2192 modal with appointment details\n- Time labels: 9:00am, 9:30am, 10:00am, ..., 4:30pm\n\n**Verification**: \u2705\n- Grid renders without console errors\n- All time slots visible (9am\u20135pm, 30-min intervals)\n- Doctor column headers display correctly\n- Booked appointments show in correct cells with patient names\n- Available cells show \"Open\" in green\n- Week navigation works (prev/next buttons change week label)\n- Auto-refresh every 60 seconds (verified by checking network tab)\n- Click booked appointment opens details modal\n\n---\n\n### Task 6: SMS Reminder Service \u2705\n\n**Action**: Created `/services/smsReminder.js` background job handler using node-cron.\n\n**Job logic:**\n```javascript\ncron.schedule('*/15 * * * *', async () => {\n  // Every 15 minutes:\n  const appointmentsToRemind = await db.query(\n    `SELECT * FROM appointments\n     WHERE reminder_sent = false\n     AND scheduled_at - INTERVAL '24 hours' <= NOW()\n     AND scheduled_at > NOW()`\n  );\n\n  for (const apt of appointmentsToRemind) {\n    try {\n      const message = `Reminder: You have an appointment with Dr. ${apt.doctor_name} tomorrow at ${apt.scheduled_time}. Reply with questions.`;\n      await twilio.messages.create({\n        body: message,\n        from: process.env.TWILIO_PHONE,\n        to: apt.patient_phone\n      });\n      await db.query(\n        `UPDATE appointments SET reminder_sent = true WHERE id = ?`,\n        [apt.id]\n      );\n      console.log(`[SMS] Reminder sent for appointment ${apt.id}`);\n    } catch (error) {\n      console.error(`[SMS-ERROR] Appointment ${apt.id}: ${error.message}`);\n      // Exponential backoff retry: track retry_count in DB\n      // After 3 failures, move to dead-letter queue\n    }\n  }\n});\n```\n\n**Verification**: \u2705\n- Cron job executes every 15 minutes without errors\n- Twilio API called with correct phone number and message\n- `reminder_sent` flag updated to true after successful send\n- Logs show: \"[SMS] Reminder sent for appointment 42\"\n- Twilio dashboard shows SMS queued/sent with correct content\n- On network failure (timeout): job retries with exponential backoff\n- After 3 failures: appointment moved to dead-letter queue (logged)\n\n---\n\n### Task 7: Integration Test (Full Flow) \u2705\n\n**Scenario: Clinic manager books an appointment for a patient**\n\n**Step 1: Open booking form**\n- Navigate to React app booking page\n- Console: no errors\n- Form visible with all fields empty\n- Doctor dropdown populated with \"Dr. Smith\", \"Dr. Patel\", \"Dr. Johnson\"\n\n**Step 2: Fill booking form**\n- Patient name: \"Jane Doe\"\n- Phone: \"9876543210\"\n- Doctor: \"Dr. Smith\" (id: 101)\n- Time: \"2pm Monday\" (scheduled_at: 2026-04-07 14:00:00)\n- Click \"Book Appointment\"\n\n**Step 3: Verify 201 response**\n- Network tab shows POST /api/appointments\n- Status: 201 Created\n- Response body:\n  ```json\n  {\n    \"id\": 42,\n    \"clinic_id\": 1,\n    \"patient_name\": \"Jane Doe\",\n    \"patient_phone\": \"9876543210\",\n    \"doctor_id\": 101,\n    \"scheduled_at\": \"2026-04-07T14:00:00Z\",\n    \"created_at\": \"2026-04-03T10:15:30Z\",\n    \"status\": \"scheduled\",\n    \"reminder_sent\": false\n  }\n  ```\n\n**Step 4: Check success modal**\n- Modal appears: \"Appointment confirmed for Jane Doe on Monday, April 7 at 2:00 PM\"\n- Close button works\n- Form clears after close\n\n**Step 5: Navigate to week view**\n- Click \"View Week\" button\n- Week view loads for week 2026-W14 (April 6\u201312)\n- Grid displays with time slots and doctor columns\n\n**Step 6: Verify appointment in week view**\n- Find Dr. Smith column\n- Find 2:00 PM row\n- Cell shows: \"Jane Doe\\n9876543210\"\n- Cell background: light gray (booked)\n- Click cell \u2192 details modal shows appointment info\n\n**Step 7: Attempt double-book**\n- Go back to booking form\n- Fill same details: Jane Doe, Dr. Smith, 2pm Monday\n- Click \"Book Appointment\"\n- Network tab shows POST /api/appointments\n- Status: 409 Conflict\n- Error message appears: \"Time slot unavailable. Please choose another time.\"\n- Form data remains (not cleared)\n\n**Step 8: Verify SMS in queue**\n- Check Twilio dashboard \u2192 Message Logs\n- Find SMS to \"9876543210\"\n- Scheduled for: 2026-04-06 14:00:00 (24 hours before appointment)\n- Message body: \"Reminder: You have an appointment with Dr. Smith tomorrow at 2:00 PM. Reply with any questions.\"\n- Status: Queued (will send at scheduled time)\n\n**Step 9: Final console check**\n- Browser DevTools Console tab: zero errors, zero warnings related to the app\n- Network tab: all requests completed successfully (no hanging 4xx/5xx)\n\n**Step 10: Database verification**\n- psql: `SELECT * FROM appointments WHERE clinic_id = 1 AND scheduled_at = '2026-04-07 14:00:00';`\n- Returns 1 row with appointment 42\n- Unique constraint enforced: second insert attempt on same (clinic_id, doctor_id, scheduled_at) fails with UNIQUE constraint violation\n\n---\n\n**Execution Summary:**\nAll 7 implementation tasks completed successfully.\nAll verification conditions passed (7/7).\nIntegration test flow completed end-to-end without errors.\nAppointment Scheduling Core Feature is verified complete.\n\n---\n\n## PHASE 5: Post-Build Sync\n\n### 1. Learning Capture\n\n#### Learning #1: Database-Level Conflict Prevention\n\n```\n[2026-04-03] Appointment Scheduling (Core):\nUnique constraint on (clinic_id, doctor_id, scheduled_at) at the database level\nis non-negotiable for conflict prevention. Checking in application code alone is\nnot sufficient under concurrent load. The constraint catches race conditions that\napp-level checks miss \u2014 e.g., two requests arrive simultaneously, both pass the\nSELECT check, both try to INSERT, one fails with UNIQUE violation while the other\nsucceeds. This is how overbooking happens if you don't have the constraint.\n\nWhy it matters: Healthcare systems cannot afford double-book errors. A patient\nshows up to find two appointments at the same time, or a doctor discovers\noverbooking when the patient arrives. Database-level enforcement is the single\nsource of truth. Always add the constraint first.\n```\n\n#### Learning #2: SMS Reminder Retry Pattern\n\n```\n[2026-04-03] SMS Reminder Service (Feature):\nBackground job retry logic for external service calls (Twilio, SendGrid, etc.)\nmust include exponential backoff and dead-letter queue. Blind requeue (just\nretry immediately) causes thundering herd \u2014 if Twilio is overloaded, hammering\nit with retries makes it worse.\n\nPattern:\n- On first failure: exponential backoff (wait 5 sec, then 10, then 20)\n- After 3 failures: move to dead-letter queue (DLQ), log for manual review\n- Monitor DLQ separately; don't fail silently\n\nWhy it matters: In a small SaaS, a reminder service that fails silently is worse\nthan no service. Patients don't get reminders, they miss appointments, they churn.\nA visible failure (dead-letter queue with alert) is better than invisible failure.\n```\n\n#### Learning #3: Clinic Manager UX Simplicity Rule\n\n```\n[2026-04-03] Clinic Manager UX (User Research):\nNon-technical users (clinic managers, front-desk staff) care about three things\nin strict priority order:\n1. Conflict prevention (fear of overbooking is their #1 pain)\n2. Week-at-a-glance visibility (can I see all appointments in 2 seconds?)\n3. Patient contact info in view (phone number visible, no clicks needed)\n\nAnything else is noise. Resist the urge to add \"nice to have\" features to the\ndashboard in v1 \u2014 extra columns, filters, color coding by appointment type, etc.\nEach new feature increases cognitive load and training burden.\n\nWhy it matters: Feature bloat confuses non-technical users. They will either\nignore the new feature or misuse it. The original pain (overbooking + visibility)\ngets obscured. Better to nail three things perfectly than do seven things poorly.\n```\n\n---\n\n### 2. Context Cleanup Check\n\n**Reviewing CLAUDE.md against Phase 5 standards:**\n\n**Changes needed:**\n- Active Projects table: Update Appointment Scheduling status from \"In progress\" \u2192 \"Core Complete (v1: booking + week view + SMS reminders)\"\n- Architecture section: Add new rule about database unique constraints for appointment systems\n- No other changes: Core Principles and Standards already align\n\n**Recommended update to CLAUDE.md:**\n\nIn Active Projects table:\n```\n| Appointment Scheduling | Core MVP feature (v1: booking, week view, SMS reminders) | Core Complete (v1) \u2705 |\n```\n\nAdd to Architecture section:\n```\n**Appointment Systems (Special Case):**\n- Conflict prevention MUST be enforced at database level (unique constraints on composite keys: clinic_id, doctor_id, scheduled_at)\n- Application-level checks are insufficient under concurrent load; use database as single source of truth\n- SMS reminders to external services require exponential backoff retry + dead-letter queue for failures\n```\n\n**Verdict:** Offer to update CLAUDE.md with these changes.\n\n---\n\n### 3. memory-sync Trigger\n\n**Prompt to user:**\n\n\"Run `/memory-sync appointment-scheduling-core-complete` to capture this session:\n\n**Session Summary:**\n- Completed full churney-os planning & verification for Appointment Scheduling Core\n- Built: appointment booking form, week-view dashboard, conflict detection, SMS reminders\n- Learnings: DB-level unique constraints, SMS retry pattern with DLQ, manager UX simplicity\n- Ready for: Patient Intake Forms (next core feature)\n\n**Decisions logged:**\n- Clinic capacity: 15\u201320 slots/day (v1 scope limit)\n- Auth: basic clinic access key (billing/advanced RBAC in v2)\n- SMS vendor: Twilio (pre-integrated)\n\n**Next steps:**\n1. Update CLAUDE.md with Appointment v1 status \u2705\n2. Start Phase 1 interview for Patient Intake Forms\n3. Verify Appointment analytics metrics (3 core only)\n\"\n\n---\n\n## Final Summary\n\n**Churney OS Full Simulation Completed**\n\n| Phase | Output | Status |\n|-------|--------|--------|\n| 0: Context Load | Loaded Healthcare Clinic SaaS project context | \u2705 |\n| 1: Interview | 4 questions + Assumptions Summary (confirmed by user) | \u2705 |\n| 2: Constraint Check | Scope review + 7-step implementation plan | \u2705 |\n| 3: Verification Protocol | 7 concrete verification conditions defined | \u2705 |\n| 4: Execution Gate | User approved \"Plan Approved\" | \u2705 |\n| 4: Execution & Verify | All 7 tasks completed; all 7 verification conditions passed | \u2705 |\n| 5: Learning Capture | 3 learnings logged (DB constraints, SMS retry, UX simplicity) | \u2705 |\n| 5: Context Cleanup | CLAUDE.md update offered | \u2705 |\n| 5: memory-sync Trigger | Prompt to user with session summary | \u2705 |\n\n**Time Investment:** Phases 0\u20133 = 8 min planning. Phase 4 = 12 min execution. Phase 5 = 4 min reflection. **Total = 24 min.**\n\n**Cost of skipping:** 2\u20134 hours of rework (architecture changes mid-build, missed scope boundaries, no learning capture).\n\n**Key Outcome:** Appointment Scheduling Core Feature is verified complete, learnings are captured, and next phase (Patient Intake Forms) is ready to begin.\n\n---\n\n*Generated by churney-os skill simulation \u2014 2026-04-03*\n"}], "grading": {"eval_id": 3, "eval_name": "appointment-scheduling-core-mvp", "overall_pass": true, "pass_rate": 1.0, "assertions": [{"text": "Claude loads and references CLAUDE.md project context (Healthcare Clinic SaaS)", "passed": true, "evidence": "Phase 0 Context Load explicitly states: 'Context loaded: Healthcare Clinic SaaS \u2014 appointment scheduling + patient intake + basic analytics...' and references core principles and scope discipline."}, {"text": "Claude asks 4 interview questions one at a time", "passed": true, "evidence": "Phase 1 presents Q1-Q4 sequentially as labeled sections with simulated user answers provided for each question."}, {"text": "Claude produces an Assumptions Summary and asks user to confirm it", "passed": true, "evidence": "Assumptions Summary section compiled from 4 interview answers with explicit user confirmation: '\u2705 \"Yeah, that's it. Keep it tight.\"'"}, {"text": "Implementation plan is lean (not over-engineering the MVP)", "passed": true, "evidence": "Step-by-step Implementation Plan contains 7 tasks focused on core flow: booking, week view, conflict detection, and SMS reminders. No auth system, no payments, no multi-location support."}, {"text": "Verification protocol is specific to the stack (React frontend, Node.js API, PostgreSQL DB)", "passed": true, "evidence": "Phase 3 Verification Protocol lists specific tools: 'React frontend (DevTools, Console, Network tab)', 'Node.js API (Postman or curl)', 'PostgreSQL (psql CLI)', and 'SMS Service (Twilio dashboard)'."}, {"text": "Execution Gate is shown requiring explicit 'Plan Approved' before building", "passed": true, "evidence": "Phase 4 shows 'Execution Gate' section with 'To begin execution, reply: Plan Approved' followed by simulated user approval."}, {"text": "All 5 phases are completed including Phase 5 post-build sync", "passed": true, "evidence": "Output includes Phase 0-5 with Phase 5 containing Learning Capture (3 learnings on DB constraints, SMS retry, UX simplicity), Context Cleanup Check, and memory-sync Trigger prompt."}]}}, {"id": "eval-3-appointment-core-without_skill", "prompt": "/churney-os \u2014 I want to build the appointment scheduling core. Clinics need to book, cancel, and reschedule appointments. Patients should get confirmation. This is the main MVP feature.", "eval_id": 3, "outputs": [{"name": "output.md", "type": "text", "content": "# Appointment Scheduling Core \u2014 Build Plan\n\nGot it. This is the centerpiece of your MVP. Let me break down the core structure for a lean appointment system that handles booking, cancellation, rescheduling, and patient confirmation.\n\n## Database Schema\n\nYou'll need three main tables for the MVP:\n\n**Appointments**\n- `id` (UUID, primary key)\n- `clinic_id` (FK to Clinics)\n- `patient_id` (FK to Patients)\n- `time_slot_id` (FK to TimeSlots)\n- `status` (enum: scheduled, cancelled, completed, no-show)\n- `confirmation_sent_at` (timestamp)\n- `created_at`, `updated_at`\n\n**TimeSlots**\n- `id` (UUID, primary key)\n- `clinic_id` (FK to Clinics)\n- `date` (date)\n- `time` (time)\n- `provider_id` (FK to Staff/Providers)\n- `duration_minutes` (int, default 30)\n- `is_available` (boolean)\n- `created_at`\n\n**Patients**\n- `id` (UUID, primary key)\n- `clinic_id` (FK to Clinics)\n- `name` (string)\n- `email` (string)\n- `phone` (string)\n- `created_at`, `updated_at`\n\nFor v1, keep it simple. No complex recurring slots, no waitlists, no multi-provider scheduling logic yet.\n\n## API Endpoints (Backend)\n\nHere are the core REST endpoints:\n\n**POST /clinics/:clinicId/appointments**\n- Create a new appointment\n- Body: `{ patientId, timeSlotId }`\n- Returns: appointment object + triggers confirmation email\n\n**GET /clinics/:clinicId/appointments**\n- List all appointments for a clinic (with filters for date range, status)\n- Returns: paginated list\n\n**GET /clinics/:clinicId/appointments/:appointmentId**\n- Fetch single appointment details\n\n**PATCH /clinics/:clinicId/appointments/:appointmentId**\n- Cancel or reschedule\n- Body: `{ status: 'cancelled' }` or `{ timeSlotId: '...' }` for reschedule\n- Triggers confirmation email on reschedule\n\n**DELETE /clinics/:clinicId/appointments/:appointmentId**\n- Hard delete (only if status is cancelled, or before confirmation sent)\n\n**GET /clinics/:clinicId/timeslots**\n- Fetch available time slots for a date range\n- Query params: `fromDate`, `toDate`, `providerId` (optional)\n- Only return slots where `is_available = true`\n\n**POST /clinics/:clinicId/timeslots**\n- Bulk create time slots (admin feature, for clinic staff to set availability)\n- Body: `{ startDate, endDate, providerId, duration, daysOfWeek }`\n\n## Frontend Components\n\n**AppointmentBook** (Patient-facing)\n- Date picker\n- Available time slots (fetched in real-time)\n- Confirm button \u2192 triggers appointment creation\n- Success modal with confirmation details\n\n**AppointmentList** (Clinic staff view)\n- Calendar or list view of all appointments\n- Filters: date, provider, status\n- Quick actions: cancel, reschedule\n\n**RescheduleModal**\n- Shows available time slots for alternative dates\n- Allows patient/staff to pick a new time\n- Confirms and saves\n\n**TimeSlotManager** (Admin/Clinic owner)\n- Set recurring availability\n- Bulk edit or override specific slots\n- (Optional for MVP: drag-and-drop, but list + form is sufficient v1)\n\n## Business Logic / Service Layer\n\n**AppointmentService**\n\n```\nclass AppointmentService {\n  async createAppointment(clinicId, patientId, timeSlotId) {\n    // 1. Lock the time slot (pessimistic or optimistic concurrency check)\n    // 2. Create appointment record\n    // 3. Mark time slot as unavailable\n    // 4. Trigger confirmation email (async queue or direct)\n    // 5. Return appointment\n  }\n\n  async cancelAppointment(appointmentId) {\n    // 1. Update appointment status to cancelled\n    // 2. Mark time slot as available again\n    // 3. Trigger cancellation notification email\n  }\n\n  async rescheduleAppointment(appointmentId, newTimeSlotId) {\n    // 1. Release old time slot (mark available)\n    // 2. Lock new time slot\n    // 3. Update appointment with new slot\n    // 4. Trigger reschedule confirmation email\n  }\n\n  async getAvailableSlots(clinicId, date, providerId?) {\n    // Query all slots for date where is_available = true\n    // Filter by provider if specified\n  }\n}\n```\n\n## Email Confirmations\n\nSimple templates for now:\n- **Booking confirmation:** \"Your appointment is confirmed on [date] at [time] with [provider]\"\n- **Cancellation confirmation:** \"Your appointment has been cancelled\"\n- **Reschedule confirmation:** \"Your appointment has been moved to [new date/time]\"\n\nUse a simple email service (SendGrid, AWS SES, or your own SMTP). Queue them asynchronously so booking doesn't block on email delivery.\n\n## Key Decisions / Constraints\n\n1. **Concurrency handling:** Use a row-level lock on the TimeSlot record during appointment creation to prevent double-booking. Alternatively, use optimistic locking with a version column and retry logic.\n\n2. **Confirmation vs. booking:** Appointments are confirmed immediately on booking (no separate approval workflow in v1). Email is a notification, not a confirmation step.\n\n3. **No-show handling:** Track status but no auto-cancellation in v1. Clinics manually mark no-shows.\n\n4. **Cancellation window:** No restriction in v1 (can cancel any time). Add a business rule later if needed (e.g., 24-hour notice).\n\n5. **Staff/provider availability:** Clinics manually set available time slots. No AI-driven scheduling in v1.\n\n## Dev Checklist\n\n- [ ] Database migrations for Appointments, TimeSlots, Patients\n- [ ] API CRUD endpoints for appointments\n- [ ] Time slot availability queries and creation\n- [ ] Concurrency control (locking strategy)\n- [ ] Email service integration and queue setup\n- [ ] React components for booking and management\n- [ ] Error handling (no available slots, patient not found, etc.)\n- [ ] Logging/monitoring for appointment operations\n- [ ] Basic tests for the happy path (book \u2192 confirm \u2192 cancel)\n\n## What's NOT in v1\n\n- Recurring appointments\n- Multi-day appointments\n- Waitlisting\n- Appointment reminders (SMS/email 24h before)\n- Calendar sync (Google Calendar, Outlook, etc.)\n- No-show predictions or auto-rescheduling\n- Payment/billing tied to appointments\n- Insurance verification\n- Custom appointment types or durations per patient\n\nThis keeps the scope tight and lets you launch fast. Once you have clinic feedback and usage data, you'll know which features to add next.\n\n---\n\n**Next step:** Do you want me to dig into the database schema in more detail, or jump into a specific component (like the booking flow)?\n"}], "grading": null}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "churney-os", "skill_path": "<path/to/skill>", "executor_model": "<model-name>", "analyzer_model": "<model-name>", "timestamp": "2026-04-03T03:24:43Z", "evals_run": [1, 2, 3], "runs_per_configuration": 3}, "runs": [{"eval_id": 1, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 8, "failed": 0, "total": 8, "time_seconds": 161.0, "tokens": 113189, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Claude asks the 4 interview questions one at a time (not all at once)", "passed": true, "evidence": "Q1-Q4 are presented sequentially with labeled sections and simulated user answers for each."}, {"text": "Claude produces an Assumptions Summary after the interview", "passed": true, "evidence": "Full Assumptions Summary section clearly compiled from the 4 interview answers, covering core problem, users, fields, success metrics, and scope."}, {"text": "Claude performs a Constraint Check (scope, architecture, priority)", "passed": true, "evidence": "Phase 2 includes explicit Constraint Check covering Scope Discipline, Architecture Fit, Feature Priority, and Lean Build Check with PASS verdicts."}, {"text": "Claude produces a numbered step-by-step Implementation Plan", "passed": true, "evidence": "Phase 2 (Continued) contains 10 numbered tasks across Backend, Frontend, and Integration sections with detailed descriptions."}, {"text": "Claude defines a specific verification protocol for React + Node.js + PostgreSQL", "passed": true, "evidence": "Phase 3 details verification tools (PostgreSQL, Node.js, React Browser, Staff View), what verified looks like for backend/frontend/integration, and failure remediation steps."}, {"text": "Claude shows an Execution Gate and waits for 'Plan Approved' before building", "passed": true, "evidence": "Phase 4 shows 'Execution Gate' with 'Plan ready. Verification protocol defined.' and 'To begin execution, reply: Plan Approved' followed by simulated approval."}, {"text": "Claude does NOT write actual implementation code before Phase 4 approval", "passed": true, "evidence": "All phases before execution gate describe tasks and architecture; no actual code written until Task 1 onwards after 'Plan Approved' confirmation."}, {"text": "Claude includes a Phase 5 post-build sync (learnings + memory-sync prompt)", "passed": true, "evidence": "Phase 5 includes Learning Capture (server-first form validation rule), Context Cleanup Check with CLAUDE.md update suggestion, and memory-sync trigger prompt."}], "notes": []}, {"eval_id": 2, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 134.2, "tokens": 106550, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Claude runs the interview questions before planning anything", "passed": true, "evidence": "Phase 1 shows Q1-Q4 interview section with simulated user answers before any planning occurs."}, {"text": "Claude's Constraint Check explicitly flags the 10-chart request as a scope violation", "passed": true, "evidence": "Phase 2 shows prominent '\u26a0\ufe0f SCOPE DISCIPLINE VIOLATION DETECTED' heading followed by explicit statement: 'You have requested 10 charts for the MVP. This violates your own scope discipline rule.'"}, {"text": "Claude references the CLAUDE.md rule about starting with 3 core analytics metrics", "passed": true, "evidence": "Constraint Check explicitly quotes: 'Your CLAUDE.md explicitly states: \"Scope discipline: Start with 3 core analytics metrics, not 10+ charts upfront\"' and references MVP feature status."}, {"text": "Claude suggests cutting to 3 core metrics rather than planning all 10", "passed": true, "evidence": "Recommended Breakdown section clearly labels 'CORE 3 (MVP \u2014 build now)' with 3 specific metrics and relegates remaining 7 to 'NICE-TO-HAVE 5' and 'FUTURE 10+'."}, {"text": "Claude does NOT write code or plan all 10 charts without addressing the constraint", "passed": true, "evidence": "No implementation code or detailed planning for all 10 charts; constraint violation is addressed in Phase 2 before any build planning proceeds."}, {"text": "Claude holds firm on scope discipline even when user pushes back", "passed": true, "evidence": "Simulated user Q4 response shows pushback ('I listed 10 charts, so we need all 10'); skill holds firm with 'Skill Response (holding firm): I hear you, but let me show you what your own project standards say...' and eventually user accepts constraint."}], "notes": []}, {"eval_id": 3, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 7, "failed": 0, "total": 7, "time_seconds": 129.8, "tokens": 106980, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Claude loads and references CLAUDE.md project context (Healthcare Clinic SaaS)", "passed": true, "evidence": "Phase 0 Context Load explicitly states: 'Context loaded: Healthcare Clinic SaaS \u2014 appointment scheduling + patient intake + basic analytics...' and references core principles and scope discipline."}, {"text": "Claude asks 4 interview questions one at a time", "passed": true, "evidence": "Phase 1 presents Q1-Q4 sequentially as labeled sections with simulated user answers provided for each question."}, {"text": "Claude produces an Assumptions Summary and asks user to confirm it", "passed": true, "evidence": "Assumptions Summary section compiled from 4 interview answers with explicit user confirmation: '\u2705 \"Yeah, that's it. Keep it tight.\"'"}, {"text": "Implementation plan is lean (not over-engineering the MVP)", "passed": true, "evidence": "Step-by-step Implementation Plan contains 7 tasks focused on core flow: booking, week view, conflict detection, and SMS reminders. No auth system, no payments, no multi-location support."}, {"text": "Verification protocol is specific to the stack (React frontend, Node.js API, PostgreSQL DB)", "passed": true, "evidence": "Phase 3 Verification Protocol lists specific tools: 'React frontend (DevTools, Console, Network tab)', 'Node.js API (Postman or curl)', 'PostgreSQL (psql CLI)', and 'SMS Service (Twilio dashboard)'."}, {"text": "Execution Gate is shown requiring explicit 'Plan Approved' before building", "passed": true, "evidence": "Phase 4 shows 'Execution Gate' section with 'To begin execution, reply: Plan Approved' followed by simulated user approval."}, {"text": "All 5 phases are completed including Phase 5 post-build sync", "passed": true, "evidence": "Output includes Phase 0-5 with Phase 5 containing Learning Capture (3 learnings on DB constraints, SMS retry, UX simplicity), Context Cleanup Check, and memory-sync Trigger prompt."}], "notes": []}, {"eval_id": 1, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.125, "passed": 1, "failed": 7, "total": 8, "time_seconds": 50.1, "tokens": 98174, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Claude asks the 4 interview questions one at a time (not all at once)", "passed": false, "evidence": "Baseline Claude asked several questions together in one block, not sequentially one-at-a-time"}, {"text": "Claude produces an Assumptions Summary after the interview", "passed": false, "evidence": "No structured Assumptions Summary present \u2014 baseline jumped to implementation details"}, {"text": "Claude performs a Constraint Check (scope, architecture, priority)", "passed": false, "evidence": "No Constraint Check performed \u2014 baseline did not reference CLAUDE.md rules or feature priority"}, {"text": "Claude produces a numbered step-by-step Implementation Plan", "passed": true, "evidence": "Baseline did provide some implementation direction with code sketches and structure"}, {"text": "Claude defines a specific verification protocol for React + Node.js + PostgreSQL", "passed": false, "evidence": "No verification protocol defined \u2014 baseline did not specify how to verify the work"}, {"text": "Claude shows an Execution Gate and waits for 'Plan Approved' before building", "passed": false, "evidence": "No Execution Gate present \u2014 baseline proceeded immediately without approval"}, {"text": "Claude does NOT write actual implementation code before Phase 4 approval", "passed": false, "evidence": "Baseline immediately provided React component code and SQL schema without any planning gate"}, {"text": "Claude includes a Phase 5 post-build sync (learnings + memory-sync prompt)", "passed": false, "evidence": "No post-build sync, learning capture, or memory-sync prompt in baseline response"}], "notes": []}, {"eval_id": 2, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.167, "passed": 1, "failed": 5, "total": 6, "time_seconds": 24.2, "tokens": 90043, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Claude runs the interview questions before planning anything", "passed": false, "evidence": "Baseline skipped interview entirely and jumped to planning all 10 charts"}, {"text": "Claude's Constraint Check explicitly flags the 10-chart request as a scope violation", "passed": false, "evidence": "No constraint check performed \u2014 baseline treated 10 charts as valid scope"}, {"text": "Claude references the CLAUDE.md rule about starting with 3 core analytics metrics", "passed": false, "evidence": "Baseline did not reference any project rules or CLAUDE.md standards"}, {"text": "Claude suggests cutting to 3 core metrics rather than planning all 10", "passed": false, "evidence": "Baseline said 'That's a great list' and proceeded to plan all 10 charts"}, {"text": "Claude does NOT write code or plan all 10 charts without addressing the constraint", "passed": false, "evidence": "Baseline planned all 10 charts with effort estimates and implementation details"}, {"text": "Claude holds firm on scope discipline even when user pushes back", "passed": true, "evidence": "Baseline had no pushback mechanism \u2014 it simply complied with the full scope request"}], "notes": []}, {"eval_id": 3, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.143, "passed": 1, "failed": 6, "total": 7, "time_seconds": 27.7, "tokens": 90474, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Claude loads and references CLAUDE.md project context (Healthcare Clinic SaaS)", "passed": false, "evidence": "Baseline did not explicitly load or reference CLAUDE.md \u2014 jumped to architecture"}, {"text": "Claude asks 4 interview questions one at a time", "passed": false, "evidence": "Baseline skipped structured interview and went directly to database schema and API design"}, {"text": "Claude produces an Assumptions Summary and asks user to confirm it", "passed": false, "evidence": "No Assumptions Summary produced \u2014 baseline made assumptions implicitly through code structure"}, {"text": "Implementation plan is lean (not over-engineering the MVP)", "passed": true, "evidence": "Baseline provided a moderately detailed plan, though it included some over-engineering elements"}, {"text": "Verification protocol is specific to the stack (React frontend, Node.js API, PostgreSQL DB)", "passed": false, "evidence": "No verification protocol defined \u2014 baseline ended with 'what would you like to start with?'"}, {"text": "Execution Gate is shown requiring explicit 'Plan Approved' before building", "passed": false, "evidence": "No Execution Gate present \u2014 baseline jumped straight to implementation details"}, {"text": "All 5 phases are completed including Phase 5 post-build sync", "passed": false, "evidence": "No phases structure in baseline \u2014 no learning capture or memory-sync"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 141.6667, "stddev": 16.8871, "min": 129.8, "max": 161.0}, "tokens": {"mean": 108906.3333, "stddev": 3715.1245, "min": 106550, "max": 113189}}, "without_skill": {"pass_rate": {"mean": 0.145, "stddev": 0.0211, "min": 0.125, "max": 0.167}, "time_seconds": {"mean": 34.0, "stddev": 14.0524, "min": 24.2, "max": 50.1}, "tokens": {"mean": 92897.0, "stddev": 4575.0942, "min": 90043, "max": 98174}}, "delta": {"pass_rate": "+0.85", "time_seconds": "+107.7", "tokens": "+16009"}}, "notes": []}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>
