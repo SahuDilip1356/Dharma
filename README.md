@@ -12,7 +12,7 @@ Browse all skills in a visual card grid, filter by layer, select the ones you ne
 
 | | |
 |:---|:---|
-| **Live site (GitHub Pages)** | **[https://sahudilip1356.github.io/Dharma/](https://sahudilip1356.github.io/Dharma/)** |
+| **Live site (GitHub Pages)** | **[https://sahudilip1356.github.io/Dharma/](https://sahudilip1356.github.io/Dharma/)** — if you see the README instead of cards, open **[docs/index.html](https://sahudilip1356.github.io/Dharma/docs/index.html)** or set Pages to folder **`/docs`** (recommended). |
 | **Source in repo** | [`docs/index.html`](docs/index.html) — regenerate with `python3 scripts/generate-skills-picker.py` |
 
 **Enable GitHub Pages:** Repository **Settings → Pages → Build and deployment → Source:** Deploy from branch **`main`**, folder **`/docs`**, then save. The site URL will match your username and repo name (above).
