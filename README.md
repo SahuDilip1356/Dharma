@@ -6,6 +6,17 @@ Dharma is a 33-skill, 8-route product development framework that runs inside Cla
 
 Every feature, bug fix, refactor, UI redesign, performance improvement, security change, or release runs through the same disciplined process — regardless of size or complexity.
 
+### Interactive skills picker (cards)
+
+Browse all skills in a visual card grid, filter by layer, select the ones you need, and **copy a ready-made prompt** for your AI session.
+
+| | |
+|:---|:---|
+| **Live site (GitHub Pages)** | **[https://sahudilip1356.github.io/Dharma/](https://sahudilip1356.github.io/Dharma/)** |
+| **Source in repo** | [`docs/index.html`](docs/index.html) — regenerate with `python3 scripts/generate-skills-picker.py` |
+
+**Enable GitHub Pages:** Repository **Settings → Pages → Build and deployment → Source:** Deploy from branch **`main`**, folder **`/docs`**, then save. The site URL will match your username and repo name (above).
+
 ---
 
 ## The Problem It Solves

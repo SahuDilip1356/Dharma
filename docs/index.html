@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dharma — Skills picker</title>
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141a24;
+      --elevated: #1c2533;
+      --text: #eef2f8;
+      --muted: #8a9ab0;
+      --border: #2a3548;
+      --glow: rgba(91, 155, 213, 0.35);
+      --orch: #e8b84a;
+      --l1: #6bcf7f;
+      --l2: #5eb8e8;
+      --l3: #a78bfa;
+      --l4: #f472b6;
+      --l5: #fb923c;
+      --other: #94a3b8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "DM Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(91,155,213,0.12), transparent),
+        radial-gradient(900px 500px at 90% 30%, rgba(167,139,250,0.1), transparent),
+        var(--bg);
+      color: var(--text);
+      margin: 0;
+      line-height: 1.45;
+      font-size: 15px;
+      padding-bottom: 10rem;
+    }
+    header {
+      padding: 1.5rem clamp(1rem, 4vw, 2rem) 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(28,37,51,0.95), rgba(20,26,36,0.85));
+      backdrop-filter: blur(12px);
+    }
+    header h1 {
+      margin: 0 0 0.4rem;
+      font-size: clamp(1.35rem, 3vw, 1.75rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    header p { margin: 0; color: var(--muted); font-size: 0.92rem; max-width: 62ch; }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      align-items: center;
+      padding: 0.9rem clamp(1rem, 4vw, 2rem);
+      border-bottom: 1px solid var(--border);
+      background: rgba(20, 26, 36, 0.6);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(10px);
+    }
+    .toolbar input[type="search"] {
+      flex: 1;
+      min-width: 220px;
+      padding: 0.6rem 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .toolbar input:focus {
+      border-color: #5b9bd5;
+      box-shadow: 0 0 0 3px var(--glow);
+    }
+    .toolbar select {
+      padding: 0.55rem 0.75rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+    }
+    .btn {
+      font: inherit;
+      cursor: pointer;
+      padding: 0.5rem 0.9rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--elevated);
+      color: var(--text);
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn:hover { background: #243044; }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      background: linear-gradient(135deg, #3d6fa8, #5b9bd5);
+      border-color: transparent;
+      color: #fff;
+    }
+    .btn-primary:hover { filter: brightness(1.06); }
+    .count { color: var(--muted); font-size: 0.88rem; white-space: nowrap; }
+    .hint { color: var(--muted); font-size: 0.8rem; width: 100%; margin-top: 0.15rem; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+      gap: 1.1rem;
+      padding: 1.25rem clamp(1rem, 4vw, 2rem) 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .skill-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
+      display: flex;
+      flex-direction: column;
+      min-height: 220px;
+      outline: none;
+    }
+    .skill-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+      border-color: rgba(91,155,213,0.35);
+    }
+    .skill-card:focus-visible {
+      box-shadow: 0 0 0 3px var(--glow);
+    }
+    .skill-card.is-selected {
+      border-color: #5b9bd5;
+      box-shadow: 0 0 0 1px #5b9bd5, 0 8px 32px rgba(91,155,213,0.2);
+    }
+    .skill-card .accent {
+      height: 4px;
+      width: 100%;
+    }
+    .layer-orchestrator .accent { background: linear-gradient(90deg, var(--orch), #f4d03f); }
+    .layer-l1 .accent { background: linear-gradient(90deg, #4ade80, var(--l1)); }
+    .layer-l2 .accent { background: linear-gradient(90deg, #38bdf8, var(--l2)); }
+    .layer-l3 .accent { background: linear-gradient(90deg, #818cf8, var(--l3)); }
+    .layer-l4 .accent { background: linear-gradient(90deg, #f472b6, #fb7185); }
+    .layer-l5 .accent { background: linear-gradient(90deg, #fb923c, #f59e0b); }
+    .layer-other .accent { background: var(--other); }
+
+    .card-inner { padding: 1rem 1.1rem 1.1rem; flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .skill-name {
+      font-weight: 650;
+      font-size: 1.02rem;
+      letter-spacing: -0.02em;
+      margin: 0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      color: #c8d7ea;
+    }
+    .pick-indicator {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      background: rgba(0,0,0,0.25);
+      display: grid;
+      place-items: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .skill-card.is-selected .pick-indicator {
+      background: linear-gradient(135deg, #3d6fa8, #5b9bd5);
+      border-color: transparent;
+    }
+    .pick-indicator svg { width: 14px; height: 14px; opacity: 0; }
+    .skill-card.is-selected .pick-indicator svg { opacity: 1; }
+
+    .layer-pill {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      background: rgba(0,0,0,0.25);
+      padding: 0.25rem 0.55rem;
+      border-radius: 999px;
+      align-self: flex-start;
+    }
+    .folder-tag {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: ui-monospace, monospace;
+    }
+    .preview-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #7dd3fc;
+      margin-top: 0.25rem;
+    }
+    .preview-text {
+      font-size: 0.86rem;
+      color: #b8c5d8;
+      line-clamp: 4;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex: 1;
+    }
+    .preview-text p { margin: 0; display: inline; }
+    .card-actions {
+      margin-top: auto;
+      padding-top: 0.5rem;
+    }
+    details.card-details {
+      font-size: 0.82rem;
+    }
+    details.card-details summary {
+      cursor: pointer;
+      color: #7dd3fc;
+      list-style: none;
+    }
+    details.card-details summary::-webkit-details-marker { display: none; }
+    details.card-details .detail-body {
+      margin-top: 0.6rem;
+      padding: 0.65rem 0.75rem;
+      background: rgba(0,0,0,0.22);
+      border-radius: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+      color: #aebccf;
+    }
+
+    .tray {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: linear-gradient(180deg, transparent, rgba(12,15,20,0.92) 18%);
+      padding: 0.75rem clamp(1rem, 3vw, 2rem) 1rem;
+      pointer-events: none;
+    }
+    .tray-inner {
+      pointer-events: auto;
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem 1.15rem;
+      box-shadow: 0 -8px 40px rgba(0,0,0,0.45);
+    }
+    .tray-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.65rem;
+    }
+    .tray-head strong { font-size: 1rem; }
+    .tray-head span { color: var(--muted); font-size: 0.9rem; }
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+      max-height: 88px;
+      overflow-y: auto;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.28rem 0.55rem 0.28rem 0.65rem;
+      background: rgba(91,155,213,0.15);
+      border: 1px solid rgba(91,155,213,0.35);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-family: ui-monospace, monospace;
+      color: #b8d4f0;
+    }
+    .chip button {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0 0.15rem;
+      font-size: 1rem;
+      line-height: 1;
+    }
+    .chip button:hover { color: #f87171; }
+    .tray-actions { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+
+    .toast {
+      position: fixed;
+      bottom: 6.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 0.55rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 60;
+      font-size: 0.88rem;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header>
+    <h1>Skill cards</h1>
+    <p>Tap a card to select skills for your next build. Your picks are remembered on this device. Skills source: github.com/SahuDilip1356/Dharma — regenerate: python3 scripts/generate-skills-picker.py</p>
+  </header>
+  <div class="toolbar">
+    <input type="search" id="q" placeholder="Search name, folder, triggers…" autocomplete="off" aria-label="Filter skills" />
+    <select id="layer" aria-label="Filter by layer">
+      <option value="">All layers</option>
+    </select>
+    <button type="button" class="btn" id="selectVisible" title="Select all cards currently visible">Select visible</button>
+    <button type="button" class="btn" id="clearVisible">Clear visible</button>
+    <span class="count" id="count"></span>
+    <span class="hint">Click a card to toggle. Use “Copy for chat” to paste into Cursor.</span>
+  </div>
+  <main class="grid" id="root" role="list"></main>
+
+  <div class="tray" aria-live="polite">
+    <div class="tray-inner">
+      <div class="tray-head">
+        <div>
+          <strong>Your selection</strong>
+          <span id="traySub">No skills selected</span>
+        </div>
+      </div>
+      <div class="chip-row" id="chipRow"></div>
+      <div class="tray-actions">
+        <button type="button" class="btn btn-primary" id="copyChat">Copy for chat</button>
+        <button type="button" class="btn" id="copyFolders">Copy folder names</button>
+        <button type="button" class="btn" id="clearAll">Clear all</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    const LS_KEY = "dharmaSkillCardPick";
+    const skills = [{"folder": "00-lifecycle-orchestrator", "name": "lifecycle-orchestrator", "category": "Orchestrator", "layer_slug": "orchestrator", "rel_path": "00-lifecycle-orchestrator/SKILL.md", "description_raw": "Master product development lifecycle orchestrator. Activate before starting ANY work —\nnew feature, bug fix, UI design, refactor, performance work, security change, or release.\nClassifies the request, selects the correct specialist skills, enforces phase gates, and\nrequires evidence before completion.\n\nTriggers on: \"build\", \"fix\", \"design\", \"improve\", \"refactor\", \"ship\", \"implement\",\n\"debug\", \"optimize\", \"release\", \"create\", \"add\", \"change\", \"review\", \"audit\",\nor any development/design/product request.\n\nPrime directives:\n- No work begins without classification\n- No code written before intent, assumptions, and success criteria are clear\n- No user-facing feature ships without UX, accessibility, responsive, and visual QA\n- No completion claim without evidence\n- No destructive or high-risk action without explicit escalation\n\nSupporting files (read after classification):\n- routing-decision-tree.md  → 7-step classification before any route selection\n- routing-matrix.md         → work type → required skills + evidence\n- ownership-boundaries.md   → scope limits per skill — prevents overlap\n- phase-gates.md            → entry criteria + exit evidence per phase\n- evidence-contract.md      → what counts as proof of completion\n- evidence-ledger-template.md → structured task receipt + gate tracking\n- escalation-rules.md       → when to stop and escalate\n- skills-inventory.md       → functional name → actual skill file mapping\n- examples/                 → golden reference scenarios per route", "description_html": "<p>Master product development lifecycle orchestrator. Activate before starting ANY work —<br>\nnew feature, bug fix, UI design, refactor, performance work, security change, or release.<br>\nClassifies the request, selects the correct specialist skills, enforces phase gates, and<br>\nrequires evidence before completion.</p><p>Triggers on: &quot;build&quot;, &quot;fix&quot;, &quot;design&quot;, &quot;improve&quot;, &quot;refactor&quot;, &quot;ship&quot;, &quot;implement&quot;,<br>\n&quot;debug&quot;, &quot;optimize&quot;, &quot;release&quot;, &quot;create&quot;, &quot;add&quot;, &quot;change&quot;, &quot;review&quot;, &quot;audit&quot;,<br>\nor any development/design/product request.</p><p>Prime directives:<br>\n- No work begins without classification<br>\n- No code written before intent, assumptions, and success criteria are clear<br>\n- No user-facing feature ships without UX, accessibility, responsive, and visual QA<br>\n- No completion claim without evidence<br>\n- No destructive or high-risk action without explicit escalation</p><p>Supporting files (read after classification):<br>\n- routing-decision-tree.md  → 7-step classification before any route selection<br>\n- routing-matrix.md         → work type → required skills + evidence<br>\n- ownership-boundaries.md   → scope limits per skill — prevents overlap<br>\n- phase-gates.md            → entry criteria + exit evidence per phase<br>\n- evidence-contract.md      → what counts as proof of completion<br>\n- evidence-ledger-template.md → structured task receipt + gate tracking<br>\n- escalation-rules.md       → when to stop and escalate<br>\n- skills-inventory.md       → functional name → actual skill file mapping<br>\n- examples/                 → golden reference scenarios per route</p>", "snippet_html": "<p>You are the master product development lifecycle orchestrator. You are the control tower — you do not fly every aircraft. You decide which runway, what sequence, when to hold, and when to clear for landing.<br>\n<strong>Read &#96;skills-inventory.md&#96; first</strong> to resolve functional skill names to actual installed skills.<br>\n---</p>", "searchBlob": "lifecycle-orchestrator 00-lifecycle-orchestrator orchestrator master product development lifecycle orchestrator. activate before starting any work —\nnew feature, bug fix, ui design, refactor, performance work, security change, or release.\nclassifies the request, selects the correct specialist skills, enforces phase gates, and\nrequires evidence before completion.\n\ntriggers on: \"build\", \"fix\", \"design\", \"improve\", \"refactor\", \"ship\", \"implement\",\n\"debug\", \"optimize\", \"release\", \"create\", \"add\", \"change\", \"review\", \"audit\",\nor any development/design/product request.\n\nprime directives:\n- no work begins without classification\n- no code written before intent, assumptions, and success criteria are clear\n- no user-facing feature ships without ux, accessibility, responsive, and visual qa\n- no completion claim without evidence\n- no destructive or high-risk action without explicit escalation\n\nsupporting files (read after classification):\n- routing-decision-tree.md  → 7-step classification before any route selection\n- routing-matrix.md         → work type → required skills + evidence\n- ownership-boundaries.md   → scope limits per skill — prevents overlap\n- phase-gates.md            → entry criteria + exit evidence per phase\n- evidence-contract.md      → what counts as proof of completion\n- evidence-ledger-template.md → structured task receipt + gate tracking\n- escalation-rules.md       → when to stop and escalate\n- skills-inventory.md       → functional name → actual skill file mapping\n- examples/                 → golden reference scenarios per route you are the master product development lifecycle orchestrator. you are the control tower — you do not fly every aircraft. you decide which runway, what sequence, when to hold, and when to clear for landing.\n**read `skills-inventory.md` first** to resolve functional skill names to actual installed skills.\n---"}, {"folder": "ai-observability", "name": "ai-observability", "category": "Layer 5 — AI & Economics", "layer_slug": "l5", "rel_path": "ai-observability/SKILL.md", "description_raw": "Post-ship monitoring setup for AI features. Triggers when:\n- An AI/LLM feature is about to ship to production (set up monitoring before go-live)\n- An AI feature is already live and has no monitoring in place\n- An AI incident occurs (hallucination spike, latency regression, cost overrun)\n- Asking \"how is our AI feature performing in production?\"\n\nTHE NON-NEGOTIABLE RULE: No AI feature ships to production without a monitoring plan.\nai-safety-eval gates pre-ship quality. ai-observability owns everything after.\n\nDoes NOT own: pre-ship testing (ai-safety-eval), prompt engineering, model selection.", "description_html": "<p>Post-ship monitoring setup for AI features. Triggers when:<br>\n- An AI/LLM feature is about to ship to production (set up monitoring before go-live)<br>\n- An AI feature is already live and has no monitoring in place<br>\n- An AI incident occurs (hallucination spike, latency regression, cost overrun)<br>\n- Asking &quot;how is our AI feature performing in production?&quot;</p><p>THE NON-NEGOTIABLE RULE: No AI feature ships to production without a monitoring plan.<br>\nai-safety-eval gates pre-ship quality. ai-observability owns everything after.</p><p>Does NOT own: pre-ship testing (ai-safety-eval), prompt engineering, model selection.</p>", "snippet_html": "<p><strong>Core rule: You cannot manage what you cannot see. Pre-ship testing tells you it worked once. Observability tells you it keeps working.</strong><br>\n---</p>", "searchBlob": "ai-observability ai-observability layer 5 — ai & economics post-ship monitoring setup for ai features. triggers when:\n- an ai/llm feature is about to ship to production (set up monitoring before go-live)\n- an ai feature is already live and has no monitoring in place\n- an ai incident occurs (hallucination spike, latency regression, cost overrun)\n- asking \"how is our ai feature performing in production?\"\n\nthe non-negotiable rule: no ai feature ships to production without a monitoring plan.\nai-safety-eval gates pre-ship quality. ai-observability owns everything after.\n\ndoes not own: pre-ship testing (ai-safety-eval), prompt engineering, model selection. **core rule: you cannot manage what you cannot see. pre-ship testing tells you it worked once. observability tells you it keeps working.**\n---"}, {"folder": "ai-safety-eval", "name": "ai-safety-eval", "category": "Layer 5 — AI & Economics", "layer_slug": "l5", "rel_path": "ai-safety-eval/SKILL.md", "description_raw": "AI safety evaluation gate — mandatory Phase 3 checkpoint before shipping any AI-powered feature.\nTriggers when:\n- Building features that use LLMs, generative AI, or probabilistic systems\n- Training or fine-tuning models\n- Using external APIs (OpenAI, Claude, etc.) in production\n- About to merge code that contains AI components\n\nTHE NON-NEGOTIABLE RULE: No AI feature ships without a completed safety evaluation.\nThis is a mandatory Phase 3 gate in Route A (New Product) and Route B (New Feature).", "description_html": "<p>AI safety evaluation gate — mandatory Phase 3 checkpoint before shipping any AI-powered feature.<br>\nTriggers when:<br>\n- Building features that use LLMs, generative AI, or probabilistic systems<br>\n- Training or fine-tuning models<br>\n- Using external APIs (OpenAI, Claude, etc.) in production<br>\n- About to merge code that contains AI components</p><p>THE NON-NEGOTIABLE RULE: No AI feature ships without a completed safety evaluation.<br>\nThis is a mandatory Phase 3 gate in Route A (New Product) and Route B (New Feature).</p>", "snippet_html": "<p><strong>Core rule: Before an AI feature reaches production, it must survive adversarial testing and demonstrate resistance to misuse.</strong><br>\nShipping without safety evaluation is negligence, not efficiency.<br>\n---</p>", "searchBlob": "ai-safety-eval ai-safety-eval layer 5 — ai & economics ai safety evaluation gate — mandatory phase 3 checkpoint before shipping any ai-powered feature.\ntriggers when:\n- building features that use llms, generative ai, or probabilistic systems\n- training or fine-tuning models\n- using external apis (openai, claude, etc.) in production\n- about to merge code that contains ai components\n\nthe non-negotiable rule: no ai feature ships without a completed safety evaluation.\nthis is a mandatory phase 3 gate in route a (new product) and route b (new feature). **core rule: before an ai feature reaches production, it must survive adversarial testing and demonstrate resistance to misuse.**\nshipping without safety evaluation is negligence, not efficiency.\n---"}, {"folder": "benchmark-framework", "name": "benchmark-framework", "category": "Layer 5 — AI & Economics", "layer_slug": "l5", "rel_path": "benchmark-framework/SKILL.md", "description_raw": "Scheduled quality regression tracking for production AI features. Triggers when:\n- 3+ AI features are live and quality needs continuous monitoring\n- A model version change is planned (run benchmarks before and after)\n- A prompt version change is deployed (run benchmarks to confirm no regression)\n- Asking \"is our AI quality getting better or worse over time?\"\n- ai-observability quality signals show unexplained degradation\n\nActivate when 3+ AI features are in production. Before that, ai-safety-eval\nspot checks and ai-observability quality signals are sufficient.\n\nDoes NOT own: pre-ship hallucination gate (that is ai-safety-eval Step 4);\none-time quality spot checks (that is ai-safety-eval Step 7).", "description_html": "<p>Scheduled quality regression tracking for production AI features. Triggers when:<br>\n- 3+ AI features are live and quality needs continuous monitoring<br>\n- A model version change is planned (run benchmarks before and after)<br>\n- A prompt version change is deployed (run benchmarks to confirm no regression)<br>\n- Asking &quot;is our AI quality getting better or worse over time?&quot;<br>\n- ai-observability quality signals show unexplained degradation</p><p>Activate when 3+ AI features are in production. Before that, ai-safety-eval<br>\nspot checks and ai-observability quality signals are sufficient.</p><p>Does NOT own: pre-ship hallucination gate (that is ai-safety-eval Step 4);<br>\none-time quality spot checks (that is ai-safety-eval Step 7).</p>", "snippet_html": "<p><strong>Core rule: Quality at launch is a snapshot. Quality over time requires a benchmark. What gets measured gets managed.</strong><br>\n---</p>", "searchBlob": "benchmark-framework benchmark-framework layer 5 — ai & economics scheduled quality regression tracking for production ai features. triggers when:\n- 3+ ai features are live and quality needs continuous monitoring\n- a model version change is planned (run benchmarks before and after)\n- a prompt version change is deployed (run benchmarks to confirm no regression)\n- asking \"is our ai quality getting better or worse over time?\"\n- ai-observability quality signals show unexplained degradation\n\nactivate when 3+ ai features are in production. before that, ai-safety-eval\nspot checks and ai-observability quality signals are sufficient.\n\ndoes not own: pre-ship hallucination gate (that is ai-safety-eval step 4);\none-time quality spot checks (that is ai-safety-eval step 7). **core rule: quality at launch is a snapshot. quality over time requires a benchmark. what gets measured gets managed.**\n---"}, {"folder": "churney-os", "name": "churney-os", "category": "Layer 1 — Product & Planning", "layer_slug": "l1", "rel_path": "churney-os/SKILL.md", "description_raw": "Founder-grade build framework extending Churney's \"Move Slow to Move Fast\" with a Design Review\nGate, 7-Layer Test Matrix, and Due Diligence Layer (Riskiest Assumption Test + Reversibility).\n\nUse at the START of any feature, module, or task — especially when:\n- Starting a new feature (\"let's build X\", \"add patient intake\", \"set up analytics\")\n- Feeling the urge to dive in immediately without a plan\n- Returning to a paused project and need to re-anchor\n- User types \"/churney-os\", \"churney\", \"plan mode\", or \"architect mode\"\n- Any task involving new files, components, API endpoints, DB tables, or integrations\n- Before any decision that is hard or expensive to reverse\n\nThis skill is a GATE. Nothing gets built until the gate is passed. The 7-layer test\nmatrix and due diligence steps are non-negotiable — they separate thoughtful building\nfrom reactive feature shipping.", "description_html": "<p>Founder-grade build framework extending Churney&#x27;s &quot;Move Slow to Move Fast&quot; with a Design Review<br>\nGate, 7-Layer Test Matrix, and Due Diligence Layer (Riskiest Assumption Test + Reversibility).</p><p>Use at the START of any feature, module, or task — especially when:<br>\n- Starting a new feature (&quot;let&#x27;s build X&quot;, &quot;add patient intake&quot;, &quot;set up analytics&quot;)<br>\n- Feeling the urge to dive in immediately without a plan<br>\n- Returning to a paused project and need to re-anchor<br>\n- User types &quot;/churney-os&quot;, &quot;churney&quot;, &quot;plan mode&quot;, or &quot;architect mode&quot;<br>\n- Any task involving new files, components, API endpoints, DB tables, or integrations<br>\n- Before any decision that is hard or expensive to reverse</p><p>This skill is a GATE. Nothing gets built until the gate is passed. The 7-layer test<br>\nmatrix and due diligence steps are non-negotiable — they separate thoughtful building<br>\nfrom reactive feature shipping.</p>", "snippet_html": "<p>You are operating under a founder-grade build discipline. Your mandate is not just to prevent premature execution — it is to ensure that *what gets built is worth building* and *what gets shipped can be proven correct*.<br>\n<strong>You are strictly prohibited from writing any code, creating any files, or making any changes until Phase 4 is explicitly unlocked.</strong><br>\nThere are 7 phases. Each one is a gate. You do not skip gates.<br>\n---</p>", "searchBlob": "churney-os churney-os layer 1 — product & planning founder-grade build framework extending churney's \"move slow to move fast\" with a design review\ngate, 7-layer test matrix, and due diligence layer (riskiest assumption test + reversibility).\n\nuse at the start of any feature, module, or task — especially when:\n- starting a new feature (\"let's build x\", \"add patient intake\", \"set up analytics\")\n- feeling the urge to dive in immediately without a plan\n- returning to a paused project and need to re-anchor\n- user types \"/churney-os\", \"churney\", \"plan mode\", or \"architect mode\"\n- any task involving new files, components, api endpoints, db tables, or integrations\n- before any decision that is hard or expensive to reverse\n\nthis skill is a gate. nothing gets built until the gate is passed. the 7-layer test\nmatrix and due diligence steps are non-negotiable — they separate thoughtful building\nfrom reactive feature shipping. you are operating under a founder-grade build discipline. your mandate is not just to prevent premature execution — it is to ensure that *what gets built is worth building* and *what gets shipped can be proven correct*.\n**you are strictly prohibited from writing any code, creating any files, or making any changes until phase 4 is explicitly unlocked.**\nthere are 7 phases. each one is a gate. you do not skip gates.\n---"}, {"folder": "goal-driven-execution", "name": "goal-driven-execution", "category": "Layer 1 — Product & Planning", "layer_slug": "l1", "rel_path": "goal-driven-execution/SKILL.md", "description_raw": "Converts vague tasks into verifiable goals with explicit success criteria, then loops until verified. Use whenever a task is multi-step, the definition of \"done\" is fuzzy, or the work involves making something pass a test (bug fixes, validation, refactors, migrations). Triggers on \"fix\", \"make it work\", \"add X\", \"refactor\", \"migrate\", \"improve\", \"ensure\", \"validate\", or any task where success can be checked rather than just declared. Apply BEFORE writing code so the loop has a target.", "description_html": "<p>Converts vague tasks into verifiable goals with explicit success criteria, then loops until verified. Use whenever a task is multi-step, the definition of &quot;done&quot; is fuzzy, or the work involves making something pass a test (bug fixes, validation, refactors, migrations). Triggers on &quot;fix&quot;, &quot;make it work&quot;, &quot;add X&quot;, &quot;refactor&quot;, &quot;migrate&quot;, &quot;improve&quot;, &quot;ensure&quot;, &quot;validate&quot;, or any task where success can be checked rather than just declared. Apply BEFORE writing code so the loop has a target.</p>", "snippet_html": "<p><strong>Define success criteria. Loop until verified.</strong></p><p>A goal you can check independently is a goal you can finish independently. A goal you can only check by asking the user is a goal that requires constant clarification.</p>", "searchBlob": "goal-driven-execution goal-driven-execution layer 1 — product & planning converts vague tasks into verifiable goals with explicit success criteria, then loops until verified. use whenever a task is multi-step, the definition of \"done\" is fuzzy, or the work involves making something pass a test (bug fixes, validation, refactors, migrations). triggers on \"fix\", \"make it work\", \"add x\", \"refactor\", \"migrate\", \"improve\", \"ensure\", \"validate\", or any task where success can be checked rather than just declared. apply before writing code so the loop has a target. **define success criteria. loop until verified.**\n\na goal you can check independently is a goal you can finish independently. a goal you can only check by asking the user is a goal that requires constant clarification."}, {"folder": "inference-economics", "name": "inference-economics", "category": "Layer 5 — AI & Economics", "layer_slug": "l5", "rel_path": "inference-economics/SKILL.md", "description_raw": "Model selection, token budget design, and cost architecture for AI features.\nTriggers at Phase 2 (planning) when:\n- Designing an AI feature and choosing which model to use\n- Setting cost constraints before building\n- Evaluating whether a feature is economically viable at scale\n- Deciding whether to cache, stream, or batch AI requests\n\nTHE NON-NEGOTIABLE RULE: Model selection and cost ceilings must be decided at\nPhase 2 — before the first line of AI code is written. Changing models post-build\nis expensive. Discovering cost overruns post-ship is worse.\n\nDoes NOT own: cost/latency validation against constraints (that is ai-safety-eval Step 6);\npost-ship cost monitoring (that is ai-observability Layer 3).", "description_html": "<p>Model selection, token budget design, and cost architecture for AI features.<br>\nTriggers at Phase 2 (planning) when:<br>\n- Designing an AI feature and choosing which model to use<br>\n- Setting cost constraints before building<br>\n- Evaluating whether a feature is economically viable at scale<br>\n- Deciding whether to cache, stream, or batch AI requests</p><p>THE NON-NEGOTIABLE RULE: Model selection and cost ceilings must be decided at<br>\nPhase 2 — before the first line of AI code is written. Changing models post-build<br>\nis expensive. Discovering cost overruns post-ship is worse.</p><p>Does NOT own: cost/latency validation against constraints (that is ai-safety-eval Step 6);<br>\npost-ship cost monitoring (that is ai-observability Layer 3).</p>", "snippet_html": "<p><strong>Core rule: Every AI feature is also a cost commitment. Design the economics before writing the prompt.</strong><br>\n---</p>", "searchBlob": "inference-economics inference-economics layer 5 — ai & economics model selection, token budget design, and cost architecture for ai features.\ntriggers at phase 2 (planning) when:\n- designing an ai feature and choosing which model to use\n- setting cost constraints before building\n- evaluating whether a feature is economically viable at scale\n- deciding whether to cache, stream, or batch ai requests\n\nthe non-negotiable rule: model selection and cost ceilings must be decided at\nphase 2 — before the first line of ai code is written. changing models post-build\nis expensive. discovering cost overruns post-ship is worse.\n\ndoes not own: cost/latency validation against constraints (that is ai-safety-eval step 6);\npost-ship cost monitoring (that is ai-observability layer 3). **core rule: every ai feature is also a cost commitment. design the economics before writing the prompt.**\n---"}, {"folder": "karpathy-discipline", "name": "karpathy-discipline", "category": "Layer 2 — Engineering Discipline", "layer_slug": "l2", "rel_path": "karpathy-discipline/SKILL.md", "description_raw": "Master coding discipline — applies all four Karpathy principles (think-before-coding, simplicity-first, surgical-changes, goal-driven-execution) as a single behavioral envelope. Use at the start of ANY non-trivial coding task — implementing a feature, fixing a bug, refactoring, scaffolding a new module, or modifying existing code. Triggers on \"build\", \"implement\", \"fix\", \"refactor\", \"add\", \"edit\", \"modify\", \"design a class/service/module\", \"write a function/component\", \"make this work\". This is the default coding discipline for serious work; the four sub-skills go deeper on each principle.", "description_html": "<p>Master coding discipline — applies all four Karpathy principles (think-before-coding, simplicity-first, surgical-changes, goal-driven-execution) as a single behavioral envelope. Use at the start of ANY non-trivial coding task — implementing a feature, fixing a bug, refactoring, scaffolding a new module, or modifying existing code. Triggers on &quot;build&quot;, &quot;implement&quot;, &quot;fix&quot;, &quot;refactor&quot;, &quot;add&quot;, &quot;edit&quot;, &quot;modify&quot;, &quot;design a class/service/module&quot;, &quot;write a function/component&quot;, &quot;make this work&quot;. This is the default coding discipline for serious work; the four sub-skills go deeper on each principle.</p>", "snippet_html": "<p>Source: Andrej Karpathy&#x27;s CLAUDE.md — behavioral guidelines to reduce common LLM coding mistakes.<br>\nThis is the meta-skill that loads all four principles together.<br>\n<strong>Tradeoff:</strong> Biases toward caution over speed. For trivial tasks (one-line fixes, typos, renames, read-only questions), skip this skill and use judgment.</p>", "searchBlob": "karpathy-discipline karpathy-discipline layer 2 — engineering discipline master coding discipline — applies all four karpathy principles (think-before-coding, simplicity-first, surgical-changes, goal-driven-execution) as a single behavioral envelope. use at the start of any non-trivial coding task — implementing a feature, fixing a bug, refactoring, scaffolding a new module, or modifying existing code. triggers on \"build\", \"implement\", \"fix\", \"refactor\", \"add\", \"edit\", \"modify\", \"design a class/service/module\", \"write a function/component\", \"make this work\". this is the default coding discipline for serious work; the four sub-skills go deeper on each principle. source: andrej karpathy's claude.md — behavioral guidelines to reduce common llm coding mistakes.\nthis is the meta-skill that loads all four principles together.\n**tradeoff:** biases toward caution over speed. for trivial tasks (one-line fixes, typos, renames, read-only questions), skip this skill and use judgment."}, {"folder": "model-governance", "name": "model-governance", "category": "Layer 5 — AI & Economics", "layer_slug": "l5", "rel_path": "model-governance/SKILL.md", "description_raw": "Model versioning, deprecation management, audit trails, and change control for\nproduction AI features. Triggers when:\n- An AI provider announces a model deprecation or version change\n- Multiple AI features use different model versions and need alignment\n- A regulated product (healthcare, compliance, financial) requires audit trails\n  for AI-generated outputs\n- A model is being upgraded or swapped in a live feature\n- Asking \"which model version is each feature using?\"\n\nActivate after 2+ AI features are live. Before that, ai-safety-eval and\nai-observability are sufficient.\n\nDoes NOT own: safety evaluation (ai-safety-eval); cost analysis (inference-economics);\nprompt versioning (prompt-optimization).", "description_html": "<p>Model versioning, deprecation management, audit trails, and change control for<br>\nproduction AI features. Triggers when:<br>\n- An AI provider announces a model deprecation or version change<br>\n- Multiple AI features use different model versions and need alignment<br>\n- A regulated product (healthcare, compliance, financial) requires audit trails<br>\n  for AI-generated outputs<br>\n- A model is being upgraded or swapped in a live feature<br>\n- Asking &quot;which model version is each feature using?&quot;</p><p>Activate after 2+ AI features are live. Before that, ai-safety-eval and<br>\nai-observability are sufficient.</p><p>Does NOT own: safety evaluation (ai-safety-eval); cost analysis (inference-economics);<br>\nprompt versioning (prompt-optimization).</p>", "snippet_html": "<p><strong>Core rule: In production, &quot;the AI&quot; is not a black box. You must know exactly which model version generated which output, and be able to reproduce or audit any decision.</strong><br>\n---</p>", "searchBlob": "model-governance model-governance layer 5 — ai & economics model versioning, deprecation management, audit trails, and change control for\nproduction ai features. triggers when:\n- an ai provider announces a model deprecation or version change\n- multiple ai features use different model versions and need alignment\n- a regulated product (healthcare, compliance, financial) requires audit trails\n  for ai-generated outputs\n- a model is being upgraded or swapped in a live feature\n- asking \"which model version is each feature using?\"\n\nactivate after 2+ ai features are live. before that, ai-safety-eval and\nai-observability are sufficient.\n\ndoes not own: safety evaluation (ai-safety-eval); cost analysis (inference-economics);\nprompt versioning (prompt-optimization). **core rule: in production, \"the ai\" is not a black box. you must know exactly which model version generated which output, and be able to reproduce or audit any decision.**\n---"}, {"folder": "pm-job-stories", "name": "pm-job-stories", "category": "Layer 1 — Product & Planning", "layer_slug": "l1", "rel_path": "pm-job-stories/SKILL.md", "description_raw": "Write JTBD-style job stories that focus on user context and motivation instead of role.\nTriggers when:\n- User says \"write job stories\", \"JTBD stories\", \"situation-motivation-outcome\"\n- The feature is context-dependent (triggered by a situation, not just a user type)\n- Exploring user motivations before writing a PRD or spec\n- User stories feel too role-centric and miss the \"why\" behind the action\n\nFormat: \"When [situation], I want to [motivation], so I can [outcome].\"\nUse this instead of user stories when the triggering situation matters as much as the role.", "description_html": "<p>Write JTBD-style job stories that focus on user context and motivation instead of role.<br>\nTriggers when:<br>\n- User says &quot;write job stories&quot;, &quot;JTBD stories&quot;, &quot;situation-motivation-outcome&quot;<br>\n- The feature is context-dependent (triggered by a situation, not just a user type)<br>\n- Exploring user motivations before writing a PRD or spec<br>\n- User stories feel too role-centric and miss the &quot;why&quot; behind the action</p><p>Format: &quot;When [situation], I want to [motivation], so I can [outcome].&quot;<br>\nUse this instead of user stories when the triggering situation matters as much as the role.</p>", "snippet_html": "<p><strong>Purpose:</strong> Write requirement backlog items grounded in the situations and motivations that drive user behavior — not just who the user is, but what&#x27;s happening when they reach for the product.<br>\n<strong>When to use over user stories:</strong> When the triggering context matters more than the user&#x27;s role. A clinic receptionist checking appointment history before a call has a very different motivation than checking it during patient intake — same role, different job.<br>\n---</p>", "searchBlob": "pm-job-stories pm-job-stories layer 1 — product & planning write jtbd-style job stories that focus on user context and motivation instead of role.\ntriggers when:\n- user says \"write job stories\", \"jtbd stories\", \"situation-motivation-outcome\"\n- the feature is context-dependent (triggered by a situation, not just a user type)\n- exploring user motivations before writing a prd or spec\n- user stories feel too role-centric and miss the \"why\" behind the action\n\nformat: \"when [situation], i want to [motivation], so i can [outcome].\"\nuse this instead of user stories when the triggering situation matters as much as the role. **purpose:** write requirement backlog items grounded in the situations and motivations that drive user behavior — not just who the user is, but what's happening when they reach for the product.\n**when to use over user stories:** when the triggering context matters more than the user's role. a clinic receptionist checking appointment history before a call has a very different motivation than checking it during patient intake — same role, different job.\n---"}, {"folder": "pm-prd", "name": "pm-prd", "category": "Layer 1 — Product & Planning", "layer_slug": "l1", "rel_path": "pm-prd/SKILL.md", "description_raw": "Professional-grade Product Requirements Document (PRD) creation using an 8-section framework\ngrounded in Teresa Torres, Marty Cagan, and Dan Olsen methodology. Triggers when:\n- User wants to write, draft, or create a PRD\n- Starting a new feature, product, or initiative that needs specification\n- User says \"write a PRD for\", \"draft requirements for\", \"spec out\", \"document this feature\"\n- Churney OS has run and the approved plan needs to be formalized as a PRD\n- Stakeholder alignment is needed before development begins\n\nOutput: A production-ready PRD saved as docs/PRD-[product-name].md\n\nApproach: Ask clarifying questions before writing — tight scope beats vague expansion.\nNon-goals must be explicit. Success metrics must be measurable. Assumptions must be flagged.", "description_html": "<p>Professional-grade Product Requirements Document (PRD) creation using an 8-section framework<br>\ngrounded in Teresa Torres, Marty Cagan, and Dan Olsen methodology. Triggers when:<br>\n- User wants to write, draft, or create a PRD<br>\n- Starting a new feature, product, or initiative that needs specification<br>\n- User says &quot;write a PRD for&quot;, &quot;draft requirements for&quot;, &quot;spec out&quot;, &quot;document this feature&quot;<br>\n- Churney OS has run and the approved plan needs to be formalized as a PRD<br>\n- Stakeholder alignment is needed before development begins</p><p>Output: A production-ready PRD saved as docs/PRD-[product-name].md</p><p>Approach: Ask clarifying questions before writing — tight scope beats vague expansion.<br>\nNon-goals must be explicit. Success metrics must be measurable. Assumptions must be flagged.</p>", "snippet_html": "<p><strong>Purpose:</strong> Produce an authoritative, stakeholder-ready PRD that aligns teams and guides development. Built on proven PM frameworks — not a template dump, a structured thinking process.<br>\n---</p>", "searchBlob": "pm-prd pm-prd layer 1 — product & planning professional-grade product requirements document (prd) creation using an 8-section framework\ngrounded in teresa torres, marty cagan, and dan olsen methodology. triggers when:\n- user wants to write, draft, or create a prd\n- starting a new feature, product, or initiative that needs specification\n- user says \"write a prd for\", \"draft requirements for\", \"spec out\", \"document this feature\"\n- churney os has run and the approved plan needs to be formalized as a prd\n- stakeholder alignment is needed before development begins\n\noutput: a production-ready prd saved as docs/prd-[product-name].md\n\napproach: ask clarifying questions before writing — tight scope beats vague expansion.\nnon-goals must be explicit. success metrics must be measurable. assumptions must be flagged. **purpose:** produce an authoritative, stakeholder-ready prd that aligns teams and guides development. built on proven pm frameworks — not a template dump, a structured thinking process.\n---"}, {"folder": "pm-prioritization", "name": "pm-prioritization", "category": "Layer 1 — Product & Planning", "layer_slug": "l1", "rel_path": "pm-prioritization/SKILL.md", "description_raw": "Reference guide to 9 prioritization frameworks with formulas, when-to-use guidance, and\ndecision logic. Triggers when:\n- Deciding which features belong in P0/P1/P2 for a PRD\n- Choosing between competing initiatives or roadmap items\n- User says \"how should we prioritize\", \"which framework should I use\", \"RICE vs ICE\"\n- Comparing opportunities or features before committing to a sprint or roadmap\n- Need to justify prioritization decisions to stakeholders\n\nCore principle: Prioritize problems (opportunities), not features.\nRecommended default: Opportunity Score for customer problems, ICE for ideas/initiatives.", "description_html": "<p>Reference guide to 9 prioritization frameworks with formulas, when-to-use guidance, and<br>\ndecision logic. Triggers when:<br>\n- Deciding which features belong in P0/P1/P2 for a PRD<br>\n- Choosing between competing initiatives or roadmap items<br>\n- User says &quot;how should we prioritize&quot;, &quot;which framework should I use&quot;, &quot;RICE vs ICE&quot;<br>\n- Comparing opportunities or features before committing to a sprint or roadmap<br>\n- Need to justify prioritization decisions to stakeholders</p><p>Core principle: Prioritize problems (opportunities), not features.<br>\nRecommended default: Opportunity Score for customer problems, ICE for ideas/initiatives.</p>", "snippet_html": "<p><strong>Core principle: Never allow customers to design solutions. Prioritize problems (opportunities), not features.</strong><br>\n---</p>", "searchBlob": "pm-prioritization pm-prioritization layer 1 — product & planning reference guide to 9 prioritization frameworks with formulas, when-to-use guidance, and\ndecision logic. triggers when:\n- deciding which features belong in p0/p1/p2 for a prd\n- choosing between competing initiatives or roadmap items\n- user says \"how should we prioritize\", \"which framework should i use\", \"rice vs ice\"\n- comparing opportunities or features before committing to a sprint or roadmap\n- need to justify prioritization decisions to stakeholders\n\ncore principle: prioritize problems (opportunities), not features.\nrecommended default: opportunity score for customer problems, ice for ideas/initiatives. **core principle: never allow customers to design solutions. prioritize problems (opportunities), not features.**\n---"}, {"folder": "pm-user-stories", "name": "pm-user-stories", "category": "Layer 1 — Product & Planning", "layer_slug": "l1", "rel_path": "pm-user-stories/SKILL.md", "description_raw": "Write sprint-ready user stories from a PRD or feature spec using the 3 C's + INVEST criteria.\nTriggers when:\n- A PRD or feature spec exists and needs to be broken into backlog items\n- User says \"write user stories for\", \"break this into stories\", \"create backlog items\"\n- Sprint planning is approaching and stories aren't written yet\n- Development team needs acceptance criteria before building\n\nOutput: A complete set of user stories with 4-6 testable acceptance criteria each.\nFormat: \"As a [role], I want [action], so that [benefit].\"", "description_html": "<p>Write sprint-ready user stories from a PRD or feature spec using the 3 C&#x27;s + INVEST criteria.<br>\nTriggers when:<br>\n- A PRD or feature spec exists and needs to be broken into backlog items<br>\n- User says &quot;write user stories for&quot;, &quot;break this into stories&quot;, &quot;create backlog items&quot;<br>\n- Sprint planning is approaching and stories aren&#x27;t written yet<br>\n- Development team needs acceptance criteria before building</p><p>Output: A complete set of user stories with 4-6 testable acceptance criteria each.<br>\nFormat: &quot;As a [role], I want [action], so that [benefit].&quot;</p>", "snippet_html": "<p><strong>Purpose:</strong> Transform PRD features into sprint-ready backlog items with clear acceptance criteria. One story = one sprint. Every acceptance criterion = testable.<br>\n---</p>", "searchBlob": "pm-user-stories pm-user-stories layer 1 — product & planning write sprint-ready user stories from a prd or feature spec using the 3 c's + invest criteria.\ntriggers when:\n- a prd or feature spec exists and needs to be broken into backlog items\n- user says \"write user stories for\", \"break this into stories\", \"create backlog items\"\n- sprint planning is approaching and stories aren't written yet\n- development team needs acceptance criteria before building\n\noutput: a complete set of user stories with 4-6 testable acceptance criteria each.\nformat: \"as a [role], i want [action], so that [benefit].\" **purpose:** transform prd features into sprint-ready backlog items with clear acceptance criteria. one story = one sprint. every acceptance criterion = testable.\n---"}, {"folder": "prompt-optimization", "name": "prompt-optimization", "category": "Layer 5 — AI & Economics", "layer_slug": "l5", "rel_path": "prompt-optimization/SKILL.md", "description_raw": "Prompt versioning, quality improvement, and token efficiency for production AI features.\nTriggers when:\n- A prompt has been in production and needs review\n- Token costs are higher than the inference-economics budget\n- Output quality is inconsistent across similar inputs\n- A prompt change is being considered (version management)\n- Preparing a prompt for the first production deployment\n\nDoes NOT own: safety thresholds or quality gates (that is ai-safety-eval);\npost-ship monitoring of prompt performance (that is ai-observability).", "description_html": "<p>Prompt versioning, quality improvement, and token efficiency for production AI features.<br>\nTriggers when:<br>\n- A prompt has been in production and needs review<br>\n- Token costs are higher than the inference-economics budget<br>\n- Output quality is inconsistent across similar inputs<br>\n- A prompt change is being considered (version management)<br>\n- Preparing a prompt for the first production deployment</p><p>Does NOT own: safety thresholds or quality gates (that is ai-safety-eval);<br>\npost-ship monitoring of prompt performance (that is ai-observability).</p>", "snippet_html": "<p><strong>Core rule: Prompts are code. They need versioning, testing, and review before they change in production.</strong><br>\n---</p>", "searchBlob": "prompt-optimization prompt-optimization layer 5 — ai & economics prompt versioning, quality improvement, and token efficiency for production ai features.\ntriggers when:\n- a prompt has been in production and needs review\n- token costs are higher than the inference-economics budget\n- output quality is inconsistent across similar inputs\n- a prompt change is being considered (version management)\n- preparing a prompt for the first production deployment\n\ndoes not own: safety thresholds or quality gates (that is ai-safety-eval);\npost-ship monitoring of prompt performance (that is ai-observability). **core rule: prompts are code. they need versioning, testing, and review before they change in production.**\n---"}, {"folder": "simplicity-first", "name": "simplicity-first", "category": "Layer 2 — Engineering Discipline", "layer_slug": "l2", "rel_path": "simplicity-first/SKILL.md", "description_raw": "Forces minimum viable code — nothing speculative, no premature abstractions, no unrequested flexibility. Use whenever generating new code, designing a module/class/function, or scoping an implementation. Triggers on \"build\", \"implement\", \"design\", \"write\", \"scaffold\", \"create a class/service/component\", \"make it configurable/extensible/flexible\", or any time the answer threatens to become longer than the problem. Apply BEFORE writing code and as a self-review pass after.", "description_html": "<p>Forces minimum viable code — nothing speculative, no premature abstractions, no unrequested flexibility. Use whenever generating new code, designing a module/class/function, or scoping an implementation. Triggers on &quot;build&quot;, &quot;implement&quot;, &quot;design&quot;, &quot;write&quot;, &quot;scaffold&quot;, &quot;create a class/service/component&quot;, &quot;make it configurable/extensible/flexible&quot;, or any time the answer threatens to become longer than the problem. Apply BEFORE writing code and as a self-review pass after.</p>", "snippet_html": "<p><strong>Minimum code that solves the stated problem. Nothing speculative.</strong></p>", "searchBlob": "simplicity-first simplicity-first layer 2 — engineering discipline forces minimum viable code — nothing speculative, no premature abstractions, no unrequested flexibility. use whenever generating new code, designing a module/class/function, or scoping an implementation. triggers on \"build\", \"implement\", \"design\", \"write\", \"scaffold\", \"create a class/service/component\", \"make it configurable/extensible/flexible\", or any time the answer threatens to become longer than the problem. apply before writing code and as a self-review pass after. **minimum code that solves the stated problem. nothing speculative.**"}, {"folder": "superpowers", "name": "superpowers", "category": "Layer 3 — Execution Methodology", "layer_slug": "l3", "rel_path": "superpowers/SKILL.md", "description_raw": "Master software development methodology — systematic, disciplined execution for any non-trivial\ncoding task. Enforces a 6-phase workflow: Design → Prepare → Plan → Implement → Test → Ship.\n\nActivate at the START of any coding work, especially when:\n- Churney OS has completed (plan approved, ready to build)\n- Starting implementation of a feature, fix, or refactor\n- User types \"let's build\", \"implement\", \"execute the plan\", \"start coding\", \"ship it\"\n- Any task that involves writing production code, not just reading or explaining\n- Subagent or parallel work is needed for speed\n\nThis is the EXECUTION counterpart to Churney OS (which handles design & planning).\nChurney OS = What to build. Superpowers = How to build it correctly.\n\nThe non-negotiable rules:\n- NO production code without a failing test first (TDD)\n- NO completion claims without fresh verification evidence\n- NO fixes without root cause investigation first (debugging)\n- SYSTEMATIC over ad-hoc — every task has a verify step", "description_html": "<p>Master software development methodology — systematic, disciplined execution for any non-trivial<br>\ncoding task. Enforces a 6-phase workflow: Design → Prepare → Plan → Implement → Test → Ship.</p><p>Activate at the START of any coding work, especially when:<br>\n- Churney OS has completed (plan approved, ready to build)<br>\n- Starting implementation of a feature, fix, or refactor<br>\n- User types &quot;let&#x27;s build&quot;, &quot;implement&quot;, &quot;execute the plan&quot;, &quot;start coding&quot;, &quot;ship it&quot;<br>\n- Any task that involves writing production code, not just reading or explaining<br>\n- Subagent or parallel work is needed for speed</p><p>This is the EXECUTION counterpart to Churney OS (which handles design &amp; planning).<br>\nChurney OS = What to build. Superpowers = How to build it correctly.</p><p>The non-negotiable rules:<br>\n- NO production code without a failing test first (TDD)<br>\n- NO completion claims without fresh verification evidence<br>\n- NO fixes without root cause investigation first (debugging)<br>\n- SYSTEMATIC over ad-hoc — every task has a verify step</p>", "snippet_html": "<p>You are operating under a systematic development discipline. Superpowers is the execution layer — it governs HOW code gets written, tested, debugged, reviewed, and shipped.<br>\nThis pairs with <strong>Churney OS</strong> (planning gate). If Churney OS hasn&#x27;t run for this task, ask the user to run it first unless they&#x27;ve already confirmed a plan.<br>\n---</p>", "searchBlob": "superpowers superpowers layer 3 — execution methodology master software development methodology — systematic, disciplined execution for any non-trivial\ncoding task. enforces a 6-phase workflow: design → prepare → plan → implement → test → ship.\n\nactivate at the start of any coding work, especially when:\n- churney os has completed (plan approved, ready to build)\n- starting implementation of a feature, fix, or refactor\n- user types \"let's build\", \"implement\", \"execute the plan\", \"start coding\", \"ship it\"\n- any task that involves writing production code, not just reading or explaining\n- subagent or parallel work is needed for speed\n\nthis is the execution counterpart to churney os (which handles design & planning).\nchurney os = what to build. superpowers = how to build it correctly.\n\nthe non-negotiable rules:\n- no production code without a failing test first (tdd)\n- no completion claims without fresh verification evidence\n- no fixes without root cause investigation first (debugging)\n- systematic over ad-hoc — every task has a verify step you are operating under a systematic development discipline. superpowers is the execution layer — it governs how code gets written, tested, debugged, reviewed, and shipped.\nthis pairs with **churney os** (planning gate). if churney os hasn't run for this task, ask the user to run it first unless they've already confirmed a plan.\n---"}, {"folder": "superpowers-brainstorm", "name": "superpowers-brainstorm", "category": "Layer 3 — Execution Methodology", "layer_slug": "l3", "rel_path": "superpowers-brainstorm/SKILL.md", "description_raw": "Design before code — structured Socratic dialogue to turn ideas into an approved spec before\nany implementation begins. Triggers when:\n- User has an idea but no written design yet\n- Starting a new feature, module, or system\n- User says \"I want to build X\", \"let's design\", \"brainstorm\", \"what should we do for Y\"\n- Before writing-plans is invoked (design must come first)\n\nHard gate: No code or implementation until design is written and approved.\nThis is Phase 1 of the Superpowers methodology.", "description_html": "<p>Design before code — structured Socratic dialogue to turn ideas into an approved spec before<br>\nany implementation begins. Triggers when:<br>\n- User has an idea but no written design yet<br>\n- Starting a new feature, module, or system<br>\n- User says &quot;I want to build X&quot;, &quot;let&#x27;s design&quot;, &quot;brainstorm&quot;, &quot;what should we do for Y&quot;<br>\n- Before writing-plans is invoked (design must come first)</p><p>Hard gate: No code or implementation until design is written and approved.<br>\nThis is Phase 1 of the Superpowers methodology.</p>", "snippet_html": "<p><strong>Hard gate: No code, no files, no changes until a design is presented and approved.</strong><br>\n---</p>", "searchBlob": "superpowers-brainstorm superpowers-brainstorm layer 3 — execution methodology design before code — structured socratic dialogue to turn ideas into an approved spec before\nany implementation begins. triggers when:\n- user has an idea but no written design yet\n- starting a new feature, module, or system\n- user says \"i want to build x\", \"let's design\", \"brainstorm\", \"what should we do for y\"\n- before writing-plans is invoked (design must come first)\n\nhard gate: no code or implementation until design is written and approved.\nthis is phase 1 of the superpowers methodology. **hard gate: no code, no files, no changes until a design is presented and approved.**\n---"}, {"folder": "superpowers-debug", "name": "superpowers-debug", "category": "Layer 3 — Execution Methodology", "layer_slug": "l3", "rel_path": "superpowers-debug/SKILL.md", "description_raw": "Systematic debugging — root cause investigation before any fix is attempted. Triggers when:\n- Something is broken and the cause isn't immediately obvious\n- User says \"it's not working\", \"this is broken\", \"there's a bug\", \"fix this error\"\n- A test is failing unexpectedly\n- An error or exception appears\n- superpowers-verify finds a failure\n\nTHE NON-NEGOTIABLE RULE: No fixes without root cause investigation first.\nSymptom fixes mask underlying problems. Find the root cause.\nThis is the debugging protocol within Phase 4 and Phase 5 of the Superpowers methodology.", "description_html": "<p>Systematic debugging — root cause investigation before any fix is attempted. Triggers when:<br>\n- Something is broken and the cause isn&#x27;t immediately obvious<br>\n- User says &quot;it&#x27;s not working&quot;, &quot;this is broken&quot;, &quot;there&#x27;s a bug&quot;, &quot;fix this error&quot;<br>\n- A test is failing unexpectedly<br>\n- An error or exception appears<br>\n- superpowers-verify finds a failure</p><p>THE NON-NEGOTIABLE RULE: No fixes without root cause investigation first.<br>\nSymptom fixes mask underlying problems. Find the root cause.<br>\nThis is the debugging protocol within Phase 4 and Phase 5 of the Superpowers methodology.</p>", "snippet_html": "<p><strong>Core rule: No fixes without root cause investigation first.</strong><br>\nExpected outcome when followed: 95% first-time fix success rate in 15–30 minutes.  <br>\nWithout it: 2–3 hours of ad-hoc thrashing.<br>\n---</p>", "searchBlob": "superpowers-debug superpowers-debug layer 3 — execution methodology systematic debugging — root cause investigation before any fix is attempted. triggers when:\n- something is broken and the cause isn't immediately obvious\n- user says \"it's not working\", \"this is broken\", \"there's a bug\", \"fix this error\"\n- a test is failing unexpectedly\n- an error or exception appears\n- superpowers-verify finds a failure\n\nthe non-negotiable rule: no fixes without root cause investigation first.\nsymptom fixes mask underlying problems. find the root cause.\nthis is the debugging protocol within phase 4 and phase 5 of the superpowers methodology. **core rule: no fixes without root cause investigation first.**\nexpected outcome when followed: 95% first-time fix success rate in 15–30 minutes.  \nwithout it: 2–3 hours of ad-hoc thrashing.\n---"}, {"folder": "superpowers-execute", "name": "superpowers-execute", "category": "Layer 3 — Execution Methodology", "layer_slug": "l3", "rel_path": "superpowers-execute/SKILL.md", "description_raw": "Execute an implementation plan using subagents for speed and quality. Triggers when:\n- A written plan exists (superpowers-write-plan has run)\n- User says \"execute the plan\", \"start building\", \"implement per the plan\", \"run the tasks\"\n- Ready to work through the task list from docs/superpowers/plans/\n\nEach task gets a fresh subagent. Two review stages per task: spec compliance → code quality.\nNever skip review stages. Never start on main without explicit approval.\nThis is Phase 4 of the Superpowers methodology.", "description_html": "<p>Execute an implementation plan using subagents for speed and quality. Triggers when:<br>\n- A written plan exists (superpowers-write-plan has run)<br>\n- User says &quot;execute the plan&quot;, &quot;start building&quot;, &quot;implement per the plan&quot;, &quot;run the tasks&quot;<br>\n- Ready to work through the task list from docs/superpowers/plans/</p><p>Each task gets a fresh subagent. Two review stages per task: spec compliance → code quality.<br>\nNever skip review stages. Never start on main without explicit approval.<br>\nThis is Phase 4 of the Superpowers methodology.</p>", "snippet_html": "<p><strong>Purpose:</strong> Work through a written implementation plan systematically, with fresh subagents per task and two-stage review to maintain quality.<br>\n---</p>", "searchBlob": "superpowers-execute superpowers-execute layer 3 — execution methodology execute an implementation plan using subagents for speed and quality. triggers when:\n- a written plan exists (superpowers-write-plan has run)\n- user says \"execute the plan\", \"start building\", \"implement per the plan\", \"run the tasks\"\n- ready to work through the task list from docs/superpowers/plans/\n\neach task gets a fresh subagent. two review stages per task: spec compliance → code quality.\nnever skip review stages. never start on main without explicit approval.\nthis is phase 4 of the superpowers methodology. **purpose:** work through a written implementation plan systematically, with fresh subagents per task and two-stage review to maintain quality.\n---"}, {"folder": "superpowers-finish", "name": "superpowers-finish", "category": "Layer 3 — Execution Methodology", "layer_slug": "l3", "rel_path": "superpowers-finish/SKILL.md", "description_raw": "Complete a development branch — verify tests, present merge/PR/keep/discard options, execute\nthe choice, and clean up the worktree. Triggers when:\n- All tasks in a plan are complete and verified\n- User says \"ship it\", \"finish the branch\", \"merge\", \"create a PR\", \"done with this feature\"\n- superpowers-execute reports all tasks complete\n- Ready to close out a development session\n\nNever skip test verification before presenting options.\nAlways present exactly 4 options — no variations.\nThis is Phase 6 of the Superpowers methodology.", "description_html": "<p>Complete a development branch — verify tests, present merge/PR/keep/discard options, execute<br>\nthe choice, and clean up the worktree. Triggers when:<br>\n- All tasks in a plan are complete and verified<br>\n- User says &quot;ship it&quot;, &quot;finish the branch&quot;, &quot;merge&quot;, &quot;create a PR&quot;, &quot;done with this feature&quot;<br>\n- superpowers-execute reports all tasks complete<br>\n- Ready to close out a development session</p><p>Never skip test verification before presenting options.<br>\nAlways present exactly 4 options — no variations.<br>\nThis is Phase 6 of the Superpowers methodology.</p>", "snippet_html": "<p><strong>Purpose:</strong> Close out a feature branch correctly — tests verified, options presented, clean commit history, worktree cleaned up.<br>\n---</p>", "searchBlob": "superpowers-finish superpowers-finish layer 3 — execution methodology complete a development branch — verify tests, present merge/pr/keep/discard options, execute\nthe choice, and clean up the worktree. triggers when:\n- all tasks in a plan are complete and verified\n- user says \"ship it\", \"finish the branch\", \"merge\", \"create a pr\", \"done with this feature\"\n- superpowers-execute reports all tasks complete\n- ready to close out a development session\n\nnever skip test verification before presenting options.\nalways present exactly 4 options — no variations.\nthis is phase 6 of the superpowers methodology. **purpose:** close out a feature branch correctly — tests verified, options presented, clean commit history, worktree cleaned up.\n---"}, {"folder": "superpowers-tdd", "name": "superpowers-tdd", "category": "Layer 3 — Execution Methodology", "layer_slug": "l3", "rel_path": "superpowers-tdd/SKILL.md", "description_raw": "Test-Driven Development — enforces RED-GREEN-REFACTOR as the mandatory implementation cycle.\nTriggers when:\n- Writing any production code for a feature or bug fix\n- User says \"write the code\", \"implement this\", \"add this function/component/endpoint\"\n- Any task from an implementation plan is being executed\n- superpowers-execute delegates a coding task\n\nTHE NON-NEGOTIABLE RULE: No production code without a failing test first.\nIf code exists before its test, delete it and start over.\nThis is the execution core of Phase 4 in the Superpowers methodology.", "description_html": "<p>Test-Driven Development — enforces RED-GREEN-REFACTOR as the mandatory implementation cycle.<br>\nTriggers when:<br>\n- Writing any production code for a feature or bug fix<br>\n- User says &quot;write the code&quot;, &quot;implement this&quot;, &quot;add this function/component/endpoint&quot;<br>\n- Any task from an implementation plan is being executed<br>\n- superpowers-execute delegates a coding task</p><p>THE NON-NEGOTIABLE RULE: No production code without a failing test first.<br>\nIf code exists before its test, delete it and start over.<br>\nThis is the execution core of Phase 4 in the Superpowers methodology.</p>", "snippet_html": "<p><strong>Core rule: Write the test first. Watch it fail. Write minimal code to pass.</strong><br>\n---</p>", "searchBlob": "superpowers-tdd superpowers-tdd layer 3 — execution methodology test-driven development — enforces red-green-refactor as the mandatory implementation cycle.\ntriggers when:\n- writing any production code for a feature or bug fix\n- user says \"write the code\", \"implement this\", \"add this function/component/endpoint\"\n- any task from an implementation plan is being executed\n- superpowers-execute delegates a coding task\n\nthe non-negotiable rule: no production code without a failing test first.\nif code exists before its test, delete it and start over.\nthis is the execution core of phase 4 in the superpowers methodology. **core rule: write the test first. watch it fail. write minimal code to pass.**\n---"}, {"folder": "superpowers-verify", "name": "superpowers-verify", "category": "Layer 3 — Execution Methodology", "layer_slug": "l3", "rel_path": "superpowers-verify/SKILL.md", "description_raw": "Verification before completion — evidence must precede any claim of \"done\". Triggers when:\n- About to report that a task, feature, or fix is complete\n- About to commit, create a PR, or merge\n- Claiming tests pass, bugs are fixed, or features work\n- User asks \"is this done?\", \"does it work?\", \"is it ready?\"\n\nTHE NON-NEGOTIABLE RULE: No completion claims without fresh verification evidence.\n\"Should work\", \"probably passes\", \"I believe it's fixed\" = not done.\nThis is Phase 5 of the Superpowers methodology.", "description_html": "<p>Verification before completion — evidence must precede any claim of &quot;done&quot;. Triggers when:<br>\n- About to report that a task, feature, or fix is complete<br>\n- About to commit, create a PR, or merge<br>\n- Claiming tests pass, bugs are fixed, or features work<br>\n- User asks &quot;is this done?&quot;, &quot;does it work?&quot;, &quot;is it ready?&quot;</p><p>THE NON-NEGOTIABLE RULE: No completion claims without fresh verification evidence.<br>\n&quot;Should work&quot;, &quot;probably passes&quot;, &quot;I believe it&#x27;s fixed&quot; = not done.<br>\nThis is Phase 5 of the Superpowers methodology.</p>", "snippet_html": "<p><strong>Core rule: Run it. See the output. Then and only then claim it&#x27;s done.</strong><br>\nSkipping verification is misrepresentation, not efficiency.<br>\n---</p>", "searchBlob": "superpowers-verify superpowers-verify layer 3 — execution methodology verification before completion — evidence must precede any claim of \"done\". triggers when:\n- about to report that a task, feature, or fix is complete\n- about to commit, create a pr, or merge\n- claiming tests pass, bugs are fixed, or features work\n- user asks \"is this done?\", \"does it work?\", \"is it ready?\"\n\nthe non-negotiable rule: no completion claims without fresh verification evidence.\n\"should work\", \"probably passes\", \"i believe it's fixed\" = not done.\nthis is phase 5 of the superpowers methodology. **core rule: run it. see the output. then and only then claim it's done.**\nskipping verification is misrepresentation, not efficiency.\n---"}, {"folder": "superpowers-write-plan", "name": "superpowers-write-plan", "category": "Layer 3 — Execution Methodology", "layer_slug": "l3", "rel_path": "superpowers-write-plan/SKILL.md", "description_raw": "Create a comprehensive, bite-sized implementation plan before coding begins. Triggers when:\n- A design/spec has been approved (via Churney OS or superpowers-brainstorm)\n- User says \"write the plan\", \"create implementation plan\", \"plan out the tasks\"\n- Ready to move from design into structured task breakdown\n- Before superpowers-execute or superpowers-tdd is invoked\n\nEach task in the plan is 2–5 minutes of real work. No TBD. No placeholders.\nThis is Phase 3 of the Superpowers methodology.", "description_html": "<p>Create a comprehensive, bite-sized implementation plan before coding begins. Triggers when:<br>\n- A design/spec has been approved (via Churney OS or superpowers-brainstorm)<br>\n- User says &quot;write the plan&quot;, &quot;create implementation plan&quot;, &quot;plan out the tasks&quot;<br>\n- Ready to move from design into structured task breakdown<br>\n- Before superpowers-execute or superpowers-tdd is invoked</p><p>Each task in the plan is 2–5 minutes of real work. No TBD. No placeholders.<br>\nThis is Phase 3 of the Superpowers methodology.</p>", "snippet_html": "<p><strong>Purpose:</strong> Turn an approved design into a precise, executable task list where every step has actual code, exact paths, and verifiable outcomes.<br>\n---</p>", "searchBlob": "superpowers-write-plan superpowers-write-plan layer 3 — execution methodology create a comprehensive, bite-sized implementation plan before coding begins. triggers when:\n- a design/spec has been approved (via churney os or superpowers-brainstorm)\n- user says \"write the plan\", \"create implementation plan\", \"plan out the tasks\"\n- ready to move from design into structured task breakdown\n- before superpowers-execute or superpowers-tdd is invoked\n\neach task in the plan is 2–5 minutes of real work. no tbd. no placeholders.\nthis is phase 3 of the superpowers methodology. **purpose:** turn an approved design into a precise, executable task list where every step has actual code, exact paths, and verifiable outcomes.\n---"}, {"folder": "surgical-changes", "name": "surgical-changes", "category": "Layer 2 — Engineering Discipline", "layer_slug": "l2", "rel_path": "surgical-changes/SKILL.md", "description_raw": "Forces edits to existing code to touch only what the user asked for — no opportunistic refactors, no style \"improvements\", no deletion of pre-existing dead code. Use whenever editing, modifying, fixing, refactoring, or extending an existing file or module. Triggers on \"fix\", \"edit\", \"modify\", \"update\", \"change\", \"patch\", \"adjust\", \"tweak\", or any diff-producing operation on code that already exists. Critical when working in unfamiliar codebases or shared repositories.", "description_html": "<p>Forces edits to existing code to touch only what the user asked for — no opportunistic refactors, no style &quot;improvements&quot;, no deletion of pre-existing dead code. Use whenever editing, modifying, fixing, refactoring, or extending an existing file or module. Triggers on &quot;fix&quot;, &quot;edit&quot;, &quot;modify&quot;, &quot;update&quot;, &quot;change&quot;, &quot;patch&quot;, &quot;adjust&quot;, &quot;tweak&quot;, or any diff-producing operation on code that already exists. Critical when working in unfamiliar codebases or shared repositories.</p>", "snippet_html": "<p><strong>Touch only what you must. Clean up only your own mess.</strong></p>", "searchBlob": "surgical-changes surgical-changes layer 2 — engineering discipline forces edits to existing code to touch only what the user asked for — no opportunistic refactors, no style \"improvements\", no deletion of pre-existing dead code. use whenever editing, modifying, fixing, refactoring, or extending an existing file or module. triggers on \"fix\", \"edit\", \"modify\", \"update\", \"change\", \"patch\", \"adjust\", \"tweak\", or any diff-producing operation on code that already exists. critical when working in unfamiliar codebases or shared repositories. **touch only what you must. clean up only your own mess.**"}, {"folder": "think-before-coding", "name": "think-before-coding", "category": "Layer 2 — Engineering Discipline", "layer_slug": "l2", "rel_path": "think-before-coding/SKILL.md", "description_raw": "Forces the model to surface assumptions, name confusion, and present alternatives BEFORE writing code. Use whenever a coding request is ambiguous, has multiple plausible interpretations, touches unfamiliar code, or could be solved several ways. Triggers on \"implement\", \"add\", \"build\", \"fix\", \"refactor\", \"write a function/module/component\", or any non-trivial code change request — especially when the spec is one or two sentences. Do NOT use for trivial single-line edits or pure read-only questions.", "description_html": "<p>Forces the model to surface assumptions, name confusion, and present alternatives BEFORE writing code. Use whenever a coding request is ambiguous, has multiple plausible interpretations, touches unfamiliar code, or could be solved several ways. Triggers on &quot;implement&quot;, &quot;add&quot;, &quot;build&quot;, &quot;fix&quot;, &quot;refactor&quot;, &quot;write a function/module/component&quot;, or any non-trivial code change request — especially when the spec is one or two sentences. Do NOT use for trivial single-line edits or pure read-only questions.</p>", "snippet_html": "<p><strong>Don&#x27;t assume. Don&#x27;t hide confusion. Surface tradeoffs.</strong></p>", "searchBlob": "think-before-coding think-before-coding layer 2 — engineering discipline forces the model to surface assumptions, name confusion, and present alternatives before writing code. use whenever a coding request is ambiguous, has multiple plausible interpretations, touches unfamiliar code, or could be solved several ways. triggers on \"implement\", \"add\", \"build\", \"fix\", \"refactor\", \"write a function/module/component\", or any non-trivial code change request — especially when the spec is one or two sentences. do not use for trivial single-line edits or pure read-only questions. **don't assume. don't hide confusion. surface tradeoffs.**"}, {"folder": "uiux-accessibility-review", "name": "uiux-accessibility-review", "category": "Layer 4 — Experience Quality", "layer_slug": "l4", "rel_path": "uiux-accessibility-review/SKILL.md", "description_raw": "Dedicated accessibility audit — WCAG compliance, keyboard navigation, screen reader\ncorrectness, color contrast, semantic HTML, and ARIA. Triggers when:\n- A user-facing feature or redesign reaches Phase 4 verification\n- User says \"check accessibility\", \"a11y audit\", \"WCAG review\", \"is this keyboard accessible\"\n- lifecycle-orchestrator routes D (UI design) or A/B (user-facing features) reaches verify phase\n- Any component that handles forms, modals, tables, navigation, or status indicators\n\nOutput: file:line findings sorted by WCAG severity — critical (ship blocker) → serious →\nmoderate → minor. Each finding includes the rule violated and the exact fix.", "description_html": "<p>Dedicated accessibility audit — WCAG compliance, keyboard navigation, screen reader<br>\ncorrectness, color contrast, semantic HTML, and ARIA. Triggers when:<br>\n- A user-facing feature or redesign reaches Phase 4 verification<br>\n- User says &quot;check accessibility&quot;, &quot;a11y audit&quot;, &quot;WCAG review&quot;, &quot;is this keyboard accessible&quot;<br>\n- lifecycle-orchestrator routes D (UI design) or A/B (user-facing features) reaches verify phase<br>\n- Any component that handles forms, modals, tables, navigation, or status indicators</p><p>Output: file:line findings sorted by WCAG severity — critical (ship blocker) → serious →<br>\nmoderate → minor. Each finding includes the rule violated and the exact fix.</p>", "snippet_html": "<p><strong>Standard:</strong> WCAG 2.1 AA minimum. WCAG AAA for healthcare and compliance-critical interfaces.<br>\n<strong>Output format:</strong> &#96;file:line [severity] rule — finding → fix&#96;<br>\n---</p>", "searchBlob": "uiux-accessibility-review uiux-accessibility-review layer 4 — experience quality dedicated accessibility audit — wcag compliance, keyboard navigation, screen reader\ncorrectness, color contrast, semantic html, and aria. triggers when:\n- a user-facing feature or redesign reaches phase 4 verification\n- user says \"check accessibility\", \"a11y audit\", \"wcag review\", \"is this keyboard accessible\"\n- lifecycle-orchestrator routes d (ui design) or a/b (user-facing features) reaches verify phase\n- any component that handles forms, modals, tables, navigation, or status indicators\n\noutput: file:line findings sorted by wcag severity — critical (ship blocker) → serious →\nmoderate → minor. each finding includes the rule violated and the exact fix. **standard:** wcag 2.1 aa minimum. wcag aaa for healthcare and compliance-critical interfaces.\n**output format:** `file:line [severity] rule — finding → fix`\n---"}, {"folder": "uiux-audit", "name": "uiux-audit", "category": "Layer 4 — Experience Quality", "layer_slug": "l4", "rel_path": "uiux-audit/SKILL.md", "description_raw": "Audit UI code against Vercel Web Interface Guidelines + UI UX Pro Max UX rules. Triggers when:\n- User says \"review my UI\", \"audit this\", \"check accessibility\", \"is this up to standard\"\n- Reviewing a PR or component before shipping\n- A build task is complete and needs a quality gate before reporting done\n- uiux-designer master skill triggers a self-audit at end of build tasks\n\nCovers 18 rule categories: accessibility, focus states, forms, animation, typography,\ncontent handling, images, performance, navigation/state, touch, safe areas, dark mode,\nlocale/i18n, hydration safety, hover states, content/copy, anti-patterns, + 99 UX guidelines.\n\nOutput: file:line format — concise, actionable, prioritized by severity.", "description_html": "<p>Audit UI code against Vercel Web Interface Guidelines + UI UX Pro Max UX rules. Triggers when:<br>\n- User says &quot;review my UI&quot;, &quot;audit this&quot;, &quot;check accessibility&quot;, &quot;is this up to standard&quot;<br>\n- Reviewing a PR or component before shipping<br>\n- A build task is complete and needs a quality gate before reporting done<br>\n- uiux-designer master skill triggers a self-audit at end of build tasks</p><p>Covers 18 rule categories: accessibility, focus states, forms, animation, typography,<br>\ncontent handling, images, performance, navigation/state, touch, safe areas, dark mode,<br>\nlocale/i18n, hydration safety, hover states, content/copy, anti-patterns, + 99 UX guidelines.</p><p>Output: file:line format — concise, actionable, prioritized by severity.</p>", "snippet_html": "<p><strong>Source:</strong> Fetch fresh guidelines before each review from:<br>\n&#96;&#96;&#96;<br>\nhttps://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md<br>\n&#96;&#96;&#96;<br>\n<strong>Fallback (if WebFetch unavailable):</strong> Apply the full ruleset below.<br>\n---</p>", "searchBlob": "uiux-audit uiux-audit layer 4 — experience quality audit ui code against vercel web interface guidelines + ui ux pro max ux rules. triggers when:\n- user says \"review my ui\", \"audit this\", \"check accessibility\", \"is this up to standard\"\n- reviewing a pr or component before shipping\n- a build task is complete and needs a quality gate before reporting done\n- uiux-designer master skill triggers a self-audit at end of build tasks\n\ncovers 18 rule categories: accessibility, focus states, forms, animation, typography,\ncontent handling, images, performance, navigation/state, touch, safe areas, dark mode,\nlocale/i18n, hydration safety, hover states, content/copy, anti-patterns, + 99 ux guidelines.\n\noutput: file:line format — concise, actionable, prioritized by severity. **source:** fetch fresh guidelines before each review from:\n```\nhttps://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md\n```\n**fallback (if webfetch unavailable):** apply the full ruleset below.\n---"}, {"folder": "uiux-design-intelligence", "name": "uiux-design-intelligence", "category": "Layer 4 — Experience Quality", "layer_slug": "l4", "rel_path": "uiux-design-intelligence/SKILL.md", "description_raw": "Design system selection engine — choose the right visual style, color palette, typography,\nand motion system for any product. Powered by UI UX Pro Max's 161 reasoning rules,\n71 design styles, 99 UX guidelines, and curated color/font databases. Triggers when:\n- User says \"what style should I use\", \"suggest a design direction\", \"pick colors/fonts\"\n- Starting a new product or feature and need a visual language\n- uiux-designer master skill needs to select design direction (Step 5 of design process)\n- Inconsistent or undifferentiated visual design needs a system\n\nOutput: Named style + color palette + font pairing + motion spec + anti-patterns to avoid.", "description_html": "<p>Design system selection engine — choose the right visual style, color palette, typography,<br>\nand motion system for any product. Powered by UI UX Pro Max&#x27;s 161 reasoning rules,<br>\n71 design styles, 99 UX guidelines, and curated color/font databases. Triggers when:<br>\n- User says &quot;what style should I use&quot;, &quot;suggest a design direction&quot;, &quot;pick colors/fonts&quot;<br>\n- Starting a new product or feature and need a visual language<br>\n- uiux-designer master skill needs to select design direction (Step 5 of design process)<br>\n- Inconsistent or undifferentiated visual design needs a system</p><p>Output: Named style + color palette + font pairing + motion spec + anti-patterns to avoid.</p>", "snippet_html": "<p><strong>Purpose:</strong> Match product type → proven visual system. No guessing. No generic purple gradients.<br>\n---</p>", "searchBlob": "uiux-design-intelligence uiux-design-intelligence layer 4 — experience quality design system selection engine — choose the right visual style, color palette, typography,\nand motion system for any product. powered by ui ux pro max's 161 reasoning rules,\n71 design styles, 99 ux guidelines, and curated color/font databases. triggers when:\n- user says \"what style should i use\", \"suggest a design direction\", \"pick colors/fonts\"\n- starting a new product or feature and need a visual language\n- uiux-designer master skill needs to select design direction (step 5 of design process)\n- inconsistent or undifferentiated visual design needs a system\n\noutput: named style + color palette + font pairing + motion spec + anti-patterns to avoid. **purpose:** match product type → proven visual system. no guessing. no generic purple gradients.\n---"}, {"folder": "uiux-design-qa", "name": "uiux-design-qa", "category": "Layer 4 — Experience Quality", "layer_slug": "l4", "rel_path": "uiux-design-qa/SKILL.md", "description_raw": "Final visual quality assurance — the last gate before any user-facing feature ships.\nScreenshot-based inspection against design intent, visual consistency, and polish standards.\nTriggers when:\n- A user-facing feature has passed all other verification gates and is ready to ship\n- User says \"design QA\", \"visual QA\", \"final review\", \"does this look right\", \"check before PR\"\n- lifecycle-orchestrator routes A, B, D reach Phase 5 (Finish Gate) for user-facing work\n- After accessibility-review and responsive-review have both passed\n\nOutput: Structured QA report — critical visual issues, consistency gaps, polish notes,\nand a final ship/hold recommendation.", "description_html": "<p>Final visual quality assurance — the last gate before any user-facing feature ships.<br>\nScreenshot-based inspection against design intent, visual consistency, and polish standards.<br>\nTriggers when:<br>\n- A user-facing feature has passed all other verification gates and is ready to ship<br>\n- User says &quot;design QA&quot;, &quot;visual QA&quot;, &quot;final review&quot;, &quot;does this look right&quot;, &quot;check before PR&quot;<br>\n- lifecycle-orchestrator routes A, B, D reach Phase 5 (Finish Gate) for user-facing work<br>\n- After accessibility-review and responsive-review have both passed</p><p>Output: Structured QA report — critical visual issues, consistency gaps, polish notes,<br>\nand a final ship/hold recommendation.</p>", "snippet_html": "<p><strong>This is the last gate.</strong> It runs after code is complete, accessibility passes, and responsive review passes. Its job is to catch what automated checks cannot: visual inconsistency, polish gaps, and intent drift.<br>\n---</p>", "searchBlob": "uiux-design-qa uiux-design-qa layer 4 — experience quality final visual quality assurance — the last gate before any user-facing feature ships.\nscreenshot-based inspection against design intent, visual consistency, and polish standards.\ntriggers when:\n- a user-facing feature has passed all other verification gates and is ready to ship\n- user says \"design qa\", \"visual qa\", \"final review\", \"does this look right\", \"check before pr\"\n- lifecycle-orchestrator routes a, b, d reach phase 5 (finish gate) for user-facing work\n- after accessibility-review and responsive-review have both passed\n\noutput: structured qa report — critical visual issues, consistency gaps, polish notes,\nand a final ship/hold recommendation. **this is the last gate.** it runs after code is complete, accessibility passes, and responsive review passes. its job is to catch what automated checks cannot: visual inconsistency, polish gaps, and intent drift.\n---"}, {"folder": "uiux-designer", "name": "uiux-designer", "category": "Layer 4 — Experience Quality", "layer_slug": "l4", "rel_path": "uiux-designer/SKILL.md", "description_raw": "Enterprise-grade UI/UX design and implementation for SaaS dashboards, admin panels, forms,\nlanding pages, onboarding flows, and mobile-responsive web apps. Triggers when:\n- Designing, building, or improving any frontend interface\n- User says \"design\", \"build UI\", \"create a page\", \"improve this layout\", \"make this look better\"\n- Working in React, Next.js, Tailwind, shadcn/ui, or any web stack\n- Reviewing or auditing existing UI for quality, accessibility, or UX issues\n\nThree-layer architecture:\n- CORE (this skill): Design process + quality rules + output format [Anthropic pattern]\n- AUDIT (uiux-audit): Vercel Web Interface Guidelines — 18 rule categories for compliance\n- INTELLIGENCE (uiux-design-intelligence): UI UX Pro Max — 161 reasoning rules, 71 styles,\n  99 UX guidelines, color/typography/font databases\n\nNever produce generic AI UI. Every interface needs a user goal, visual hierarchy, design\ndirection, accessible states, and responsive behavior.", "description_html": "<p>Enterprise-grade UI/UX design and implementation for SaaS dashboards, admin panels, forms,<br>\nlanding pages, onboarding flows, and mobile-responsive web apps. Triggers when:<br>\n- Designing, building, or improving any frontend interface<br>\n- User says &quot;design&quot;, &quot;build UI&quot;, &quot;create a page&quot;, &quot;improve this layout&quot;, &quot;make this look better&quot;<br>\n- Working in React, Next.js, Tailwind, shadcn/ui, or any web stack<br>\n- Reviewing or auditing existing UI for quality, accessibility, or UX issues</p><p>Three-layer architecture:<br>\n- CORE (this skill): Design process + quality rules + output format [Anthropic pattern]<br>\n- AUDIT (uiux-audit): Vercel Web Interface Guidelines — 18 rule categories for compliance<br>\n- INTELLIGENCE (uiux-design-intelligence): UI UX Pro Max — 161 reasoning rules, 71 styles,<br>\n  99 UX guidelines, color/typography/font databases</p><p>Never produce generic AI UI. Every interface needs a user goal, visual hierarchy, design<br>\ndirection, accessible states, and responsive behavior.</p>", "snippet_html": "<p><strong>Never produce generic AI UI.</strong></p><p>Banned defaults: purple gradients, identical rounded cards, vague hero sections, meaningless decorative blobs, placeholder-heavy wireframes, low-contrast text on gray backgrounds.</p><p>Every interface must have:<br>\n1. A clear user goal<br>\n2. A visual hierarchy<br>\n3. A defined design direction (from &#96;uiux-design-intelligence&#96;)<br>\n4. Accessible interaction states<br>\n5. Responsive behavior<br>\n6. Production-ready component structure</p><p>---</p>", "searchBlob": "uiux-designer uiux-designer layer 4 — experience quality enterprise-grade ui/ux design and implementation for saas dashboards, admin panels, forms,\nlanding pages, onboarding flows, and mobile-responsive web apps. triggers when:\n- designing, building, or improving any frontend interface\n- user says \"design\", \"build ui\", \"create a page\", \"improve this layout\", \"make this look better\"\n- working in react, next.js, tailwind, shadcn/ui, or any web stack\n- reviewing or auditing existing ui for quality, accessibility, or ux issues\n\nthree-layer architecture:\n- core (this skill): design process + quality rules + output format [anthropic pattern]\n- audit (uiux-audit): vercel web interface guidelines — 18 rule categories for compliance\n- intelligence (uiux-design-intelligence): ui ux pro max — 161 reasoning rules, 71 styles,\n  99 ux guidelines, color/typography/font databases\n\nnever produce generic ai ui. every interface needs a user goal, visual hierarchy, design\ndirection, accessible states, and responsive behavior. **never produce generic ai ui.**\n\nbanned defaults: purple gradients, identical rounded cards, vague hero sections, meaningless decorative blobs, placeholder-heavy wireframes, low-contrast text on gray backgrounds.\n\nevery interface must have:\n1. a clear user goal\n2. a visual hierarchy\n3. a defined design direction (from `uiux-design-intelligence`)\n4. accessible interaction states\n5. responsive behavior\n6. production-ready component structure\n\n---"}, {"folder": "uiux-frontend-design-system", "name": "uiux-frontend-design-system", "category": "Layer 4 — Experience Quality", "layer_slug": "l4", "rel_path": "uiux-frontend-design-system/SKILL.md", "description_raw": "Define and enforce a frontend design system — tokens, component library, layout rules,\nand visual consistency standards. Triggers when:\n- Starting a new product or major UI surface that needs a visual foundation\n- Components look inconsistent across pages\n- User says \"create a design system\", \"define tokens\", \"standardize components\", \"our UI is inconsistent\"\n- Route A (new product) or Route D (UI redesign) reaches Phase 1 or Phase 2\n- uiux-designer has selected a visual direction and it needs to be codified into code\n\nOutput: Token definitions, component inventory, layout grid, spacing scale,\nand a usage contract — all as implementable code, not just design principles.", "description_html": "<p>Define and enforce a frontend design system — tokens, component library, layout rules,<br>\nand visual consistency standards. Triggers when:<br>\n- Starting a new product or major UI surface that needs a visual foundation<br>\n- Components look inconsistent across pages<br>\n- User says &quot;create a design system&quot;, &quot;define tokens&quot;, &quot;standardize components&quot;, &quot;our UI is inconsistent&quot;<br>\n- Route A (new product) or Route D (UI redesign) reaches Phase 1 or Phase 2<br>\n- uiux-designer has selected a visual direction and it needs to be codified into code</p><p>Output: Token definitions, component inventory, layout grid, spacing scale,<br>\nand a usage contract — all as implementable code, not just design principles.</p>", "snippet_html": "<p><strong>Purpose:</strong> Translate a chosen visual direction (from &#96;uiux-design-intelligence&#96;) into a concrete, implementable system — tokens, components, layout rules, and consistency contracts.<br>\n---</p>", "searchBlob": "uiux-frontend-design-system uiux-frontend-design-system layer 4 — experience quality define and enforce a frontend design system — tokens, component library, layout rules,\nand visual consistency standards. triggers when:\n- starting a new product or major ui surface that needs a visual foundation\n- components look inconsistent across pages\n- user says \"create a design system\", \"define tokens\", \"standardize components\", \"our ui is inconsistent\"\n- route a (new product) or route d (ui redesign) reaches phase 1 or phase 2\n- uiux-designer has selected a visual direction and it needs to be codified into code\n\noutput: token definitions, component inventory, layout grid, spacing scale,\nand a usage contract — all as implementable code, not just design principles. **purpose:** translate a chosen visual direction (from `uiux-design-intelligence`) into a concrete, implementable system — tokens, components, layout rules, and consistency contracts.\n---"}, {"folder": "uiux-interaction-review", "name": "uiux-interaction-review", "category": "Layer 4 — Experience Quality", "layer_slug": "l4", "rel_path": "uiux-interaction-review/SKILL.md", "description_raw": "Interaction design review — states, transitions, feedback loops, and microinteractions.\nTriggers when:\n- A component or feature needs its interaction quality assessed\n- User says \"review the interactions\", \"check states\", \"the feedback feels off\", \"transitions\"\n- Route D (UI design) reaches Phase 1 or Phase 4\n- Any form, button, modal, dropdown, or multi-step flow is being reviewed\n- A feature works but feels unpolished or unresponsive to the user\n\nCovers: all component states, animation quality, feedback timing, error recovery UX,\nloading patterns, and destructive action safeguards.", "description_html": "<p>Interaction design review — states, transitions, feedback loops, and microinteractions.<br>\nTriggers when:<br>\n- A component or feature needs its interaction quality assessed<br>\n- User says &quot;review the interactions&quot;, &quot;check states&quot;, &quot;the feedback feels off&quot;, &quot;transitions&quot;<br>\n- Route D (UI design) reaches Phase 1 or Phase 4<br>\n- Any form, button, modal, dropdown, or multi-step flow is being reviewed<br>\n- A feature works but feels unpolished or unresponsive to the user</p><p>Covers: all component states, animation quality, feedback timing, error recovery UX,<br>\nloading patterns, and destructive action safeguards.</p>", "snippet_html": "<p><strong>Purpose:</strong> Ensure every interactive element communicates clearly — before, during, and after each user action. Interactions that feel broken or unresponsive destroy trust faster than any visual issue.<br>\n---</p>", "searchBlob": "uiux-interaction-review uiux-interaction-review layer 4 — experience quality interaction design review — states, transitions, feedback loops, and microinteractions.\ntriggers when:\n- a component or feature needs its interaction quality assessed\n- user says \"review the interactions\", \"check states\", \"the feedback feels off\", \"transitions\"\n- route d (ui design) reaches phase 1 or phase 4\n- any form, button, modal, dropdown, or multi-step flow is being reviewed\n- a feature works but feels unpolished or unresponsive to the user\n\ncovers: all component states, animation quality, feedback timing, error recovery ux,\nloading patterns, and destructive action safeguards. **purpose:** ensure every interactive element communicates clearly — before, during, and after each user action. interactions that feel broken or unresponsive destroy trust faster than any visual issue.\n---"}, {"folder": "uiux-react-patterns", "name": "uiux-react-patterns", "category": "Layer 4 — Experience Quality", "layer_slug": "l4", "rel_path": "uiux-react-patterns/SKILL.md", "description_raw": "React and Next.js component patterns for high-quality, performant, accessible UI.\nPowered by Vercel's 70-rule React best practices guide. Triggers when:\n- Writing or reviewing React/Next.js components\n- Performance, rendering, or bundle size is a concern\n- Component API design feels off or props are getting complex\n- uiux-designer master skill reaches the implementation step for React/Next.js\n\nCovers: eliminating waterfalls, bundle optimization, server vs client boundaries,\nre-render optimization, form patterns, data fetching, and advanced React patterns.", "description_html": "<p>React and Next.js component patterns for high-quality, performant, accessible UI.<br>\nPowered by Vercel&#x27;s 70-rule React best practices guide. Triggers when:<br>\n- Writing or reviewing React/Next.js components<br>\n- Performance, rendering, or bundle size is a concern<br>\n- Component API design feels off or props are getting complex<br>\n- uiux-designer master skill reaches the implementation step for React/Next.js</p><p>Covers: eliminating waterfalls, bundle optimization, server vs client boundaries,<br>\nre-render optimization, form patterns, data fetching, and advanced React patterns.</p>", "snippet_html": "<p><strong>Source:</strong> Vercel Engineering — 70 rules across 8 categories for React and Next.js.<br>\n---</p>", "searchBlob": "uiux-react-patterns uiux-react-patterns layer 4 — experience quality react and next.js component patterns for high-quality, performant, accessible ui.\npowered by vercel's 70-rule react best practices guide. triggers when:\n- writing or reviewing react/next.js components\n- performance, rendering, or bundle size is a concern\n- component api design feels off or props are getting complex\n- uiux-designer master skill reaches the implementation step for react/next.js\n\ncovers: eliminating waterfalls, bundle optimization, server vs client boundaries,\nre-render optimization, form patterns, data fetching, and advanced react patterns. **source:** vercel engineering — 70 rules across 8 categories for react and next.js.\n---"}, {"folder": "uiux-responsive-review", "name": "uiux-responsive-review", "category": "Layer 4 — Experience Quality", "layer_slug": "l4", "rel_path": "uiux-responsive-review/SKILL.md", "description_raw": "Responsive design audit — verify mobile, tablet, and desktop behavior at standard breakpoints.\nTriggers when:\n- A user-facing feature or redesign reaches Phase 4 verification\n- User says \"check mobile\", \"test responsive\", \"does this work on tablet\", \"check breakpoints\"\n- lifecycle-orchestrator routes D (UI design) or A/B (user-facing features) reaches verify phase\n- Any new page, layout, form, modal, table, or navigation component is built\n\nChecks behavior at 375px (mobile), 768px (tablet), 1280px (desktop), 1440px (wide).\nOutput: file:line findings per breakpoint with specific fixes.", "description_html": "<p>Responsive design audit — verify mobile, tablet, and desktop behavior at standard breakpoints.<br>\nTriggers when:<br>\n- A user-facing feature or redesign reaches Phase 4 verification<br>\n- User says &quot;check mobile&quot;, &quot;test responsive&quot;, &quot;does this work on tablet&quot;, &quot;check breakpoints&quot;<br>\n- lifecycle-orchestrator routes D (UI design) or A/B (user-facing features) reaches verify phase<br>\n- Any new page, layout, form, modal, table, or navigation component is built</p><p>Checks behavior at 375px (mobile), 768px (tablet), 1280px (desktop), 1440px (wide).<br>\nOutput: file:line findings per breakpoint with specific fixes.</p>", "snippet_html": "<p><strong>Breakpoints tested:</strong><br>\n- &#96;375px&#96; — mobile (iPhone SE / small Android)<br>\n- &#96;768px&#96; — tablet (iPad portrait)<br>\n- &#96;1280px&#96; — desktop (laptop)<br>\n- &#96;1440px&#96; — wide desktop (external monitor)<br>\n---</p>", "searchBlob": "uiux-responsive-review uiux-responsive-review layer 4 — experience quality responsive design audit — verify mobile, tablet, and desktop behavior at standard breakpoints.\ntriggers when:\n- a user-facing feature or redesign reaches phase 4 verification\n- user says \"check mobile\", \"test responsive\", \"does this work on tablet\", \"check breakpoints\"\n- lifecycle-orchestrator routes d (ui design) or a/b (user-facing features) reaches verify phase\n- any new page, layout, form, modal, table, or navigation component is built\n\nchecks behavior at 375px (mobile), 768px (tablet), 1280px (desktop), 1440px (wide).\noutput: file:line findings per breakpoint with specific fixes. **breakpoints tested:**\n- `375px` — mobile (iphone se / small android)\n- `768px` — tablet (ipad portrait)\n- `1280px` — desktop (laptop)\n- `1440px` — wide desktop (external monitor)\n---"}];
+    let selected = new Set();
+
+    try {
+      const saved = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
+      if (Array.isArray(saved)) saved.forEach((x) => selected.add(x));
+    } catch (e) {}
+
+    function persist() {
+      localStorage.setItem(LS_KEY, JSON.stringify([...selected]));
+    }
+
+    const layers = [...new Set(skills.map(s => s.category))].sort();
+    const layerSel = document.getElementById("layer");
+    for (const L of layers) {
+      const o = document.createElement("option");
+      o.value = L;
+      o.textContent = L;
+      layerSel.appendChild(o);
+    }
+
+    function escapeHtml(t) {
+      const d = document.createElement("div");
+      d.textContent = t;
+      return d.innerHTML;
+    }
+    function escapeAttr(t) {
+      return String(t).replace(/"/g, '&quot;');
+    }
+
+    function skillByFolder(f) {
+      return skills.find((s) => s.folder === f);
+    }
+
+    function cardHtml(s) {
+      const layerClass = "layer-" + (s.layer_slug || "other");
+      const isOn = selected.has(s.folder) ? "is-selected" : "";
+      return `<article role="listitem" tabindex="0" class="skill-card ${layerClass} ${isOn}"
+        data-folder="${escapeAttr(s.folder)}"
+        data-search="${escapeAttr(s.searchBlob)}"
+        data-layer="${escapeAttr(s.category)}"
+        aria-pressed="${selected.has(s.folder)}">
+        <div class="accent" aria-hidden="true"></div>
+        <div class="card-inner">
+          <div class="card-top">
+            <h2 class="skill-name">${escapeHtml(s.name)}</h2>
+            <div class="pick-indicator" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+            </div>
+          </div>
+          <div class="layer-pill">${escapeHtml(s.category)}</div>
+          <div class="folder-tag">${escapeHtml(s.rel_path)}</div>
+          <div class="preview-label">Core rule / excerpt</div>
+          <div class="preview-text">${s.snippet_html}</div>
+          <div class="card-actions">
+            <details class="card-details" onclick="event.stopPropagation()">
+              <summary>Full trigger text &amp; description</summary>
+              <div class="detail-body">${s.description_html}</div>
+            </details>
+          </div>
+        </div>
+      </article>`;
+    }
+
+    function updateTray() {
+      const chipRow = document.getElementById("chipRow");
+      const sub = document.getElementById("traySub");
+      chipRow.replaceChildren();
+      if (selected.size === 0) {
+        sub.textContent = "No skills selected";
+        return;
+      }
+      sub.textContent = selected.size + " skill" + (selected.size === 1 ? "" : "s") + " selected";
+      [...selected].sort().forEach((folder) => {
+        const s = skillByFolder(folder);
+        const label = s ? s.name : folder;
+        const span = document.createElement("span");
+        span.className = "chip";
+        span.innerHTML = escapeHtml(label) +
+          '<button type="button" aria-label="Remove ' + escapeAttr(label) + '" data-remove="' + escapeAttr(folder) + '">×</button>';
+        chipRow.appendChild(span);
+      });
+      chipRow.querySelectorAll("button[data-remove]").forEach((btn) => {
+        btn.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          selected.delete(btn.getAttribute("data-remove"));
+          persist();
+          render();
+          updateTray();
+        });
+      });
+    }
+
+    function toggleFolder(folder) {
+      if (selected.has(folder)) selected.delete(folder);
+      else selected.add(folder);
+      persist();
+    }
+
+    function render() {
+      const q = document.getElementById("q").value.trim().toLowerCase();
+      const layer = document.getElementById("layer").value;
+      const root = document.getElementById("root");
+      let n = 0;
+      const frag = document.createDocumentFragment();
+      for (const s of skills) {
+        const matchQ = !q || s.searchBlob.includes(q);
+        const matchL = !layer || s.category === layer;
+        if (!matchQ || !matchL) continue;
+        n++;
+        const wrap = document.createElement("div");
+        wrap.innerHTML = cardHtml(s).trim();
+        frag.appendChild(wrap.firstElementChild);
+      }
+      root.replaceChildren(frag);
+      document.getElementById("count").textContent = n + " cards";
+
+      root.querySelectorAll(".skill-card").forEach((card) => {
+        const folder = card.getAttribute("data-folder");
+        card.classList.toggle("is-selected", selected.has(folder));
+        card.setAttribute("aria-pressed", selected.has(folder) ? "true" : "false");
+        const onActivate = (e) => {
+          if (e.type === "keydown" && e.key !== "Enter" && e.key !== " ") return;
+          e.preventDefault();
+          toggleFolder(folder);
+          render();
+          updateTray();
+        };
+        card.addEventListener("click", (e) => {
+          if (e.target.closest("details, summary, button, a")) return;
+          toggleFolder(folder);
+          render();
+          updateTray();
+        });
+        card.addEventListener("keydown", onActivate);
+      });
+    }
+
+    function toast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(toast._id);
+      toast._id = setTimeout(() => t.classList.remove("show"), 2200);
+    }
+
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => toast("Copied to clipboard")).catch(() => toast("Copy failed — select text manually"));
+    }
+
+    document.getElementById("copyChat").addEventListener("click", () => {
+      if (selected.size === 0) return toast("No skills selected");
+      const lines = [...selected].sort().map((f) => {
+        const s = skillByFolder(f);
+        return "- " + (s ? s.name + " (`" + f + "`) — " + s.category : f);
+      });
+      const body = [
+        "For this task, apply these Cursor/Dharma skills (read SKILL.md for each):",
+        "",
+        ...lines,
+        "",
+        "Start with `lifecycle-orchestrator` if the task is new or ambiguous."
+      ].join("\n");
+      copyText(body);
+    });
+
+    document.getElementById("copyFolders").addEventListener("click", () => {
+      if (selected.size === 0) return toast("No skills selected");
+      copyText([...selected].sort().join("\n"));
+    });
+
+    document.getElementById("clearAll").addEventListener("click", () => {
+      selected.clear();
+      persist();
+      render();
+      updateTray();
+    });
+
+    document.getElementById("selectVisible").addEventListener("click", () => {
+      const q = document.getElementById("q").value.trim().toLowerCase();
+      const layer = document.getElementById("layer").value;
+      skills.forEach((s) => {
+        const matchQ = !q || s.searchBlob.includes(q);
+        const matchL = !layer || s.category === layer;
+        if (matchQ && matchL) selected.add(s.folder);
+      });
+      persist();
+      render();
+      updateTray();
+    });
+
+    document.getElementById("clearVisible").addEventListener("click", () => {
+      const q = document.getElementById("q").value.trim().toLowerCase();
+      const layer = document.getElementById("layer").value;
+      skills.forEach((s) => {
+        const matchQ = !q || s.searchBlob.includes(q);
+        const matchL = !layer || s.category === layer;
+        if (matchQ && matchL) selected.delete(s.folder);
+      });
+      persist();
+      render();
+      updateTray();
+    });
+
+    document.getElementById("q").addEventListener("input", render);
+    document.getElementById("layer").addEventListener("change", render);
+    updateTray();
+    render();
+  </script>
+</body>
+</html>
