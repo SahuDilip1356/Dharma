@@ -117,6 +117,25 @@ Use the general skill only when no specific skill covers the need.
 
 ---
 
+### Developer Experience Layer
+
+| Skill | Owns | Does NOT Own |
+|---|---|---|
+| `react-best-practices` | React/Next.js performance optimization — waterfall elimination, bundle size, Server Component performance, re-render optimization, rendering performance, JS micro-optimizations, advanced patterns | UX patterns, form design, component variant API (that is `uiux-react-patterns`); accessibility patterns — aria-label, focus-visible (that is `uiux-react-patterns`); browser-level verification — screenshots, console logs (that is `webapp-testing`); post-ship performance monitoring — p95 latency, error rates (that is `ai-observability`) |
+| `find-skills` | Ecosystem skill gap resolution — discovering, verifying, and recommending installable skills from skills.sh when no installed Dharma skill covers a domain | Executing installed skill logic (each installed skill owns its own execution); deciding which gaps matter (that is the orchestrator's call); unilaterally modifying routing-matrix.md |
+
+**`react-best-practices` vs `uiux-react-patterns` disambiguation rule:**
+- "Does this rule affect how fast the code runs?" → `react-best-practices` owns it
+- "Does this rule affect how good the UX feels or how accessible it is?" → `uiux-react-patterns` owns it
+- When in doubt: forms, aria, focus, variant API → `uiux-react-patterns`; waterfalls, bundle, re-renders, caching → `react-best-practices`
+
+**`find-skills` activation rule:**
+- `find-skills` activates ONLY after `skills-inventory.md` returns no match for a functional need
+- It is a pre-Phase 0 resolver, not a phase skill — it never appears in the route's phase sequence
+- An installed skill always takes precedence over an ecosystem discovery
+
+---
+
 ## What "Reporting Out-of-Scope" Looks Like
 
 ```

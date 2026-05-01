@@ -70,6 +70,15 @@ Update this file when skills are added, renamed, or replaced — never update ro
 
 ---
 
+## Developer Experience Layer
+
+| Functional Name | Actual Skill | Status | Notes |
+|----------------|-------------|--------|-------|
+| `react-performance` | `react-best-practices` | ✅ Installed | Phase 3 — 70 performance rules (waterfalls, bundle, re-renders, JS efficiency); complements `uiux-react-patterns` |
+| `skill-gap-resolver` | `find-skills` | ✅ Installed | Pre-Phase 0 — searches skills.sh ecosystem when no installed Dharma skill covers a domain; meta-orchestrator tool |
+
+---
+
 ## AI & Economics Layer
 
 | Functional Name | Actual Skill | Status | Notes |
@@ -106,7 +115,8 @@ These are not skills — they are conductor-level controls for the orchestrator 
 | Experience Quality | 10 | 0 |
 | Testing | 1 | 0 |
 | AI & Economics | 6 | 0 |
-| **Total** | **34** | **0** |
+| Developer Experience | 2 | 0 |
+| **Total** | **36** | **0** |
 
 ---
 

@@ -47,6 +47,18 @@ You are the master product development lifecycle orchestrator. You are the contr
 **Read `routing-decision-tree.md`** and run all 7 steps before selecting any route.
 Output the Route Receipt before proceeding. No Phase 0 skill begins until the receipt is output.
 
+### Step 0.5: Resolve Skill Gaps (find-skills)
+
+After the Route Receipt is output, check every functional skill name in the planned route against `skills-inventory.md`.
+
+**If any functional need has no installed skill match:**
+→ Invoke `find-skills` to search the open skills ecosystem for a gap-filler.
+→ If a quality skill is found and user approves installation, add it to `skills-inventory.md` and update the Route Receipt.
+→ If no skill is found, note the gap in the Route Receipt under `Skill Gaps` and proceed with general capability.
+
+**If all functional needs are covered by installed skills:**
+→ Skip find-skills. Proceed directly to Phase 0.
+
 ---
 
 ## Step 1: Classify the Work

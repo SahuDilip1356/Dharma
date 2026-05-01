@@ -2,7 +2,7 @@
 
 > Build with discipline. Ship with evidence. Govern with intention.
 
-Dharma is a 33-skill, 8-route product development framework that runs inside Claude Code. It replaces ad-hoc AI-assisted development with a structured lifecycle: classify the work, select the right specialist skills, enforce phase gates, and require verifiable evidence before any completion claim.
+Dharma is a 36-skill, 8-route product development framework that runs inside Claude Code. It replaces ad-hoc AI-assisted development with a structured lifecycle: classify the work, select the right specialist skills, enforce phase gates, and require verifiable evidence before any completion claim.
 
 Every feature, bug fix, refactor, UI redesign, performance improvement, security change, or release runs through the same disciplined process — regardless of size or complexity.
 
@@ -55,8 +55,10 @@ Dharma has three structural components:
         └───────────┬───────────┘
                     │ invokes
 ┌───────────────────▼─────────────────────────────────────────────────┐
-│                        5 SKILL LAYERS                               │
+│                        6 SKILL LAYERS                               │
 │                                                                     │
+│  Layer 7 — Developer Experience  (2 skills)                         │
+│  ─────────────────────────────────────────────────────────────────  │
 │  Layer 6 — AI & Economics  (6 skills)                               │
 │  ─────────────────────────────────────────────────────────────────  │
 │  Layer 5 — Testing  (1 skill)                                       │
@@ -111,7 +113,7 @@ The orchestrator maps every work request to one of 8 routes. Routes determine th
 
 ---
 
-## The 5 Skill Layers
+## The 7 Skill Layers
 
 ### Layer 1 — Product & Planning (5 skills)
 
@@ -187,6 +189,7 @@ Ensures every user-facing output meets a professional standard of design, access
 
 ### Layer 5 — Testing (1 skill)
 
+
 Browser-level functional UI verification — the gap between unit tests and visual QA.
 
 | Skill | Phase | Purpose |
@@ -203,6 +206,27 @@ Agent 4 → uiux-design-qa        (visual fidelity)
 All four produce evidence. `superpowers-verify` synthesizes into a single completion claim.
 
 **Why this layer exists:** Unit tests prove logic. Design QA proves visual fidelity. `webapp-testing` fills the gap: does the UI actually work in a real browser, across all four states (loading / empty / error / success)?
+
+---
+
+### Layer 7 — Developer Experience (2 skills)
+
+Extends Dharma's reach — one skill resolves ecosystem gaps dynamically; one governs React performance discipline.
+
+| Skill | Phase | Purpose |
+|---|---|---|
+| `react-best-practices` | Phase 3 | 70 performance rules (waterfalls, bundle, re-renders, JS efficiency) — Vercel Engineering, companion to `uiux-react-patterns` |
+| `find-skills` | Pre-Phase 0 | Ecosystem gap resolver — searches skills.sh when no Dharma skill covers a domain; meta-orchestrator tool |
+
+**How they complement each other and the existing stack:**
+
+`react-best-practices` pairs with `uiux-react-patterns` — they split React knowledge by concern:
+- `uiux-react-patterns` owns: forms, accessibility patterns (aria, focus), component API design (variant system) — the *UX quality* of React code
+- `react-best-practices` owns: waterfalls, bundle size, re-renders, server performance, JS micro-optimizations — the *performance* of React code
+
+`find-skills` activates only when `skills-inventory.md` has no match — it's a safety valve, not a primary tool. It never runs if the existing 35 skills cover the need.
+
+**Why this layer exists:** React performance is a dedicated discipline — 70 rules across 8 categories that live outside UX concerns. And no framework is complete; `find-skills` ensures Dharma can extend itself when the ecosystem has something better than general capability for a novel domain.
 
 ---
 
@@ -254,6 +278,9 @@ When a task arrives, the orchestrator runs in sequence:
 
 **Step 0 — Run the routing decision tree**
 7 questions in order: Is this high-risk (auth/payments/AI/compliance)? Is it user-facing? Is something broken? Is it a new feature? New product? Refactor? Release? First match determines the route.
+
+**Step 0.5 — Resolve skill gaps (find-skills)**
+Check every functional skill in the planned route against `skills-inventory.md`. If any domain has no installed skill, `find-skills` searches the open ecosystem (skills.sh) for a quality match. Installed skills always take precedence — `find-skills` only activates on a genuine gap.
 
 **Step 1 — Output the Route Receipt**
 Before any code is touched:
@@ -344,6 +371,12 @@ Five valid completion states — and only five:
 | `ai-observability` | `ai-observability/SKILL.md` |
 | `model-governance` | `model-governance/SKILL.md` |
 | `benchmark-framework` | `benchmark-framework/SKILL.md` |
+
+### Layer 7 — Developer Experience
+| Skill | File |
+|---|---|
+| `react-best-practices` | `react-best-practices/SKILL.md` |
+| `find-skills` | `find-skills/SKILL.md` |
 
 ### Orchestrator & Governance
 | File | Purpose |

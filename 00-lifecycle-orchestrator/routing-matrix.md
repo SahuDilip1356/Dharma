@@ -20,6 +20,7 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 | 2 | `inference-economics` | `inference-economics` | ✅ If AI/LLM component present |
 | 3 | `tdd` | `superpowers-tdd` | ✅ Mandatory |
 | 3 | `execution-subagents` | `superpowers-execute` | ✅ Mandatory |
+| 3 | `react-performance` | `react-best-practices` | ✅ Mandatory (React/Next.js) |
 | 3 | `ai-safety-eval` | `ai-safety-eval` | ✅ If AI/LLM component present |
 | 3 | `prompt-optimization` | `prompt-optimization` | ✅ If AI/LLM component present |
 | 4 | `accessibility-review` | `uiux-accessibility-review` | ✅ Mandatory |
@@ -64,6 +65,7 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 | 2 | `inference-economics` | `inference-economics` | ✅ If AI/LLM component present |
 | 3 | `tdd` | `superpowers-tdd` | ✅ Mandatory |
 | 3 | `execution-subagents` | `superpowers-execute` | ✅ Mandatory |
+| 3 | `react-performance` | `react-best-practices` | ✅ If React/Next.js UI |
 | 3 | `ai-safety-eval` | `ai-safety-eval` | ✅ If AI/LLM component present |
 | 3 | `prompt-optimization` | `prompt-optimization` | ✅ If AI/LLM component present |
 | 4 | `webapp-testing` | `webapp-testing` | ✅ If user-facing |
@@ -132,7 +134,7 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 | 5 | `design-qa` | `uiux-design-qa` | ✅ Mandatory |
 | 5 | `branch-finish` | `superpowers-finish` | ✅ Mandatory |
 
-**Optional:** `react-patterns` for implementation quality
+**Optional (implementation phase):** `react-patterns` (uiux-react-patterns) for forms and a11y patterns; `react-performance` (react-best-practices) for performance optimization
 
 **Required Evidence:**
 - User goal statement
@@ -179,6 +181,7 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 | 0 | `root-cause-debug` | `superpowers-debug` | ✅ Mandatory |
 | 0 | `think-before-coding` | `think-before-coding` | ✅ Mandatory |
 | 3 | `surgical-changes` | `surgical-changes` | ✅ Mandatory |
+| 3 | `react-performance` | `react-best-practices` | ✅ If frontend (CRITICAL — primary skill for React perf) |
 | 3 | `react-patterns` | `uiux-react-patterns` | ✅ If frontend |
 | 4 | `execution-verify` | `superpowers-verify` | ✅ Mandatory |
 | 5 | `branch-finish` | `superpowers-finish` | ✅ Mandatory |
