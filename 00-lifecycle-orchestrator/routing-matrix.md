@@ -24,6 +24,7 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 | 3 | `prompt-optimization` | `prompt-optimization` | ✅ If AI/LLM component present |
 | 4 | `accessibility-review` | `uiux-accessibility-review` | ✅ Mandatory |
 | 4 | `responsive-design-review` | `uiux-responsive-review` | ✅ Mandatory |
+| 4 | `webapp-testing` | `webapp-testing` | ✅ Mandatory (user-facing) |
 | 4 | `execution-verify` | `superpowers-verify` | ✅ Mandatory |
 | 5 | `design-qa` | `uiux-design-qa` | ✅ Mandatory |
 | 5 | `branch-finish` | `superpowers-finish` | ✅ Mandatory |
@@ -39,6 +40,7 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 - Inference economics summary (if AI/LLM component present)
 - Passing tests
 - AI safety evaluation report (if AI/LLM component present)
+- Browser verification screenshots + console log (webapp-testing)
 - Observability checklist complete (if AI/LLM component present)
 - Accessibility audit findings
 - Responsive behavior verified
@@ -64,6 +66,7 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 | 3 | `execution-subagents` | `superpowers-execute` | ✅ Mandatory |
 | 3 | `ai-safety-eval` | `ai-safety-eval` | ✅ If AI/LLM component present |
 | 3 | `prompt-optimization` | `prompt-optimization` | ✅ If AI/LLM component present |
+| 4 | `webapp-testing` | `webapp-testing` | ✅ If user-facing |
 | 4 | `execution-verify` | `superpowers-verify` | ✅ Mandatory |
 | 4 | `design-qa` | `uiux-design-qa` | ✅ If user-facing |
 | 5 | `branch-finish` | `superpowers-finish` | ✅ Mandatory |
@@ -78,6 +81,7 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 - Inference economics summary (if AI/LLM component present)
 - Tests passing
 - AI safety evaluation report (if AI/LLM component present)
+- Browser verification screenshots + console log (webapp-testing, if user-facing)
 - Observability checklist complete (if AI/LLM component present)
 - UI screenshots if user-facing
 - PR/commit summary
@@ -94,6 +98,7 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 | 0 | `think-before-coding` | `think-before-coding` | ✅ Mandatory |
 | 3 | `surgical-changes` | `surgical-changes` | ✅ Mandatory |
 | 3 | `tdd` | `superpowers-tdd` | ✅ Mandatory |
+| 4 | `webapp-testing` | `webapp-testing` | ✅ If bug is UI/browser-visible |
 | 4 | `execution-verify` | `superpowers-verify` | ✅ Mandatory |
 | 5 | `branch-finish` | `superpowers-finish` | ✅ Mandatory |
 
@@ -105,6 +110,7 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 - Failing test (written before fix)
 - Fix applied
 - Regression test passing
+- Browser before/after screenshots (webapp-testing, if UI bug)
 - Full suite passing
 
 ---
@@ -122,6 +128,7 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 | 1 | `interaction-design-review` | `uiux-interaction-review` | ✅ Mandatory |
 | 4 | `accessibility-review` | `uiux-accessibility-review` | ✅ Mandatory |
 | 4 | `responsive-design-review` | `uiux-responsive-review` | ✅ Mandatory |
+| 4 | `webapp-testing` | `webapp-testing` | ✅ Mandatory |
 | 5 | `design-qa` | `uiux-design-qa` | ✅ Mandatory |
 | 5 | `branch-finish` | `superpowers-finish` | ✅ Mandatory |
 
@@ -134,6 +141,7 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 - Component structure
 - Accessibility audit findings
 - Responsive behavior verified at 375/768/1280/1440px
+- Browser state verification screenshots (webapp-testing)
 - Screenshot review (design-qa output)
 
 ---

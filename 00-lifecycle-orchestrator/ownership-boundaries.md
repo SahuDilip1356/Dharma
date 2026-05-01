@@ -94,6 +94,16 @@ Use the general skill only when no specific skill covers the need.
 
 ---
 
+### Testing Layer
+
+| Skill | Owns | Does NOT Own |
+|---|---|---|
+| `webapp-testing` | Browser-level functional verification — DOM inspection, functional state screenshots (loading/empty/error/success), console error detection, network request failure capture, form submission and interaction testing | Visual design fidelity screenshots (that is `uiux-design-qa`); unit and integration tests (that is `superpowers-tdd`); post-ship production monitoring (that is `ai-observability`) |
+
+**Screenshot disambiguation rule:** `webapp-testing` screenshots prove *functional states* — did the button trigger the right outcome, did the error state render, did the form submit successfully. `uiux-design-qa` screenshots prove *visual fidelity* — does the implementation match the design spec. Both can run in the same verification pass; they answer different questions and are not duplicates.
+
+---
+
 ### AI & Economics Layer
 
 | Skill | Owns | Does NOT Own |

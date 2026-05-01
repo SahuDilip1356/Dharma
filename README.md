@@ -57,7 +57,9 @@ Dharma has three structural components:
 ┌───────────────────▼─────────────────────────────────────────────────┐
 │                        5 SKILL LAYERS                               │
 │                                                                     │
-│  Layer 5 — AI & Economics  (6 skills)                               │
+│  Layer 6 — AI & Economics  (6 skills)                               │
+│  ─────────────────────────────────────────────────────────────────  │
+│  Layer 5 — Testing  (1 skill)                                       │
 │  ─────────────────────────────────────────────────────────────────  │
 │  Layer 4 — Experience Quality  (10 skills)                          │
 │  ─────────────────────────────────────────────────────────────────  │
@@ -183,7 +185,28 @@ Ensures every user-facing output meets a professional standard of design, access
 
 ---
 
-### Layer 5 — AI & Economics (6 skills)
+### Layer 5 — Testing (1 skill)
+
+Browser-level functional UI verification — the gap between unit tests and visual QA.
+
+| Skill | Phase | Purpose |
+|---|---|---|
+| `webapp-testing` | Phase 4 | Playwright (Python) browser automation — state verification, console error detection, before/after screenshots as functional evidence |
+
+**Multi-agent verification pattern** — `superpowers-execute` runs these specialists in parallel at Phase 4:
+```
+Agent 1 → superpowers-tdd      (unit + integration tests)
+Agent 2 → webapp-testing        (browser functional verification)
+Agent 3 → uiux-accessibility-review (a11y on live UI)
+Agent 4 → uiux-design-qa        (visual fidelity)
+```
+All four produce evidence. `superpowers-verify` synthesizes into a single completion claim.
+
+**Why this layer exists:** Unit tests prove logic. Design QA proves visual fidelity. `webapp-testing` fills the gap: does the UI actually work in a real browser, across all four states (loading / empty / error / success)?
+
+---
+
+### Layer 6 — AI & Economics (6 skills)
 
 Governs the full lifecycle of AI/LLM-powered features — from cost design to post-ship quality.
 
@@ -307,7 +330,12 @@ Five valid completion states — and only five:
 | `uiux-design-qa` | `uiux-design-qa/SKILL.md` |
 | `uiux-react-patterns` | `uiux-react-patterns/SKILL.md` |
 
-### Layer 5 — AI & Economics
+### Layer 5 — Testing
+| Skill | File |
+|---|---|
+| `webapp-testing` | `webapp-testing/SKILL.md` |
+
+### Layer 6 — AI & Economics
 | Skill | File |
 |---|---|
 | `inference-economics` | `inference-economics/SKILL.md` |

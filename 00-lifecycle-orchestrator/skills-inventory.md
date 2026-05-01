@@ -62,6 +62,14 @@ Update this file when skills are added, renamed, or replaced — never update ro
 
 ---
 
+## Testing Layer
+
+| Functional Name | Actual Skill | Status | Notes |
+|----------------|-------------|--------|-------|
+| `webapp-testing` | `webapp-testing` | ✅ Installed | Phase 4 browser verification — Playwright (Python); multi-agent subagent for UI flows |
+
+---
+
 ## AI & Economics Layer
 
 | Functional Name | Actual Skill | Status | Notes |
@@ -96,8 +104,9 @@ These are not skills — they are conductor-level controls for the orchestrator 
 | Engineering Discipline | 4 | 0 |
 | Execution Methodology | 8 | 0 |
 | Experience Quality | 10 | 0 |
+| Testing | 1 | 0 |
 | AI & Economics | 6 | 0 |
-| **Total** | **33** | **0** |
+| **Total** | **34** | **0** |
 
 ---
 
