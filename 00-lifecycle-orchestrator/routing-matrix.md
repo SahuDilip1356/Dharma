@@ -20,7 +20,9 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 | 2 | `inference-economics` | `inference-economics` | ✅ If AI/LLM component present |
 | 3 | `tdd` | `superpowers-tdd` | ✅ Mandatory |
 | 3 | `execution-subagents` | `superpowers-execute` | ✅ Mandatory |
-| 3 | `react-performance` | `react-best-practices` | ✅ Mandatory (React/Next.js) |
+| 3 | `aesthetic-code-gen` | `frontend-design` | ✅ Mandatory (user-facing UI) — runs first in Phase 3 |
+| 3 | `react-performance` | `react-best-practices` | ✅ Mandatory (React/Next.js) — runs after frontend-design |
+| 3 | `react-patterns` | `uiux-react-patterns` | ✅ Mandatory (user-facing) — runs after frontend-design |
 | 3 | `ai-safety-eval` | `ai-safety-eval` | ✅ If AI/LLM component present |
 | 3 | `prompt-optimization` | `prompt-optimization` | ✅ If AI/LLM component present |
 | 4 | `accessibility-review` | `uiux-accessibility-review` | ✅ Mandatory |
@@ -35,17 +37,18 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 
 **Required Evidence:**
 - Problem + user + goal (churney-os output)
-- UX flow + visual direction
-- Design system tokens
+- UX flow + visual direction (uiux-designer + uiux-design-intelligence output)
+- Design system tokens (uiux-frontend-design-system output)
+- Aesthetic direction statement (frontend-design output — style, palette, distinctive choice, anti-patterns rejected)
 - Implementation plan
 - Inference economics summary (if AI/LLM component present)
-- Passing tests
+- Passing tests (superpowers-tdd)
 - AI safety evaluation report (if AI/LLM component present)
 - Browser verification screenshots + console log (webapp-testing)
 - Observability checklist complete (if AI/LLM component present)
 - Accessibility audit findings
 - Responsive behavior verified
-- Screenshots (design-qa)
+- Screenshots (design-qa — validates against aesthetic direction statement)
 - PR/commit summary
 
 ---
@@ -65,7 +68,9 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 | 2 | `inference-economics` | `inference-economics` | ✅ If AI/LLM component present |
 | 3 | `tdd` | `superpowers-tdd` | ✅ Mandatory |
 | 3 | `execution-subagents` | `superpowers-execute` | ✅ Mandatory |
-| 3 | `react-performance` | `react-best-practices` | ✅ If React/Next.js UI |
+| 3 | `aesthetic-code-gen` | `frontend-design` | ✅ If user-facing — runs first in Phase 3 |
+| 3 | `react-performance` | `react-best-practices` | ✅ If React/Next.js UI — runs after frontend-design |
+| 3 | `react-patterns` | `uiux-react-patterns` | ✅ If user-facing — runs after frontend-design |
 | 3 | `ai-safety-eval` | `ai-safety-eval` | ✅ If AI/LLM component present |
 | 3 | `prompt-optimization` | `prompt-optimization` | ✅ If AI/LLM component present |
 | 4 | `webapp-testing` | `webapp-testing` | ✅ If user-facing |
@@ -128,23 +133,27 @@ Functional names used here — resolve to actual skills via `skills-inventory.md
 | 1 | `frontend-design-system` | `uiux-frontend-design-system` | ✅ Mandatory |
 | 1 | `content-ux-review` | `uiux-audit` | ✅ Mandatory |
 | 1 | `interaction-design-review` | `uiux-interaction-review` | ✅ Mandatory |
+| 3 | `tdd` | `superpowers-tdd` | ✅ Mandatory |
+| 3 | `execution-subagents` | `superpowers-execute` | ✅ Mandatory |
+| 3 | `aesthetic-code-gen` | `frontend-design` | ✅ Mandatory — runs first in Phase 3; consumes Phase 1 design brief |
+| 3 | `react-performance` | `react-best-practices` | ✅ Mandatory — runs after frontend-design |
+| 3 | `react-patterns` | `uiux-react-patterns` | ✅ Mandatory — runs after frontend-design |
 | 4 | `accessibility-review` | `uiux-accessibility-review` | ✅ Mandatory |
 | 4 | `responsive-design-review` | `uiux-responsive-review` | ✅ Mandatory |
 | 4 | `webapp-testing` | `webapp-testing` | ✅ Mandatory |
-| 5 | `design-qa` | `uiux-design-qa` | ✅ Mandatory |
+| 5 | `design-qa` | `uiux-design-qa` | ✅ Mandatory — validates against aesthetic direction statement from frontend-design |
 | 5 | `branch-finish` | `superpowers-finish` | ✅ Mandatory |
-
-**Optional (implementation phase):** `react-patterns` (uiux-react-patterns) for forms and a11y patterns; `react-performance` (react-best-practices) for performance optimization
 
 **Required Evidence:**
 - User goal statement
 - UX flow or screen structure
-- Visual direction (style + colors + fonts)
-- Component structure
+- Visual direction (style + colors + fonts from uiux-design-intelligence)
+- Aesthetic direction statement (from frontend-design — style name, palette, distinctive choice, anti-patterns rejected)
+- 4-state coverage: loading / empty / error / success
 - Accessibility audit findings
 - Responsive behavior verified at 375/768/1280/1440px
 - Browser state verification screenshots (webapp-testing)
-- Screenshot review (design-qa output)
+- Screenshot review (design-qa output — validates against aesthetic direction statement)
 
 ---
 

@@ -2,7 +2,7 @@
 
 > Build with discipline. Ship with evidence. Govern with intention.
 
-Dharma is a 36-skill, 8-route product development framework that runs inside Claude Code. It replaces ad-hoc AI-assisted development with a structured lifecycle: classify the work, select the right specialist skills, enforce phase gates, and require verifiable evidence before any completion claim.
+Dharma is a 37-skill, 8-route product development framework that runs inside Claude Code. It replaces ad-hoc AI-assisted development with a structured lifecycle: classify the work, select the right specialist skills, enforce phase gates, and require verifiable evidence before any completion claim.
 
 Every feature, bug fix, refactor, UI redesign, performance improvement, security change, or release runs through the same disciplined process — regardless of size or complexity.
 
@@ -63,7 +63,7 @@ Dharma has three structural components:
 │  ─────────────────────────────────────────────────────────────────  │
 │  Layer 5 — Testing  (1 skill)                                       │
 │  ─────────────────────────────────────────────────────────────────  │
-│  Layer 4 — Experience Quality  (10 skills)                          │
+│  Layer 4 — Experience Quality  (11 skills)                          │
 │  ─────────────────────────────────────────────────────────────────  │
 │  Layer 3 — Execution Methodology  (8 skills)                        │
 │  ─────────────────────────────────────────────────────────────────  │
@@ -167,23 +167,37 @@ The `superpowers-verify` skill enforces a hard rule: **never use "should work", 
 
 ---
 
-### Layer 4 — Experience Quality (10 skills)
+### Layer 4 — Experience Quality (11 skills)
 
-Ensures every user-facing output meets a professional standard of design, accessibility, and responsiveness.
+Ensures every user-facing output meets a professional standard of design, accessibility, and responsiveness. Eleven skills cover the **full design lifecycle**: decide the aesthetic → generate the code → apply patterns → audit and verify.
 
-| Skill | Purpose |
-|---|---|
-| `uiux-designer` | UX intent, user flows, state design (empty/loading/error/success) |
-| `uiux-design-intelligence` | Style guide, color palette, typography selection |
-| `uiux-frontend-design-system` | Design tokens, component inventory, layout system |
-| `uiux-accessibility-review` | WCAG compliance, keyboard navigation, screen reader, contrast |
-| `uiux-responsive-review` | Breakpoint behavior at 375 / 768 / 1280 / 1440px |
-| `uiux-interaction-review` | State transitions, hover/focus/active, feedback loops |
-| `uiux-audit` | Vercel guidelines compliance, copy quality, labels, errors |
-| `uiux-design-qa` | Final visual QA — design-to-implementation fidelity |
-| `uiux-react-patterns` | React/Next.js component patterns and rendering performance |
+| Skill | Phase | Purpose |
+|---|---|---|
+| `uiux-designer` | 1 | UX intent, user flows, 4-state design (loading/empty/error/success) |
+| `uiux-design-intelligence` | 1 | Style selection, color palette, typography — the aesthetic decision |
+| `uiux-frontend-design-system` | 1–2 | Design tokens (CSS variables), component inventory, consistency contract |
+| `uiux-interaction-review` | 1 | State transitions, hover/focus/active, feedback loops |
+| `uiux-audit` | 1 | Vercel guidelines compliance, copy quality, labels, errors |
+| `frontend-design` | **3** | **Aesthetic code generation** — translates Phase 1 brief + tokens into distinctive, non-generic UI code; anti-AI-slop intentionality; runs first in Phase 3 chain |
+| `uiux-react-patterns` | 3 | UX patterns, forms, accessibility (runs after frontend-design) |
+| `uiux-accessibility-review` | 4 | WCAG compliance, keyboard navigation, screen reader, contrast |
+| `uiux-responsive-review` | 4 | Breakpoint behavior at 375 / 768 / 1280 / 1440px |
+| `uiux-design-qa` | 5 | Final visual QA — validates code against aesthetic direction statement from frontend-design |
 
-**Why this layer exists:** Design quality is not a soft concern — it is a retention and trust signal. This layer prevents the common failure mode where technically correct code produces a product that users abandon because it feels broken, inconsistent, or inaccessible. The 10-skill layer covers the full design lifecycle from UX intent to final QA.
+**The Phase 3 UI code chain:**
+```
+frontend-design (generate)  →  react-best-practices  }  parallel
+                            →  uiux-react-patterns   }  after generate
+```
+
+**Phase 1 → 3 → 5 design pipeline:**
+```
+uiux-design-intelligence  decides  the aesthetic  (Phase 1)
+frontend-design           executes the aesthetic  (Phase 3)
+uiux-design-qa            validates the aesthetic (Phase 5)
+```
+
+**Why this layer exists:** Design quality is a retention and trust signal. This layer prevents two failure modes: (1) technically correct code with no visual character — the generic AI aesthetic users immediately recognize and distrust, (2) beautiful design decisions that never make it into the actual code because no skill bridges the gap between "chose the style" and "wrote the component." `frontend-design` is that bridge.
 
 ---
 
@@ -196,12 +210,22 @@ Browser-level functional UI verification — the gap between unit tests and visu
 |---|---|---|
 | `webapp-testing` | Phase 4 | Playwright (Python) browser automation — state verification, console error detection, before/after screenshots as functional evidence |
 
+**Multi-agent Phase 3 chain (Build)** — `superpowers-execute` sequences Phase 3 for UI features:
+```
+Step 3a  →  frontend-design          (aesthetic code generation — runs first)
+              ↓ code produced
+Step 3b  →  react-best-practices     }  parallel, after 3a completes
+         →  uiux-react-patterns      }
+         →  superpowers-tdd          }
+```
+`frontend-design` must complete before the others — they optimize code that needs to exist first.
+
 **Multi-agent verification pattern** — `superpowers-execute` runs these specialists in parallel at Phase 4:
 ```
-Agent 1 → superpowers-tdd      (unit + integration tests)
-Agent 2 → webapp-testing        (browser functional verification)
-Agent 3 → uiux-accessibility-review (a11y on live UI)
-Agent 4 → uiux-design-qa        (visual fidelity)
+Agent 1 → superpowers-tdd              (unit + integration tests)
+Agent 2 → webapp-testing               (browser functional verification)
+Agent 3 → uiux-accessibility-review    (a11y on live UI)
+Agent 4 → uiux-design-qa               (visual fidelity vs aesthetic direction statement)
 ```
 All four produce evidence. `superpowers-verify` synthesizes into a single completion claim.
 
@@ -345,17 +369,18 @@ Five valid completion states — and only five:
 | `superpowers-finish` | `superpowers-finish/SKILL.md` |
 
 ### Layer 4 — Experience Quality
-| Skill | File |
-|---|---|
-| `uiux-designer` | `uiux-designer/SKILL.md` |
-| `uiux-design-intelligence` | `uiux-design-intelligence/SKILL.md` |
-| `uiux-frontend-design-system` | `uiux-frontend-design-system/SKILL.md` |
-| `uiux-accessibility-review` | `uiux-accessibility-review/SKILL.md` |
-| `uiux-responsive-review` | `uiux-responsive-review/SKILL.md` |
-| `uiux-interaction-review` | `uiux-interaction-review/SKILL.md` |
-| `uiux-audit` | `uiux-audit/SKILL.md` |
-| `uiux-design-qa` | `uiux-design-qa/SKILL.md` |
-| `uiux-react-patterns` | `uiux-react-patterns/SKILL.md` |
+| Skill | Phase | File |
+|---|---|---|
+| `uiux-designer` | 1 | `uiux-designer/SKILL.md` |
+| `uiux-design-intelligence` | 1 | `uiux-design-intelligence/SKILL.md` |
+| `uiux-frontend-design-system` | 1–2 | `uiux-frontend-design-system/SKILL.md` |
+| `uiux-interaction-review` | 1 | `uiux-interaction-review/SKILL.md` |
+| `uiux-audit` | 1 | `uiux-audit/SKILL.md` |
+| `frontend-design` | **3** | `frontend-design/SKILL.md` |
+| `uiux-react-patterns` | 3 | `uiux-react-patterns/SKILL.md` |
+| `uiux-accessibility-review` | 4 | `uiux-accessibility-review/SKILL.md` |
+| `uiux-responsive-review` | 4 | `uiux-responsive-review/SKILL.md` |
+| `uiux-design-qa` | 5 | `uiux-design-qa/SKILL.md` |
 
 ### Layer 5 — Testing
 | Skill | File |

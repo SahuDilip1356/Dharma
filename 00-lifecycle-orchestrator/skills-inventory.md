@@ -57,6 +57,7 @@ Update this file when skills are added, renamed, or replaced — never update ro
 | `design-qa` | `uiux-design-qa` | ✅ Installed | Final visual QA |
 | `ui-audit` | `uiux-audit` | ✅ Installed | Vercel guidelines compliance |
 | `react-patterns` | `uiux-react-patterns` | ✅ Installed | React/Next.js best practices |
+| `aesthetic-code-gen` | `frontend-design` | ✅ Installed | Phase 3 — aesthetic UI code generation; runs first in Phase 3 chain, consumes Phase 1 design brief + tokens; anti-AI-slop intentionality |
 
 ---
 
@@ -112,11 +113,11 @@ These are not skills — they are conductor-level controls for the orchestrator 
 | Product & Planning | 5 | 0 |
 | Engineering Discipline | 4 | 0 |
 | Execution Methodology | 8 | 0 |
-| Experience Quality | 10 | 0 |
+| Experience Quality | 11 | 0 |
 | Testing | 1 | 0 |
 | AI & Economics | 6 | 0 |
 | Developer Experience | 2 | 0 |
-| **Total** | **36** | **0** |
+| **Total** | **37** | **0** |
 
 ---
 

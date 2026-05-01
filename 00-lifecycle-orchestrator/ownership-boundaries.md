@@ -89,8 +89,9 @@ Use the general skill only when no specific skill covers the need.
 | `uiux-responsive-review` | Mobile/tablet/desktop breakpoint behavior (375/768/1280/1440px) | Accessibility compliance, visual style, interaction design |
 | `uiux-interaction-review` | State transitions, hover/focus/active states, feedback loops, motion | Accessibility, responsive, visual direction |
 | `uiux-audit` | Vercel guidelines compliance, labels, errors, copy quality | Deep a11y audit, responsive QA, interaction design |
-| `uiux-design-qa` | Final visual QA, screenshot review, design-to-implementation fidelity | Code correctness, test coverage, product scope |
-| `uiux-react-patterns` | React/Next.js component patterns, performance patterns in UI | Product design, accessibility, responsive layout |
+| `uiux-design-qa` | Final visual QA, screenshot review, design-to-implementation fidelity against aesthetic direction statement | Code correctness, test coverage, product scope |
+| `uiux-react-patterns` | React/Next.js UX patterns — forms, accessibility patterns (aria, focus), component API design (variant system) | Performance optimization (that is `react-best-practices`); aesthetic code generation (that is `frontend-design`) |
+| `frontend-design` | Aesthetic code generation — translating design brief + design tokens into distinctive, non-generic UI code; 4-state visual design (loading/empty/error/success appearance); anti-AI-slop intentionality; outputting aesthetic direction statement for `uiux-design-qa` | Choosing the aesthetic direction — style, colors, fonts (that is `uiux-design-intelligence`); UX patterns, forms, a11y (that is `uiux-react-patterns`); performance optimization (that is `react-best-practices`); visual fidelity validation (that is `uiux-design-qa`) |
 
 ---
 
@@ -99,6 +100,21 @@ Use the general skill only when no specific skill covers the need.
 | Skill | Owns | Does NOT Own |
 |---|---|---|
 | `webapp-testing` | Browser-level functional verification — DOM inspection, functional state screenshots (loading/empty/error/success), console error detection, network request failure capture, form submission and interaction testing | Visual design fidelity screenshots (that is `uiux-design-qa`); unit and integration tests (that is `superpowers-tdd`); post-ship production monitoring (that is `ai-observability`) |
+
+**Phase 3 UI code chain — sequence matters:**
+```
+frontend-design  →  react-best-practices  }  in parallel
+                 →  uiux-react-patterns   }  after frontend-design
+                 →  superpowers-tdd       }
+```
+`frontend-design` runs first because the other Phase 3 skills need generated code to optimize and pattern-check. Never invoke `react-best-practices` or `uiux-react-patterns` before code exists.
+
+**Design layer disambiguation (Phase 1 → Phase 3 → Phase 5):**
+- `uiux-design-intelligence` → *decides* the aesthetic (Phase 1)
+- `frontend-design` → *executes* the aesthetic as code (Phase 3)
+- `uiux-design-qa` → *validates* the code matches the aesthetic (Phase 5)
+
+---
 
 **Screenshot disambiguation rule:** `webapp-testing` screenshots prove *functional states* — did the button trigger the right outcome, did the error state render, did the form submit successfully. `uiux-design-qa` screenshots prove *visual fidelity* — does the implementation match the design spec. Both can run in the same verification pass; they answer different questions and are not duplicates.
 
