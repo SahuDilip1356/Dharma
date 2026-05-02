@@ -106,10 +106,21 @@ These are not skills — they are conductor-level controls for the orchestrator 
 
 ---
 
+## Memory & Context Layer (Layer 0)
+
+Cross-cutting — runs before and after every Dharma skill invocation. Not routed to directly.
+
+| Functional Name | Actual Skill | Status | Notes |
+|----------------|-------------|--------|-------|
+| `memory-layer` | `memory-layer` | ✅ Installed | Pre/post-flight wrapper — loads global + project memory before skills; writes decisions/learnings after |
+
+---
+
 ## Skill Count Summary
 
 | Layer | Installed | Planned |
 |-------|-----------|---------|
+| Memory & Context (Layer 0) | 1 | 0 |
 | Product & Planning | 5 | 0 |
 | Engineering Discipline | 4 | 0 |
 | Execution Methodology | 8 | 0 |
@@ -117,7 +128,7 @@ These are not skills — they are conductor-level controls for the orchestrator 
 | Testing | 1 | 0 |
 | AI & Economics | 6 | 0 |
 | Developer Experience | 2 | 0 |
-| **Total** | **37** | **0** |
+| **Total** | **38** | **0** |
 
 ---
 

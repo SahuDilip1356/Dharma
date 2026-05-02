@@ -2,7 +2,7 @@
 
 > Build with discipline. Ship with evidence. Govern with intention.
 
-Dharma is a 37-skill, 8-route product development framework that runs inside Claude Code. It replaces ad-hoc AI-assisted development with a structured lifecycle: classify the work, select the right specialist skills, enforce phase gates, and require verifiable evidence before any completion claim.
+Dharma is a 38-skill, 8-route product development framework that runs inside Claude Code. It replaces ad-hoc AI-assisted development with a structured lifecycle: classify the work, select the right specialist skills, enforce phase gates, and require verifiable evidence before any completion claim.
 
 Every feature, bug fix, refactor, UI redesign, performance improvement, security change, or release runs through the same disciplined process — regardless of size or complexity.
 
@@ -55,7 +55,7 @@ Dharma has three structural components:
         └───────────┬───────────┘
                     │ invokes
 ┌───────────────────▼─────────────────────────────────────────────────┐
-│                        6 SKILL LAYERS                               │
+│                        7 SKILL LAYERS                               │
 │                                                                     │
 │  Layer 7 — Developer Experience  (2 skills)                         │
 │  ─────────────────────────────────────────────────────────────────  │
@@ -70,10 +70,14 @@ Dharma has three structural components:
 │  Layer 2 — Engineering Discipline  (4 skills)                       │
 │  ─────────────────────────────────────────────────────────────────  │
 │  Layer 1 — Product & Planning  (5 skills)                           │
+│  ─────────────────────────────────────────────────────────────────  │
+│  Layer 0 — Memory & Context  (1 skill)  ← cross-cutting wrapper     │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
 The orchestrator is the control tower. It does not fly every aircraft — it decides which runway, what sequence, when to hold, and when to clear for landing. The skill layers are the specialists it invokes.
+
+Layer 0 is the foundation — the Memory Layer wraps every skill invocation. Before any skill runs it loads global + project memory. After any skill completes it writes back decisions, learnings, and deployment state. The engine always starts from current context, never from zero.
 
 ---
 
@@ -113,7 +117,7 @@ The orchestrator maps every work request to one of 8 routes. Routes determine th
 
 ---
 
-## The 7 Skill Layers
+## The 8 Skill Layers
 
 ### Layer 1 — Product & Planning (5 skills)
 
@@ -248,7 +252,7 @@ Extends Dharma's reach — one skill resolves ecosystem gaps dynamically; one go
 - `uiux-react-patterns` owns: forms, accessibility patterns (aria, focus), component API design (variant system) — the *UX quality* of React code
 - `react-best-practices` owns: waterfalls, bundle size, re-renders, server performance, JS micro-optimizations — the *performance* of React code
 
-`find-skills` activates only when `skills-inventory.md` has no match — it's a safety valve, not a primary tool. It never runs if the existing 35 skills cover the need.
+`find-skills` activates only when `skills-inventory.md` has no match — it's a safety valve, not a primary tool. It never runs if the existing 38 skills cover the need.
 
 **Why this layer exists:** React performance is a dedicated discipline — 70 rules across 8 categories that live outside UX concerns. And no framework is complete; `find-skills` ensures Dharma can extend itself when the ecosystem has something better than general capability for a novel domain.
 
@@ -278,6 +282,42 @@ Phase 5: ai-observability sets up post-ship monitoring before go-live
 Ongoing: model-governance maintains the model registry + deprecation playbook
 Ongoing: benchmark-framework tracks quality regression on a schedule
 ```
+
+---
+
+### Layer 0 — Memory & Context (1 skill)
+
+The foundation that every other layer runs on top of. A cross-cutting wrapper — not invoked directly, but active on every skill call.
+
+| Skill | Trigger | Purpose |
+|---|---|---|
+| `memory-layer` | Automatic — pre/post every skill | Two-drawer context system: global memory (founder, patterns) + project memory (decisions, learnings, deployment) |
+
+**The two-drawer model:**
+
+```
+TOP DRAWER — GLOBAL (always loaded, every project)
+  Product Dev/memory/founder.md       — who Dilip is, how he builds
+  Product Dev/memory/patterns.md      — build patterns across all projects
+  Product Dev/memory/tools-and-skills.md — what's been built
+
+BOTTOM DRAWER — PROJECT (loaded per active project folder)
+  [project]/memory/decisions.md       — decisions made + rationale
+  [project]/memory/learnings.md       — failures + what worked
+  [project]/memory/deployment-pipeline.md — how this project ships
+```
+
+**Pre-flight:** loads global + relevant project memory slices before the skill runs.
+**Post-flight:** writes to project memory only if the skill produced a decision, failure pattern, or deployment change. Exploratory runs produce no write.
+**Staleness check:** if project memory is >7 days old, surfaces a warning once, then proceeds — never blocks.
+**New project:** creates `memory/` scaffold automatically on first invocation.
+
+**Why this layer exists:** Without it, every Dharma session starts from zero — no knowledge of what was decided, what failed, or how this specific project ships. Layer 0 makes the engine stateful. Skills run with full context of the project they are operating on, not just generic capability. This is what keeps the engine current as projects grow and change.
+
+**Relationship to memory-sync:**
+`memory-sync` is the manual override — a human-triggered force-sync for bulk session captures.
+`memory-layer` is the automatic background thread — skill-level, selective, and always on.
+They are complementary. Neither replaces the other.
 
 ---
 
@@ -402,6 +442,11 @@ Five valid completion states — and only five:
 |---|---|
 | `react-best-practices` | `react-best-practices/SKILL.md` |
 | `find-skills` | `find-skills/SKILL.md` |
+
+### Layer 0 — Memory & Context
+| Skill | File |
+|---|---|
+| `memory-layer` | `memory-layer/SKILL.md` |
 
 ### Orchestrator & Governance
 | File | Purpose |
