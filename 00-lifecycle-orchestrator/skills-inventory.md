@@ -116,11 +116,61 @@ Cross-cutting — runs before and after every Dharma skill invocation. Not route
 
 ---
 
+## External Runtime Plugins (Layer 0+, Optional Candidates)
+
+External plugins/runtimes that operate beneath skills. Distinct from Layer 0 (Memory) — these are **external**, **optional**, and **project-scoped by default**. Not invoked directly; they modify how tools behave when present.
+
+| Functional Name | Plugin / Source | Status | Notes |
+|----------------|----------------|--------|-------|
+| `context-compression` | `mksglu/context-mode` v1.0.107 (Elastic-2.0) | 🟡 Candidate (project-scoped, sandbox only) | MCP server installed at `~/sandboxes/context-mode-test/` without hooks. Tools available but NOT auto-redirected — `WebFetch` still bypasses Context Mode. Decision log: `decisions.md` [2026-05-04]. |
+
+### Promotion criteria (Candidate → Installed)
+Move from "Candidate" to "Installed" only when ALL true:
+- Run in 3+ real Dharma projects without breaking existing skills
+- Measurable context reduction in real workloads (not synthetic tests)
+- Hook deployment question resolved (project-scoped MCP install does NOT auto-redirect tools — would require global plugin install which has higher trust surface)
+
+### Demotion / removal triggers
+- Plugin upgrade introduces breaking changes to MCP protocol
+- Maintainer becomes unresponsive (>60 days no activity)
+- Security advisory published
+
+---
+
+## Phase 5 — Release Review Gates
+
+Slash commands invoked at release time. Not skills — gates that produce evidence.
+
+| Functional Name | Command | Status | When to invoke |
+|----------------|---------|--------|---------------|
+| `code-review-gate` (G6) | `/review` | ✅ Installed (`code-review` plugin, Anthropic official) | Every meaningful change before merge — bugs, edge cases, code quality |
+| `high-risk-review-gate` (G6.5) | `/ultrareview` | ✅ Installed (Claude Code built-in) | High-stakes changes only: auth, payments, data migration, security, AI safety, production infra. Cloud-based parallel multi-agent deep review. |
+
+### When G6.5 (`/ultrareview`) is mandatory
+| Trigger | Reason |
+|---------|--------|
+| Auth/RBAC changes | Privilege escalation risk |
+| Payment flow changes | Financial / regulatory risk |
+| Database migrations | Data loss / corruption risk |
+| Security-sensitive code | Vulnerability surface |
+| AI safety changes | Compliance / harm risk |
+| Production infrastructure | Outage risk |
+| Compliance-critical paths (DPDPA, GDPR, etc.) | Legal exposure |
+
+### Routing rule
+- All PRs run G6 (`/review`) by default
+- If `Risk level: high | critical` from Step 0 classification → ALSO run G6.5 (`/ultrareview`)
+- G6 failures block merge until resolved
+- G6.5 critical findings halt the release entirely; resolve and rerun
+
+---
+
 ## Skill Count Summary
 
-| Layer | Installed | Planned |
-|-------|-----------|---------|
+| Layer | Installed | Planned / Candidate |
+|-------|-----------|---------------------|
 | Memory & Context (Layer 0) | 1 | 0 |
+| External Runtime Plugins (Layer 0+) | 0 | 1 candidate (context-mode) |
 | Product & Planning | 5 | 0 |
 | Engineering Discipline | 4 | 0 |
 | Execution Methodology | 8 | 0 |
@@ -128,7 +178,8 @@ Cross-cutting — runs before and after every Dharma skill invocation. Not route
 | Testing | 1 | 0 |
 | AI & Economics | 6 | 0 |
 | Developer Experience | 2 | 0 |
-| **Total** | **38** | **0** |
+| Phase 5 Release Gates | 2 | 0 |
+| **Total** | **40** | **1 candidate** |
 
 ---
 

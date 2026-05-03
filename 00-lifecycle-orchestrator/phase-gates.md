@@ -201,3 +201,72 @@ Verified: [evidence reference]
 Remaining risks: [list or "none"]
 Next: [merge | PR | monitor | follow-up task]
 ```
+
+---
+
+## Phase 5.5: Release Review Gates
+
+**Purpose:** External code review before merge — bugs caught here are 10× cheaper than bugs caught after release.
+**Applies to:** All changes that produce a PR or merge candidate.
+
+### Gate G6: Standard Code Review (`/review`)
+**Mandatory for:** Every meaningful change before merge.
+**Skip only when:** Pure documentation edit, single-typo fix, or `risk: low` + `reversibility: easy` + `surface area: internal` (all three).
+
+**Entry Criteria**
+- Phase 5 Finish Gate evidence exists
+- A PR or merge candidate exists
+
+**Action**
+- Run `/review` against the current branch or PR
+- Wait for results — do not merge in parallel
+
+**Exit Evidence**
+```
+Command: /review
+Findings: [count of issues by severity]
+Resolved: [list of fixes applied]
+Re-run: ✅ (after fixes) or N/A (no findings)
+```
+
+**Block Condition**
+- Any finding flagged `bug` or `critical` — must be resolved and re-run
+- Cannot merge until G6 returns clean
+
+---
+
+### Gate G6.5: High-Risk Deep Review (`/ultrareview`)
+**Mandatory for:** Any change matching the High-Risk Trigger list below.
+**Optional for:** Lower-risk changes where the team wants extra confidence.
+
+**High-Risk Trigger List** (any one triggers G6.5)
+- Auth, RBAC, session, or identity changes
+- Payment flow or financial transaction changes
+- Database migrations (schema, data transforms, drops)
+- Security-sensitive code (input validation, crypto, secrets handling)
+- AI safety changes (model swap, prompt change to user-facing AI feature)
+- Production infrastructure (deploy config, networking, IAM)
+- Compliance-critical paths (DPDPA, GDPR, HIPAA, PCI, SOC2)
+
+**Entry Criteria**
+- G6 (`/review`) has passed
+- Risk level from Step 0 classification = `high` or `critical`
+
+**Action**
+- Run `/ultrareview` (cloud-based parallel multi-agent deep review)
+- Allow time — this is comprehensive, not fast
+
+**Exit Evidence**
+```
+Command: /ultrareview
+Critical findings: [count or "none"]
+High findings:     [count or "none"]
+Medium findings:   [count or "none"]
+Resolved: [list of fixes applied]
+Re-run: ✅ (after fixes) or N/A (no findings)
+```
+
+**Block Condition**
+- ANY critical finding — halt the release; resolve and re-run G6 + G6.5
+- High findings — must be either resolved or explicitly accepted with documented rationale in the decision log
+- Medium findings — log them for follow-up; do not block release
