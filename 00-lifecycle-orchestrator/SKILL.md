@@ -20,17 +20,23 @@ description: |
   Supporting files (read after classification):
   - routing-decision-tree.md  → 7-step classification before any route selection
   - routing-matrix.md         → work type → required skills + evidence
-  - ownership-boundaries.md   → scope limits per skill — prevents overlap
+  - ownership-boundaries.md   → scope limits per skill — prevents overlap (WHAT)
+  - tool-access-matrix.md     → permitted tools per skill — prevents tool-scope drift (HOW)
   - phase-gates.md            → entry criteria + exit evidence per phase (incl. Phase 5.5 G6/G6.5 release gates)
   - evidence-contract.md      → what counts as proof of completion
   - evidence-ledger-template.md → structured task receipt + gate tracking
-  - escalation-rules.md       → when to stop and escalate
+  - escalation-rules.md       → when to stop and escalate (WHEN)
   - skills-inventory.md       → functional name → actual skill file mapping
                                 + Layer 0+ External Runtime Plugins (context-mode candidate)
                                 + Phase 5 Release Review Gates (/review, /ultrareview)
   - agent-architecture.md     → maps Dharma to Act+Reason+Memory + Deployment + Multi-Agent
                                 framework; surfaces gap register; cross-references skills
   - examples/                 → golden reference scenarios per route
+
+  Governance triangle:
+  - ownership-boundaries.md (WHAT — what work each skill does)
+  - escalation-rules.md     (WHEN — when to stop and ask)
+  - tool-access-matrix.md   (HOW — which tools each skill may use)
 
 license: MIT
 metadata:

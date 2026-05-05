@@ -43,8 +43,8 @@ This document maps each component to where it lives in Dharma, surfaces gaps exp
 | Step | Dharma implementation | Status |
 |---|---|---|
 | **1. Define Specific Goal/KPI** | Phase 0 Intent Gate (`phase-gates.md`) — measurable success criteria mandatory before any phase advances | ✅ Strong |
-| **2. Assign API & Tool Access** | Currently implicit in skill instructions; no central matrix declaring which tools each skill may use | ❌ Gap #2 |
-| **3. Wire Governance & Constraints** | `phase-gates.md` (entry/exit per phase) + `evidence-contract.md` + `ownership-boundaries.md` + `escalation-rules.md` + Phase 5.5 release gates (`/review`, `/ultrareview`) | ✅ Strong |
+| **2. Assign API & Tool Access** | `tool-access-matrix.md` — declares per-layer defaults + per-skill overrides + high-risk tool restrictions. Soft governance, surfaced in Route Receipts and during `/review`. | ✅ Now strong (Gap #2 closed) |
+| **3. Wire Governance & Constraints** | `phase-gates.md` (entry/exit per phase) + `evidence-contract.md` + `ownership-boundaries.md` + `escalation-rules.md` + `tool-access-matrix.md` + Phase 5.5 release gates (`/review`, `/ultrareview`) | ✅ Strong |
 | **4. Human SME in the Loop** | `escalation-rules.md` covers high-risk stops; `/review` and `/ultrareview` are code review (not domain-SME review for legal, compliance, brand) | ⚠️ Partial — see Gap #3 |
 
 ---
@@ -66,8 +66,8 @@ Status as of 2026-05-04. Re-evaluate quarterly.
 
 | # | Gap | Severity | Status | Effort to close |
 |---|---|---|---|---|
-| 1 | Episodic Memory — past prompts/drafts/outputs preserved per project | 🔴 High | ✅ **Closed** (this commit — `episodic-memory` skill + `memory/episodic/` directory + `dharma-resume`) | — |
-| 2 | Tool Access Governance — explicit "this skill can use these tools" declarations | 🟡 Medium | ⏳ Open | Small (~1 hour) — central matrix in orchestrator OR per-skill `tool-access.md` |
+| 1 | Episodic Memory — past prompts/drafts/outputs preserved per project | 🔴 High | ✅ **Closed** (commit 68e4f1f — `episodic-memory` skill + `memory/episodic/` directory + `dharma-resume`) | — |
+| 2 | Tool Access Governance — explicit "this skill can use these tools" declarations | 🟡 Medium | ✅ **Closed** (this commit — `tool-access-matrix.md` with per-layer defaults + per-skill overrides + high-risk tool restrictions) | — |
 | 3 | Human SME in the Loop — formal domain-expert review pattern (legal, compliance, brand) | 🟡 Medium | ⏳ Open | Small (~1 hour) — new gate G7 or escalation type |
 | 4 | CEO / Lead Agent Final Evaluation — formal final-evaluation role | 🟢 Low | ⏳ Open | Small — orchestrator final-summary enhancement |
 | 5 | Consistent Target KPIs — explicit numerical targets per skill where applicable | 🟢 Low | ⏳ Open | Medium — frontmatter audit + standardization across 40 skills |
