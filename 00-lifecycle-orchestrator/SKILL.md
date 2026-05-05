@@ -28,6 +28,8 @@ description: |
   - skills-inventory.md       → functional name → actual skill file mapping
                                 + Layer 0+ External Runtime Plugins (context-mode candidate)
                                 + Phase 5 Release Review Gates (/review, /ultrareview)
+  - agent-architecture.md     → maps Dharma to Act+Reason+Memory + Deployment + Multi-Agent
+                                framework; surfaces gap register; cross-references skills
   - examples/                 → golden reference scenarios per route
 
 license: MIT

@@ -112,7 +112,16 @@ Cross-cutting — runs before and after every Dharma skill invocation. Not route
 
 | Functional Name | Actual Skill | Status | Notes |
 |----------------|-------------|--------|-------|
-| `memory-layer` | `memory-layer` | ✅ Installed | Pre/post-flight wrapper — loads global + project memory before skills; writes decisions/learnings after |
+| `memory-layer` | `memory-layer` | ✅ Installed | Pre/post-flight wrapper — loads global + project memory before skills; writes decisions/learnings after. Owns semantic memory (global + project). |
+| `episodic-memory` | `episodic-memory` | ✅ Installed | Captures session digests into `[project]/memory/episodic/`. Owns episodic memory — past prompts, drafts, outputs, open threads. Runs post-flight before memory-layer. |
+| `dharma-resume` | `dharma-resume` | ✅ Installed | Session continuity — reads STATE.md + recent episodic digests; outputs Resume Brief; routes back into orchestrator at the right phase. Triggers on "resume", "continue", "where were we". |
+
+**Three memory types covered:**
+- Semantic (long-term): `memory-layer` (global + project-level facts)
+- Episodic (interaction history): `episodic-memory` (session digests)
+- Working (immediate): `dharma-resume` + `STATE.md` + Phase 0 evidence
+
+See `00-lifecycle-orchestrator/agent-architecture.md` for the full mapping to canonical agent architecture.
 
 ---
 
@@ -169,7 +178,7 @@ Slash commands invoked at release time. Not skills — gates that produce eviden
 
 | Layer | Installed | Planned / Candidate |
 |-------|-----------|---------------------|
-| Memory & Context (Layer 0) | 1 | 0 |
+| Memory & Context (Layer 0) | 3 | 0 |
 | External Runtime Plugins (Layer 0+) | 0 | 1 candidate (context-mode) |
 | Product & Planning | 5 | 0 |
 | Engineering Discipline | 4 | 0 |
@@ -179,7 +188,7 @@ Slash commands invoked at release time. Not skills — gates that produce eviden
 | AI & Economics | 6 | 0 |
 | Developer Experience | 2 | 0 |
 | Phase 5 Release Gates | 2 | 0 |
-| **Total** | **40** | **1 candidate** |
+| **Total** | **42** | **1 candidate** |
 
 ---
 

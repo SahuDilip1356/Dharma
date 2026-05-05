@@ -197,22 +197,60 @@ Done
     learnings.md             ← failure patterns and what worked
     deployment-pipeline.md   ← how this project ships (CI/CD, env, gotchas)
     product-context.md       ← product vision, personas, features (optional)
+    PROJECT.md               ← Layer 1 definition doc (problem, audience, Core 3, scope, metrics)
+    STATE.md                 ← live working memory (current phase, blockers, next step)
+    ROADMAP.md               ← phases, milestones, target dates
+    PLAN.md                  ← active plan (TDD-first tasks)
+    episodic/                ← episodic memory (managed by `episodic-memory` skill)
+      YYYY-MM-DD-slug.md     ← session digests
 ```
 
 Start with `MEMORY.md`, `decisions.md`, and `learnings.md`.
 Add `deployment-pipeline.md` when the project first ships.
 Add `product-context.md` when the product definition is stable.
+Add `PROJECT.md` after Layer 1 definition (via `saral-build` or `churney-os`).
+`STATE.md`, `ROADMAP.md`, `PLAN.md`, and `episodic/` are managed by the
+`episodic-memory` and `dharma-resume` skills — created on demand.
+
+### Memory model — three types of memory in Dharma
+
+| Type | Where it lives | Purpose | Owner skill |
+|---|---|---|---|
+| **Semantic (global)** | `Product Dev/memory/{founder, patterns, tools-and-skills}.md` | Founder identity, build philosophy, cross-project patterns | `memory-layer` |
+| **Semantic (project)** | `[project]/memory/{PROJECT, product-context, decisions, learnings}.md` | Project-level facts, decisions, lessons | `memory-layer` |
+| **Episodic** | `[project]/memory/episodic/*.md` | Past session digests — prompts, drafts, outputs, open threads | `episodic-memory` |
+| **Working** | `[project]/memory/STATE.md` + Phase 0 evidence + evidence-ledger | Current task brief, live state, immediate next step | `dharma-resume`, all skills |
+
+This three-type model closes the "interaction history" gap that pure decision logs miss.
+See `00-lifecycle-orchestrator/agent-architecture.md` for the full mapping.
 
 ---
 
-## Relationship to memory-sync Skill
+## Relationship to memory-sync, episodic-memory, dharma-resume
 
-| | `memory-sync` | `memory-layer` |
-|---|---|---|
-| **Trigger** | Human — `/memory-sync <summary>` | Automatic — wraps every skill |
-| **Scope** | Full session capture | Skill-level, selective |
-| **When to use** | After a long session, major sprint, or debugging run | Always (background) |
-| **Writes** | Everything accumulated in session | Only what the current skill produced |
+Memory in Dharma is now a coordinated set of skills, not a single skill:
 
-They are complementary. `memory-layer` keeps memory current automatically.
-`memory-sync` is the manual override for bulk captures and session closures.
+| Skill | Trigger | Scope | Writes |
+|---|---|---|---|
+| `memory-layer` | Automatic — wraps every skill | Skill-level, selective | `decisions.md`, `learnings.md`, `deployment-pipeline.md` |
+| `memory-sync` | Human — `/memory-sync <summary>` | Full session capture | Everything accumulated in session, batch update |
+| `episodic-memory` | Automatic post-session + manual | Session digest | `[project]/memory/episodic/YYYY-MM-DD-slug.md` |
+| `dharma-resume` | "resume", "continue", "where were we", auto-trigger when STATE.md exists | Session continuity | `STATE.md` after work resumes |
+
+### Post-session order of operations
+
+```
+Session ends with substantive output
+  ↓
+1. episodic-memory writes session digest (the arc)
+  ↓
+2. memory-layer writes durable decisions/learnings (extracted from arc)
+  ↓
+3. STATE.md updated with current state (if work incomplete)
+  ↓
+Done
+```
+
+**The episodic skill captures the path; memory-layer distills durable conclusions from it.**
+`memory-sync` is the manual override for bulk captures.
+`dharma-resume` is the read-side: surfaces what previous sessions wrote.
