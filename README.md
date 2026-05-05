@@ -55,7 +55,7 @@ Dharma has three structural components:
         └───────────┬───────────┘
                     │ invokes
 ┌───────────────────▼─────────────────────────────────────────────────┐
-│                        7 SKILL LAYERS                               │
+│                        8 SKILL LAYERS                               │
 │                                                                     │
 │  Layer 7 — Developer Experience  (2 skills)                         │
 │  ─────────────────────────────────────────────────────────────────  │
@@ -71,17 +71,30 @@ Dharma has three structural components:
 │  ─────────────────────────────────────────────────────────────────  │
 │  Layer 1 — Product & Planning  (5 skills)                           │
 │  ─────────────────────────────────────────────────────────────────  │
-│  Layer 0 — Memory & Context  (1 skill)  ← cross-cutting wrapper     │
+│  Layer 0 — Memory & Context  (3 skills)  ← cross-cutting wrapper    │
+│    memory-layer · episodic-memory · dharma-resume                   │
+│  ─────────────────────────────────────────────────────────────────  │
+│  Layer 0+ — External Runtime Plugins  (1 candidate)  ← optional     │
+│    context-mode (project-scoped, sandbox-only)                      │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
 The orchestrator is the control tower. It does not fly every aircraft — it decides which runway, what sequence, when to hold, and when to clear for landing. The skill layers are the specialists it invokes.
 
-Layer 0 is the foundation — the Memory Layer wraps every skill invocation. Before any skill runs it loads global + project memory. After any skill completes it writes back decisions, learnings, and deployment state. The engine always starts from current context, never from zero.
+Layer 0 is the foundation — three skills wrap every skill invocation:
+- `memory-layer` loads global + project memory and writes durable decisions/learnings
+- `episodic-memory` captures session digests so past prompts/drafts/outputs survive across sessions
+- `dharma-resume` reads `STATE.md` + recent episodic digests to pick up exactly where you left off
+
+Together these provide all three canonical agent memory types: **semantic** (long-term knowledge), **episodic** (interaction history), and **working** (current task brief). The engine always starts from current context, never from zero.
+
+Layer 0+ is **optional, project-scoped**: external plugins like `context-mode` that operate beneath skills. Distinct from the internal Layer 0 — these are external candidates, opt-in per project, and not required for Dharma to work.
+
+See `00-lifecycle-orchestrator/agent-architecture.md` for the full mapping to canonical agent architecture (Act + Reason + Memory + Deployment + Multi-Agent) and the Gap Register.
 
 ---
 
-## The Lifecycle: 6 Phases
+## The Lifecycle: 6 Phases + Release Gates
 
 Every task moves through 6 phases. Phase gates are mandatory — a phase cannot start until the previous phase's exit evidence exists.
 
@@ -92,9 +105,16 @@ Phase 2 — Plan          Implementation plan, file manifest, bite-sized tasks
 Phase 3 — Build         TDD (RED → GREEN → REFACTOR), surgical changes, AI safety gate
 Phase 4 — Verify        Evidence-first: run it, read the output, cite the proof
 Phase 5 — Finish        Commit, PR, merge, observability setup (AI features)
+Phase 5.5 — Release     G6: /review (every change) + G6.5: /ultrareview (high-risk only)
 ```
 
 The UX Gate at Phase 1 is **non-negotiable** for all user-facing work. No user-facing feature advances past Phase 1 without defined states, accessibility consideration, and responsive behavior planned.
+
+**Phase 5.5 release gates** wrap external code review around every PR before merge:
+- **G6 (`/review`)** — Standard code review for every meaningful change. Skip only for doc edits or trivial low-risk changes.
+- **G6.5 (`/ultrareview`)** — Cloud-based parallel multi-agent deep review. Mandatory for high-risk changes: auth, payments, data migrations, security, AI safety, production infrastructure, compliance-critical paths.
+
+Critical findings at G6.5 halt the release. See `00-lifecycle-orchestrator/phase-gates.md` for full gate specs.
 
 ---
 
@@ -285,15 +305,17 @@ Ongoing: benchmark-framework tracks quality regression on a schedule
 
 ---
 
-### Layer 0 — Memory & Context (1 skill)
+### Layer 0 — Memory & Context (3 skills)
 
-The foundation that every other layer runs on top of. A cross-cutting wrapper — not invoked directly, but active on every skill call.
+The foundation that every other layer runs on top of. A cross-cutting wrapper — not invoked directly, but active on every skill call. Together these three skills provide all three canonical agent memory types.
 
-| Skill | Trigger | Purpose |
-|---|---|---|
-| `memory-layer` | Automatic — pre/post every skill | Two-drawer context system: global memory (founder, patterns) + project memory (decisions, learnings, deployment) |
+| Skill | Trigger | Purpose | Memory type owned |
+|---|---|---|---|
+| `memory-layer` | Automatic — pre/post every skill | Two-drawer context: global (founder, patterns) + project (decisions, learnings, deployment) | Semantic |
+| `episodic-memory` | Automatic post-session + manual | Session digests stored at `[project]/memory/episodic/` — preserves past prompts, drafts, outputs, open threads | Episodic |
+| `dharma-resume` | "resume", "continue", "where were we", auto when STATE.md exists | Reads STATE.md + recent episodic digests; outputs Resume Brief; routes back to right phase | Working |
 
-**The two-drawer model:**
+**The three-drawer model:**
 
 ```
 TOP DRAWER — GLOBAL (always loaded, every project)
@@ -301,23 +323,41 @@ TOP DRAWER — GLOBAL (always loaded, every project)
   Product Dev/memory/patterns.md      — build patterns across all projects
   Product Dev/memory/tools-and-skills.md — what's been built
 
-BOTTOM DRAWER — PROJECT (loaded per active project folder)
+MIDDLE DRAWER — PROJECT (loaded per active project folder)
+  [project]/memory/PROJECT.md         — Layer 1 definition doc anchor
   [project]/memory/decisions.md       — decisions made + rationale
   [project]/memory/learnings.md       — failures + what worked
   [project]/memory/deployment-pipeline.md — how this project ships
+  [project]/memory/STATE.md           — live working memory: current phase, blockers, next step
+  [project]/memory/ROADMAP.md         — phases, milestones, target dates
+  [project]/memory/PLAN.md            — active plan (TDD-first tasks)
+
+BOTTOM DRAWER — EPISODIC (interaction history)
+  [project]/memory/episodic/YYYY-MM-DD-slug.md — session digests
 ```
 
-**Pre-flight:** loads global + relevant project memory slices before the skill runs.
-**Post-flight:** writes to project memory only if the skill produced a decision, failure pattern, or deployment change. Exploratory runs produce no write.
+**Three memory types, fully covered:**
+- **Semantic (long-term):** Global + project-level facts via `memory-layer`
+- **Episodic (interaction history):** Session digests via `episodic-memory` — what was discussed, what drafts existed, what prompt produced what output
+- **Working (immediate):** STATE.md + Phase 0 evidence via `dharma-resume`
+
+**Pre-flight:** `memory-layer` loads global + relevant project memory slices before any skill runs.
+**Post-flight order:** `episodic-memory` first (captures the session arc), then `memory-layer` (extracts durable decisions/learnings from that arc). STATE.md updated last if work is incomplete.
 **Staleness check:** if project memory is >7 days old, surfaces a warning once, then proceeds — never blocks.
 **New project:** creates `memory/` scaffold automatically on first invocation.
 
-**Why this layer exists:** Without it, every Dharma session starts from zero — no knowledge of what was decided, what failed, or how this specific project ships. Layer 0 makes the engine stateful. Skills run with full context of the project they are operating on, not just generic capability. This is what keeps the engine current as projects grow and change.
+**Why this layer exists:** Without it, every Dharma session starts from zero — no knowledge of what was decided, what failed, what was being worked on, or how this specific project ships. Layer 0 makes the engine stateful and resumable. The three-skill set closes the same gap that GSD's `.planning/` directory addresses, but inside Dharma's existing memory pattern.
 
-**Relationship to memory-sync:**
-`memory-sync` is the manual override — a human-triggered force-sync for bulk session captures.
-`memory-layer` is the automatic background thread — skill-level, selective, and always on.
-They are complementary. Neither replaces the other.
+**Relationship to memory-sync, dharma-resume, episodic-memory:**
+
+| Skill | Trigger | Scope |
+|---|---|---|
+| `memory-sync` | Manual — `/memory-sync <summary>` | Full session bulk capture |
+| `memory-layer` | Automatic — wraps every skill | Skill-level, selective decisions/learnings |
+| `episodic-memory` | Automatic post-session + manual | Session digest |
+| `dharma-resume` | Trigger phrases or auto when STATE.md exists | Read-side: surface state, route to phase |
+
+They are complementary. Together they provide complete memory coverage.
 
 ---
 
@@ -447,6 +487,8 @@ Five valid completion states — and only five:
 | Skill | File |
 |---|---|
 | `memory-layer` | `memory-layer/SKILL.md` |
+| `episodic-memory` | `episodic-memory/SKILL.md` |
+| `dharma-resume` | `dharma-resume/SKILL.md` |
 
 ### Orchestrator & Governance
 | File | Purpose |
@@ -455,10 +497,11 @@ Five valid completion states — and only five:
 | `00-lifecycle-orchestrator/routing-decision-tree.md` | 7-step classification |
 | `00-lifecycle-orchestrator/routing-matrix.md` | Route → skills → evidence map |
 | `00-lifecycle-orchestrator/ownership-boundaries.md` | Skill scope limits |
-| `00-lifecycle-orchestrator/phase-gates.md` | Phase entry/exit criteria |
+| `00-lifecycle-orchestrator/phase-gates.md` | Phase entry/exit criteria (incl. Phase 5.5 release gates) |
 | `00-lifecycle-orchestrator/evidence-contract.md` | What counts as valid evidence |
 | `00-lifecycle-orchestrator/evidence-ledger-template.md` | Task receipt template |
 | `00-lifecycle-orchestrator/escalation-rules.md` | When to stop and escalate |
+| `00-lifecycle-orchestrator/agent-architecture.md` | Maps Dharma to canonical agent architecture (Act+Reason+Memory + Deployment + Multi-Agent) with Gap Register |
 | `00-lifecycle-orchestrator/examples/` | 8 golden reference scenarios |
 
 ---

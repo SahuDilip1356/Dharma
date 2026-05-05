@@ -328,10 +328,10 @@ Following this 7-phase build sequence, you arrive at:
 
 | Component | Count | Purpose |
 |---|---|---|
-| Skill layers | 5 | Product planning, engineering discipline, execution methodology, experience quality, AI & economics |
-| Skills | 33 | Specialist capabilities invoked at specific phases |
+| Skill layers | 8 | Memory & Context (Layer 0), Product Planning (1), Engineering Discipline (2), Execution Methodology (3), Experience Quality (4), Testing (5), AI & Economics (6), Developer Experience (7) |
+| Skills | 42 | Specialist capabilities invoked at specific phases |
 | Routes | 8 | Deterministic work-type-to-skill-sequence mappings |
-| Governance files | 7 | Routing decision tree, ownership boundaries, phase gates, evidence contract, evidence ledger, escalation rules, golden examples |
+| Governance files | 8 | Routing decision tree, ownership boundaries, phase gates (incl. Phase 5.5 release gates), evidence contract, evidence ledger, escalation rules, agent architecture mapping, golden examples |
 | Golden examples | 8 | Reference scenarios covering the full risk spectrum |
 
 The framework is complete when:
@@ -340,6 +340,48 @@ The framework is complete when:
 - Every skill has defined ownership and explicit non-ownership
 - Every task produces a Route Receipt before work begins
 - Every completion claim is backed by cited evidence
+- All three canonical memory types are covered: semantic, episodic, working
+
+---
+
+## Phase 8: Memory & Context Layer (Layer 0)
+
+This phase was added after the initial 7-phase build. It closes the "interaction history" gap that pure decision logs miss.
+
+### Why Layer 0 came last
+A framework that doesn't remember its own history forces every session to start from zero. Without episodic memory, decision logs alone aren't enough — you can read what was decided, but not the path that led there, what drafts existed, or what prompt produced what output. The result: every new session re-explains context that was just covered.
+
+### The three skills in Layer 0
+
+| Skill | Memory type | Purpose |
+|---|---|---|
+| `memory-layer` | Semantic | Two-drawer global+project memory; pre/post-flight wrapper |
+| `episodic-memory` | Episodic | Captures session digests at `[project]/memory/episodic/` |
+| `dharma-resume` | Working | Reads STATE.md + recent digests; outputs Resume Brief; routes to right phase |
+
+### How they coordinate
+
+```
+Session ends with substantive output
+   → episodic-memory writes session digest (the arc)
+   → memory-layer extracts durable decisions/learnings (from arc)
+   → STATE.md updated with current state (if work incomplete)
+
+Next session begins
+   → dharma-resume reads STATE.md + last 3 episodic digests
+   → outputs Resume Brief (last outcome, open threads, blockers, next step)
+   → user confirms direction → orchestrator picks up at right phase
+```
+
+### When to add Layer 0
+Add it when you find yourself re-explaining context every session — the same project, the same problems, but session N has no idea what session N-1 was working on. That's the moment a memory layer pays for itself many times over.
+
+### What NOT to build at Layer 0
+- A separate state directory (e.g., `.dharma/`, `.planning/`) — extend the existing `memory/` directory instead. One memory location per project, not two.
+- Full conversation transcripts — episodic memory is a digest, not a log. Aim for 1 page per session.
+- Auto-deletion or archive policies — pruning is manual and quarterly. Historical context can be valuable for retrospectives.
+
+See `00-lifecycle-orchestrator/agent-architecture.md` for the full mapping to canonical agent architecture and the open Gap Register.
 
 ---
 
