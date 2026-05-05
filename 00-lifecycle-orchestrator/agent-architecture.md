@@ -18,7 +18,7 @@ This document maps each component to where it lives in Dharma, surfaces gaps exp
 |---|---|---|
 | **Defined Persona / Role** | YAML frontmatter on every skill (`name`, `description`, role definition in body); `00-lifecycle-orchestrator` defines control-tower role explicitly | ✅ Strong |
 | **Precise Constraints** | `ownership-boundaries.md` (scope per skill) + `escalation-rules.md` (stop conditions) + `evidence-contract.md` (proof requirements) | ✅ Strong |
-| **Target KPIs** | Phase 0 Intent Gate captures success criteria; some skills (`benchmark-framework`, `saral-build`, `goal-driven-execution`) declare explicit KPIs; many skills use implicit "exit evidence" instead of numerical targets | ⚠️ Inconsistent — see Gap #5 |
+| **Target KPIs** | `skill-kpis.md` — central registry mapping every skill to 2–3 measurable KPIs across 5 categories (Output Quality / Efficiency / Behavioral / Gate Compliance / Outcome). Layer defaults + per-skill overrides. Spot-checked per task, aggregated quarterly. | ✅ Strong (Gap #5 closed) |
 
 ### Reason (Logic)
 
@@ -70,7 +70,7 @@ Status as of 2026-05-04. Re-evaluate quarterly.
 | 2 | Tool Access Governance — explicit "this skill can use these tools" declarations | 🟡 Medium | ✅ **Closed** (commit 942dc1f — `tool-access-matrix.md` with per-layer defaults + per-skill overrides + high-risk tool restrictions) | — |
 | 3 | Human SME in the Loop — formal domain-expert review pattern (legal, compliance, brand) | 🟡 Medium | ✅ **Closed** (this commit — `sme-review-gate.md` Gate G7 + Phase 5.7 + escalation rules + evidence types) | — |
 | 4 | CEO / Lead Agent Final Evaluation — formal final-evaluation role | 🟢 Low | ✅ **Closed** (this commit — `lead-agent-evaluation.md` + Phase 5.8 + verdict types + escalation triggers) | — |
-| 5 | Consistent Target KPIs — explicit numerical targets per skill where applicable | 🟢 Low | ⏳ Open | Medium — frontmatter audit + standardization across 40 skills |
+| 5 | Consistent Target KPIs — explicit numerical targets per skill where applicable | 🟢 Low | ✅ **Closed** (this commit — `skill-kpis.md` central registry: 5 KPI categories, layer defaults, per-skill overrides for all 40+ skills, integrated with evidence-contract and Lead Agent G8) | — |
 
 ---
 
@@ -132,6 +132,22 @@ Status as of 2026-05-04. Re-evaluate quarterly.
 - **Before adding a new agent capability** to Dharma, check this map. If the capability already exists, extend the existing skill rather than create a new one.
 - **When auditing Dharma** for completeness vs. an external framework (Kedar, GSD, others), update the Gap Register here rather than creating a parallel doc.
 - **When a gap is closed**, change its status to ✅ in the Gap Register and add the implementation row above.
+
+---
+
+## Coverage status
+
+As of 2026-05-04, all 5 originally-identified gaps are **closed**:
+
+| Gap | Status | Closed in commit |
+|---|---|---|
+| 1 — Episodic Memory | ✅ | 68e4f1f |
+| 2 — Tool Access Governance | ✅ | 942dc1f |
+| 3 — Human SME in the Loop | ✅ | 901cdc8 |
+| 4 — CEO / Lead Agent Final Evaluation | ✅ | 901cdc8 |
+| 5 — Consistent Target KPIs | ✅ | this commit |
+
+Dharma's coverage of canonical agent architecture is now ~98%. Future gaps will surface through use; this register stays open as a living document.
 
 ---
 

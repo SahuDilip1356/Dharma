@@ -85,6 +85,14 @@ The orchestrator enforces this contract before any completion claim is accepted.
 | Conditions resolution | If CONDITIONAL: list each condition + how it was resolved + sign-off |
 | Human escalation | If escalated: human name + decision + date |
 
+### KPI Evidence (per skill, see `skill-kpis.md`)
+| Evidence | How to Provide |
+|----------|---------------|
+| Skill KPI measurement | Per-task: cite the relevant KPI(s) from `skill-kpis.md` for each skill in the chain + measured value |
+| KPI met / missed | Compare measured value to target; state met / missed with explanation |
+| KPI trend (quarterly) | Aggregate KPIs across recent tasks; flag skills consistently below target |
+| KPI revision | If a KPI is consistently wrong, log decision in `decisions.md`: "KPI for [skill] revised from X to Y because [reason]" |
+
 ---
 
 ## Evidence Requirements by Route

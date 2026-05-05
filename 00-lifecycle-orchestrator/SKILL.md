@@ -31,6 +31,8 @@ description: |
                                 for legal/medical/financial/brand/specialized-technical content
   - lead-agent-evaluation.md  → Phase 5.8 final evaluation (CEO pattern) — cross-skill
                                 synthesis + GO/CONDITIONAL/HOLD/NO-GO verdict + human escalation
+  - skill-kpis.md             → central KPI registry — target KPIs per skill across 5 categories
+                                (Output Quality / Efficiency / Behavioral / Gate Compliance / Outcome)
   - skills-inventory.md       → functional name → actual skill file mapping
                                 + Layer 0+ External Runtime Plugins (context-mode candidate)
                                 + Phase 5 Release Review Gates (/review, /ultrareview)
