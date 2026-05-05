@@ -44,6 +44,23 @@ Elevate risk level by one tier when ANY of these are true:
 - Force push to main/master requested
 - Irreversible deployment or migration
 
+### Escalate to SME Review Required (G7) — see `sme-review-gate.md`
+G7 is a separate gate, not a risk-level tier, but its triggers overlap. Mandatory SME review when:
+- Privacy policies, ToS, or compliance docs are written or modified
+- Medical claims, dosages, or clinical content involved
+- Investment advice, tax calculations, or fiduciary content
+- Public-facing brand/PR copy on sensitive topics or crisis comms
+- Specialized technical claims (cryptography, AI safety guarantees, safety-critical systems)
+- Anything `critical` AND in a regulated domain → both critical-stop AND G7 apply
+
+### Escalate to Human Lead Agent — see `lead-agent-evaluation.md`
+Lead Agent runs automatically at task end (orchestrator). ESCALATE to a human Lead Agent (Dilip or designated approver) when:
+- Risk level = `critical`
+- Final Evaluation verdict is CONDITIONAL with material conditions
+- Cross-skill inconsistency surfaced (plan-execution drift, goal-output drift, scope creep)
+- First-time production deployment for the project
+- Public-facing release at scale
+
 ---
 
 ## Stop Conditions (Require Explicit User Approval Before Proceeding)

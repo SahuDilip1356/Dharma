@@ -270,3 +270,93 @@ Re-run: ✅ (after fixes) or N/A (no findings)
 - ANY critical finding — halt the release; resolve and re-run G6 + G6.5
 - High findings — must be either resolved or explicitly accepted with documented rationale in the decision log
 - Medium findings — log them for follow-up; do not block release
+
+---
+
+## Phase 5.7: SME Review Gate (G7)
+
+**Purpose:** Domain-expert review for regulated content. See `sme-review-gate.md` for full protocol.
+**Applies to:** Changes that touch legal/regulatory, medical, financial, brand-sensitive, or specialized-technical content.
+
+### Gate G7: Human SME Review (`domain expert sign-off`)
+**Mandatory for:** Any change matching the SME Trigger list below.
+**Distinct from G6/G6.5:** Code review checks engineering quality. SME review checks domain correctness. Both can be required for the same change.
+
+**SME Trigger List** (any one triggers G7)
+- Legal/regulatory: privacy policies, ToS, compliance docs (DPDPA, GDPR, HIPAA, PCI, etc.), contracts
+- Medical/clinical: any medical claim, dosage, diagnostic content, healthcare data handling
+- Financial: investment advice, tax calculations, audit findings, lending decisions
+- Brand/PR/Crisis: sensitive public-facing copy, crisis comms, breach disclosures
+- Specialized technical: cryptography, safety-critical systems, public AI safety claims
+
+**Entry Criteria**
+- G6 (`/review`) has passed
+- G6.5 (`/ultrareview`) has passed if applicable
+- The work matches at least one SME Trigger above
+
+**Action**
+- Package the work for SME review (plain-English summary, specific questions, highlighted concerns)
+- Deliver to a NAMED, credentialed SME via documented channel
+- Wait for WRITTEN approval (verbal not sufficient)
+
+**Exit Evidence**
+```
+G7 SME Review:
+  SME name + credentials: [name + cert/license]
+  Domain: [legal | medical | financial | brand | technical]
+  Submitted: YYYY-MM-DD
+  Approved: YYYY-MM-DD
+  Status: [approved | approved-with-conditions | rejected]
+  Conditions resolved: [yes/no]
+  Written approval link: [email/doc/ticket URL]
+```
+
+**Block Condition**
+- Rejected — halt release, address rejection reason, re-submit
+- Approved-with-conditions — conditions MUST be resolved before release
+- No written approval — cannot pass with verbal-only approval
+- For solo founders without in-house SME: see `sme-review-gate.md` for acceptable substitutes (external SME hire, vetted marketplace, or explicit risk acceptance for low-stakes content only)
+
+---
+
+## Phase 5.8: Lead Agent Final Evaluation (G8)
+
+**Purpose:** End-to-end synthesis across all skills used in the task — the CEO-pattern final go/no-go call. See `lead-agent-evaluation.md` for full protocol.
+**Applies to:** Every task before "done" can be claimed.
+
+### Gate G8: Lead Agent Final Evaluation
+The orchestrator (or designated human escalation target) evaluates that the work as a WHOLE met the original goal — not just that each skill did its piece. Catches plan-execution drift, goal-output drift, scope creep, and evidence-claim mismatches that single-skill verification misses.
+
+**Entry Criteria**
+- All planned skills have produced exit evidence
+- All applicable release gates have passed (G6, G6.5, G7)
+
+**Action**
+- Reconfirm the original goal from Route Receipt (Phase 0)
+- Walk the evidence ledger; check every phase + gate
+- Cross-skill consistency check (plan vs. execution, goal vs. output, scope, surface area)
+- Make the call: GO / CONDITIONAL GO / HOLD / NO-GO with rationale
+
+**Exit Evidence**
+```
+Final Evaluation:
+  Verdict: [✅ GO | ⚠️ CONDITIONAL | ⏳ HOLD | ❌ NO-GO]
+  Goal achieved: [yes | partially | no]
+  Phase 0–5 evidence: [✅ complete | gaps: list]
+  Release gates: [G6 ✅ | G6.5 ✅/N/A | G7 ✅/N/A]
+  Cross-skill consistency: [✅ clean | findings: list]
+  Conditions (if any): [list]
+  Lead Agent: [orchestrator | escalated to: name]
+```
+
+**Block Condition**
+- HOLD or NO-GO — cannot claim "done"; address gaps and re-evaluate
+- CONDITIONAL with material conditions — escalate to human Lead Agent for explicit acceptance
+- Risk = `critical` from Phase 0 — automatic escalation to human regardless of verdict
+
+**Escalation triggers (orchestrator → human Lead Agent):**
+- Risk level = `critical`
+- Verdict is CONDITIONAL with material conditions
+- Cross-skill inconsistency found
+- First-time production deployment
+- Public-facing release at scale

@@ -22,10 +22,15 @@ description: |
   - routing-matrix.md         → work type → required skills + evidence
   - ownership-boundaries.md   → scope limits per skill — prevents overlap (WHAT)
   - tool-access-matrix.md     → permitted tools per skill — prevents tool-scope drift (HOW)
-  - phase-gates.md            → entry criteria + exit evidence per phase (incl. Phase 5.5 G6/G6.5 release gates)
+  - phase-gates.md            → entry criteria + exit evidence per phase
+                                (incl. Phase 5.5 G6/G6.5, Phase 5.7 G7 SME, Phase 5.8 Lead Agent)
   - evidence-contract.md      → what counts as proof of completion
   - evidence-ledger-template.md → structured task receipt + gate tracking
   - escalation-rules.md       → when to stop and escalate (WHEN)
+  - sme-review-gate.md        → Phase 5.7 G7 SME Review Gate — domain expert sign-off
+                                for legal/medical/financial/brand/specialized-technical content
+  - lead-agent-evaluation.md  → Phase 5.8 final evaluation (CEO pattern) — cross-skill
+                                synthesis + GO/CONDITIONAL/HOLD/NO-GO verdict + human escalation
   - skills-inventory.md       → functional name → actual skill file mapping
                                 + Layer 0+ External Runtime Plugins (context-mode candidate)
                                 + Phase 5 Release Review Gates (/review, /ultrareview)
@@ -37,6 +42,12 @@ description: |
   - ownership-boundaries.md (WHAT — what work each skill does)
   - escalation-rules.md     (WHEN — when to stop and ask)
   - tool-access-matrix.md   (HOW — which tools each skill may use)
+
+  Release gate stack (Phase 5.5 → 5.8):
+  - G6   /review             every meaningful change
+  - G6.5 /ultrareview        high-risk code (auth/payments/migrations/AI/infra)
+  - G7   SME review          regulated domain content (legal/medical/financial/brand)
+  - G8   Lead Agent          final cross-skill synthesis + go/no-go verdict
 
 license: MIT
 metadata:
