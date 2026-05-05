@@ -133,6 +133,34 @@ External plugins/runtimes that operate beneath skills. Distinct from Layer 0 (Me
 |----------------|----------------|--------|-------|
 | `context-compression` | `mksglu/context-mode` v1.0.107 (Elastic-2.0) | 🟡 Candidate (project-scoped, sandbox only) | MCP server installed at `~/sandboxes/context-mode-test/` without hooks. Tools available but NOT auto-redirected — `WebFetch` still bypasses Context Mode. Decision log: `decisions.md` [2026-05-04]. |
 
+---
+
+## Candidate Skills (Under Evaluation)
+
+Skills created on demand via `skill-creator` (Step 0.5 Tier 2 fallback). Each starts here until promoted to its target layer.
+
+| Skill | Created | Source brief | Eval status | Promotion target layer |
+|---|---|---|---|---|
+| _(none yet)_ | — | — | — | — |
+
+### Lifecycle of a candidate skill
+1. **Created** by `anthropic-skills:skill-creator` after find-skills returned nothing AND user approved building
+2. **Saved** to this section with creation date and the gap brief
+3. **Evaluated** per skill-creator's eval framework (≥80% pass rate target)
+4. **Validated** in 3+ real Dharma tasks (no incorrect outputs)
+5. **Annotated** with KPIs (per `skill-kpis.md`) + tool access (per `tool-access-matrix.md`) + ownership boundaries (per `ownership-boundaries.md`)
+6. **Promoted** to its target layer when all five conditions hold
+
+### What flags a candidate skill in evidence
+While in Candidate status, any output produced by the skill is flagged in the evidence ledger as `[candidate skill output — verify carefully]`. Lead Agent (G8) Final Evaluation must explicitly review candidate-skill outputs before passing the verdict.
+
+### Demotion / removal
+A candidate skill is removed if:
+- Eval pass rate stays below 80% after 2+ revision rounds
+- Produces incorrect output in 2+ real tasks
+- Better-fit installed or external skill is found via `find-skills` after creation
+- User explicitly removes (e.g., "this skill isn't pulling its weight")
+
 ### Promotion criteria (Candidate → Installed)
 Move from "Candidate" to "Installed" only when ALL true:
 - Run in 3+ real Dharma projects without breaking existing skills

@@ -70,17 +70,64 @@ You are the master product development lifecycle orchestrator. You are the contr
 **Read `routing-decision-tree.md`** and run all 7 steps before selecting any route.
 Output the Route Receipt before proceeding. No Phase 0 skill begins until the receipt is output.
 
-### Step 0.5: Resolve Skill Gaps (find-skills)
+### Step 0.5: Resolve Skill Gaps
 
-After the Route Receipt is output, check every functional skill name in the planned route against `skills-inventory.md`.
+After the Route Receipt is output, check every functional skill name in the planned route against `skills-inventory.md`. Use this 3-tier fallback when a gap exists:
 
-**If any functional need has no installed skill match:**
+#### Tier 1 — `find-skills` (search open ecosystem)
 → Invoke `find-skills` to search the open skills ecosystem for a gap-filler.
-→ If a quality skill is found and user approves installation, add it to `skills-inventory.md` and update the Route Receipt.
-→ If no skill is found, note the gap in the Route Receipt under `Skill Gaps` and proceed with general capability.
+→ If a quality skill is found AND user approves installation:
+  - Install the skill
+  - Add to `skills-inventory.md` under the appropriate layer
+  - Update the Route Receipt
+  - Proceed to Phase 0 with the new skill in the chain
+
+#### Tier 2 — `skill-creator` (build a new skill on demand)
+If Tier 1 returns nothing AND the gap is a recurring need (not a one-off task), offer to BUILD a new skill:
+
+→ Surface the gap to the user explicitly:
+```
+No installed or external skill covers [domain].
+Should I invoke skill-creator to build a new skill for this?
+- Build it now (saved to candidate layer for evaluation)
+- Use general capability for this task only (skip — no skill saved)
+- Stop and clarify the gap (maybe it's not really a recurring need)
+```
+
+→ If user approves:
+  - Invoke `anthropic-skills:skill-creator`
+  - Pass the functional need + observed gap as the brief
+  - Save the generated skill to the **Candidate Skills** section in `skills-inventory.md`
+  - Run at least one eval before promoting to active (per skill-creator's own protocol)
+  - Update the Route Receipt with `skill: <new-name> [candidate, unevaluated]`
+  - Proceed cautiously — flag any output produced by candidate skills in the evidence ledger
+
+→ If user declines:
+  - Note the gap in Route Receipt under `Skill Gaps`
+  - Proceed with general capability for this task only
+
+#### Tier 3 — General capability (no skill, declared gap)
+If user declines both Tier 1 install and Tier 2 build, OR if the gap is genuinely a one-off:
+
+→ Note the gap in the Route Receipt under `Skill Gaps`
+→ Apply general Claude capability with extra discipline:
+  - Document assumptions explicitly (no installed skill to enforce them)
+  - Be conservative on tool access (default to read-only operations until clear)
+  - Surface the gap in the Final Evaluation (Lead Agent G8) so cross-skill consistency is preserved
+→ If the gap recurs in 3+ separate tasks, automatically escalate to Tier 2 next time
+
+#### Promotion criteria for candidate skills (Tier 2 → active)
+A skill created via `skill-creator` lives in the Candidate Skills section until ALL true:
+- Run successfully in 3+ real Dharma tasks without producing incorrect output
+- Skill-creator's eval framework returns ≥80% pass rate on test prompts
+- KPIs defined per `skill-kpis.md` (at minimum: Output Quality + Behavioral)
+- Tool access declared per `tool-access-matrix.md`
+- Layer placement and ownership boundaries reviewed against `ownership-boundaries.md`
+
+When all five conditions hold, move from Candidate Skills to its target layer in the inventory.
 
 **If all functional needs are covered by installed skills:**
-→ Skip find-skills. Proceed directly to Phase 0.
+→ Skip Tier 1, 2, 3. Proceed directly to Phase 0.
 
 ---
 
