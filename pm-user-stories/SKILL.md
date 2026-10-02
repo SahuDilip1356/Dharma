@@ -111,6 +111,6 @@ Acceptance Criteria:
 
 ## Pairs With
 
-- `pm-prd` — run first; stories are derived from the PRD's P0/P1 features
+- `intent` — run first; stories are derived from the PRD's P0/P1 features
 - `pm-job-stories` — use instead when focusing on user context/motivation rather than role
-- `superpowers-write-plan` — convert stories into implementation tasks once approved
+- `spec-chain` — convert stories into implementation tasks once approved

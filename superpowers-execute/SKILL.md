@@ -2,7 +2,7 @@
 name: superpowers-execute
 description: |
   Execute an implementation plan using subagents for speed and quality. Triggers when:
-  - A written plan exists (superpowers-write-plan has run)
+  - A written plan exists (spec-chain has run)
   - User says "execute the plan", "start building", "implement per the plan", "run the tasks"
   - Ready to work through the task list from docs/superpowers/plans/
 

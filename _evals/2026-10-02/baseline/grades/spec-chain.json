@@ -1,0 +1,215 @@
+{
+  "skill": "spec-chain",
+  "results": [
+    {
+      "eval": 1,
+      "model": "haiku",
+      "behavior": "Creates intent.md, spec.md and plan.md",
+      "grade": "PARTIAL",
+      "reason": "Drafts intent.md and spec.md only; no plan.md despite saying it would 'create the full chain'"
+    },
+    {
+      "eval": 1,
+      "model": "haiku",
+      "behavior": "Every behavior in spec.md is an AC* written as Given/When/Then",
+      "grade": "PASS",
+      "reason": "AC1-AC4 each have given/when/then clauses"
+    },
+    {
+      "eval": 1,
+      "model": "haiku",
+      "behavior": "Every T* task in plan.md traces to at least one AC*",
+      "grade": "FAIL",
+      "reason": "No plan.md or T* tasks produced for Q1"
+    },
+    {
+      "eval": 1,
+      "model": "haiku",
+      "behavior": "Runs scripts/validate_chain.py and reports its result",
+      "grade": "PARTIAL",
+      "reason": "Names exact 'python3 ~/.claude/skills/spec-chain/scripts/validate_chain.py specs/dpdpa-daily-brief/' but on a chain lacking plan.md; no result discussed"
+    },
+    {
+      "eval": 1,
+      "model": "haiku",
+      "behavior": "Tasks are small enough to fit one clean agent context",
+      "grade": "FAIL",
+      "reason": "No tasks produced, so no task sizing"
+    },
+    {
+      "eval": 2,
+      "model": "haiku",
+      "behavior": "Marks payment-touching tasks risk: tier1",
+      "grade": "PARTIAL",
+      "reason": "T1,T2,T4 tier1, but T5 (declined-card handling, edits src/api/checkout.ts) marked tier2"
+    },
+    {
+      "eval": 2,
+      "model": "haiku",
+      "behavior": "Includes a rollback consideration for payment changes",
+      "grade": "FAIL",
+      "reason": "No rollback, feature flag, or down-migration mentioned for payment changes"
+    },
+    {
+      "eval": 2,
+      "model": "haiku",
+      "behavior": "Produces a dependency-ordered task list without cycles",
+      "grade": "PASS",
+      "reason": "T1->T2->T3/T4, T5 depends T2,T3; acyclic and ordered"
+    },
+    {
+      "eval": 3,
+      "model": "haiku",
+      "behavior": "Skips the full chain for an obvious one-file bug fix",
+      "grade": "PASS",
+      "reason": "'Bug fix <=1 file, obvious -> skip the chain. No intent.md, spec.md, or plan.md'"
+    },
+    {
+      "eval": 3,
+      "model": "haiku",
+      "behavior": "Writes a failing test first, then the fix",
+      "grade": "PARTIAL",
+      "reason": "Test written first and run to fail, but test asserts parseDate('') throws, enshrining the reported bug rather than reproducing it"
+    },
+    {
+      "eval": 1,
+      "model": "sonnet",
+      "behavior": "Creates intent.md, spec.md and plan.md",
+      "grade": "PASS",
+      "reason": "'Files to write: specs/dpdpa-daily-brief-email/{intent,spec,plan}.md' with content for each"
+    },
+    {
+      "eval": 1,
+      "model": "sonnet",
+      "behavior": "Every behavior in spec.md is an AC* written as Given/When/Then",
+      "grade": "PARTIAL",
+      "reason": "AC1-AC3 follow given/when/then, but AC4/AC5 lack 'when' and AC6 is a plain statement"
+    },
+    {
+      "eval": 1,
+      "model": "sonnet",
+      "behavior": "Every T* task in plan.md traces to at least one AC*",
+      "grade": "PASS",
+      "reason": "T1-T6 each list 'Implements ACn'"
+    },
+    {
+      "eval": 1,
+      "model": "sonnet",
+      "behavior": "Runs scripts/validate_chain.py and reports its result",
+      "grade": "PASS",
+      "reason": "Exact validate_chain.py command and states expected result (G* covered, tasks have ACs, no cycles)"
+    },
+    {
+      "eval": 1,
+      "model": "sonnet",
+      "behavior": "Tasks are small enough to fit one clean agent context",
+      "grade": "PASS",
+      "reason": "'Each task is at most 5 files and size S/M, with a runnable verify'"
+    },
+    {
+      "eval": 2,
+      "model": "sonnet",
+      "behavior": "Marks payment-touching tasks risk: tier1",
+      "grade": "PASS",
+      "reason": "'every task is risk: tier1'; T1/T2 explicitly risk: tier1"
+    },
+    {
+      "eval": 2,
+      "model": "sonnet",
+      "behavior": "Includes a rollback consideration for payment changes",
+      "grade": "PARTIAL",
+      "reason": "Only 'forward-only, with a down-migration in the same file' for T1; no payment-level rollback (flag/disable)"
+    },
+    {
+      "eval": 2,
+      "model": "sonnet",
+      "behavior": "Produces a dependency-ordered task list without cycles",
+      "grade": "PASS",
+      "reason": "Explicit depends_on; 'T3 and T1 run in parallel; T2 and T4 follow'; acyclic"
+    },
+    {
+      "eval": 3,
+      "model": "sonnet",
+      "behavior": "Skips the full chain for an obvious one-file bug fix",
+      "grade": "PASS",
+      "reason": "'the table says skip the chain. No intent.md, spec.md or plan.md is written'"
+    },
+    {
+      "eval": 3,
+      "model": "sonnet",
+      "behavior": "Writes a failing test first, then the fix",
+      "grade": "PASS",
+      "reason": "Failing test 'does not throw on empty string' run first, then guard fix, then rerun"
+    },
+    {
+      "eval": 1,
+      "model": "opus",
+      "behavior": "Creates intent.md, spec.md and plan.md",
+      "grade": "PASS",
+      "reason": "Writes intent.md, spec.md (ACs) and plan.md (tasks) to specs/dpdpa-daily-brief/"
+    },
+    {
+      "eval": 1,
+      "model": "opus",
+      "behavior": "Every behavior in spec.md is an AC* written as Given/When/Then",
+      "grade": "PARTIAL",
+      "reason": "AC1/AC4/AC5/AC6 mostly G/W/T, but AC2 is 'then' only, AC3 lacks 'when', AC7 has no body"
+    },
+    {
+      "eval": 1,
+      "model": "opus",
+      "behavior": "Every T* task in plan.md traces to at least one AC*",
+      "grade": "PASS",
+      "reason": "T1-T5 each list 'implements: ACn'"
+    },
+    {
+      "eval": 1,
+      "model": "opus",
+      "behavior": "Runs scripts/validate_chain.py and reports its result",
+      "grade": "PASS",
+      "reason": "Exact 'python3 ~/.claude/skills/spec-chain/scripts/validate_chain.py specs/dpdpa-daily-brief/' as gate before handoff"
+    },
+    {
+      "eval": 1,
+      "model": "opus",
+      "behavior": "Tasks are small enough to fit one clean agent context",
+      "grade": "PASS",
+      "reason": "Tasks sized S/M with single runnable verify each"
+    },
+    {
+      "eval": 2,
+      "model": "opus",
+      "behavior": "Marks payment-touching tasks risk: tier1",
+      "grade": "PASS",
+      "reason": "'every payments task is risk: tier1 with a named human reviewer'; T1-T4 tier1, UI page T5 tier2"
+    },
+    {
+      "eval": 2,
+      "model": "opus",
+      "behavior": "Includes a rollback consideration for payment changes",
+      "grade": "PARTIAL",
+      "reason": "T1 notes 'down-migration in same file; not reversible by git revert'; no broader payment rollback plan"
+    },
+    {
+      "eval": 2,
+      "model": "opus",
+      "behavior": "Produces a dependency-ordered task list without cycles",
+      "grade": "PASS",
+      "reason": "depends_on chain T1->T2/T3->T4, T2->T5; 'dispatch the tasks in dependency order'"
+    },
+    {
+      "eval": 3,
+      "model": "opus",
+      "behavior": "Skips the full chain for an obvious one-file bug fix",
+      "grade": "PASS",
+      "reason": "'bug fix in one file with an obvious cause, so I'd skip the chain'"
+    },
+    {
+      "eval": 3,
+      "model": "opus",
+      "behavior": "Writes a failing test first, then the fix",
+      "grade": "PASS",
+      "reason": "Writes failing test first ('expect it to fail'), then minimal guard fix, then rerun"
+    }
+  ]
+}

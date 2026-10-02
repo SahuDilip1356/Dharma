@@ -1,0 +1,22 @@
+[
+  {"n": 1, "skill": "intent", "why": "Start new feature, kick off work"},
+  {"n": 2, "skill": "intent", "why": "Lock requirements, define scope"},
+  {"n": 3, "skill": "office-hours", "why": "Solution proposed, reframe pain"},
+  {"n": 4, "skill": "spec-chain", "why": "Break into executable tasks"},
+  {"n": 5, "skill": "dharma3", "why": "Resume project status"},
+  {"n": 6, "skill": "dharma3", "why": "Where were we, progress check"},
+  {"n": 7, "skill": "superpowers-tdd", "why": "Write production code"},
+  {"n": 8, "skill": "design-md", "why": "Design landing page"},
+  {"n": 9, "skill": "design-md", "why": "Style like Stripe brand"},
+  {"n": 10, "skill": "reviewing-ui", "why": "A11y audit before ship"},
+  {"n": 11, "skill": "webapp-testing", "why": "Test mobile responsiveness"},
+  {"n": 12, "skill": "shipping-ai-features", "why": "LLM model choice, costs"},
+  {"n": 13, "skill": "prompt-engineering", "why": "Write system prompt"},
+  {"n": 14, "skill": "webapp-testing", "why": "Test form in browser"},
+  {"n": 15, "skill": "fact-check", "why": "Verify claim truthfulness"},
+  {"n": 16, "skill": "pm-prioritization", "why": "RICE vs ICE framework"},
+  {"n": 17, "skill": "pm-job-stories", "why": "Write job stories"},
+  {"n": 18, "skill": "find-skills", "why": "Find Terraform skill"},
+  {"n": 19, "skill": "superpowers-debug", "why": "500 error, root cause"},
+  {"n": 20, "skill": "coding-discipline", "why": "Simple rename refactor"}
+]

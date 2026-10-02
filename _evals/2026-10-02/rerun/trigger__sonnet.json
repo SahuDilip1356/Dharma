@@ -1,0 +1,22 @@
+[
+{"n":1,"skill":"intent","why":"New feature kickoff; intent opens work cycle"},
+{"n":2,"skill":"intent","why":"'Lock the requirements' is an intent trigger"},
+{"n":3,"skill":"office-hours","why":"User named a solution; reframe before building"},
+{"n":4,"skill":"spec-chain","why":"Decompose into tasks for agents"},
+{"n":5,"skill":"dharma3","why":"Explicit /dharma3 command"},
+{"n":6,"skill":"dharma3","why":"'where were we' resume trigger"},
+{"n":7,"skill":"coding-discipline","why":"Small scoped code edit; touch only what asked"},
+{"n":8,"skill":"design-md","why":"Landing page design that converts"},
+{"n":9,"skill":"design-md","why":"Look like known brand Stripe"},
+{"n":10,"skill":"reviewing-ui","why":"a11y audit of built UI"},
+{"n":11,"skill":"reviewing-ui","why":"Check responsive mobile behavior"},
+{"n":12,"skill":"shipping-ai-features","why":"Model choice and cost ceilings for LLM feature"},
+{"n":13,"skill":"prompt-engineering","why":"Writing a system prompt for Claude feature"},
+{"n":14,"skill":"webapp-testing","why":"Test form in a real browser"},
+{"n":15,"skill":"fact-check","why":"Verify a factual claim"},
+{"n":16,"skill":"pm-prioritization","why":"RICE vs ICE framework choice"},
+{"n":17,"skill":"pm-job-stories","why":"Explicit job stories request"},
+{"n":18,"skill":"find-skills","why":"Asks whether a skill exists"},
+{"n":19,"skill":"superpowers-debug","why":"Unknown cause of error; root cause first"},
+{"n":20,"skill":"none","why":"Trivial rename; no skill needed"}
+]

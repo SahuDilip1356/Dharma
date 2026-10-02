@@ -1,0 +1,22 @@
+[
+{"n":1,"skill":"intent","why":"new feature kickoff"},
+{"n":2,"skill":"intent","why":"lock the requirements trigger"},
+{"n":3,"skill":"office-hours","why":"user named a solution; reframe first"},
+{"n":4,"skill":"spec-chain","why":"decompose into agent tasks"},
+{"n":5,"skill":"dharma3","why":"explicit /dharma3 command"},
+{"n":6,"skill":"dharma3","why":"resume project trigger"},
+{"n":7,"skill":"coding-discipline","why":"small code edit, minimal change"},
+{"n":8,"skill":"designing-ui","why":"design and build a landing page"},
+{"n":9,"skill":"design-md","why":"brand-style look like Stripe"},
+{"n":10,"skill":"reviewing-ui","why":"a11y audit of built UI"},
+{"n":11,"skill":"reviewing-ui","why":"check mobile responsiveness"},
+{"n":12,"skill":"shipping-ai-features","why":"model choice and cost ceilings"},
+{"n":13,"skill":"prompt-engineering","why":"writing a system prompt"},
+{"n":14,"skill":"webapp-testing","why":"test form in real browser"},
+{"n":15,"skill":"fact-check","why":"verify a claim is true"},
+{"n":16,"skill":"pm-prioritization","why":"RICE vs ICE framework choice"},
+{"n":17,"skill":"pm-job-stories","why":"explicit job stories request"},
+{"n":18,"skill":"find-skills","why":"is there a skill for X"},
+{"n":19,"skill":"superpowers-debug","why":"unknown error cause, debug"},
+{"n":20,"skill":"none","why":"trivial rename, no skill needed"}
+]

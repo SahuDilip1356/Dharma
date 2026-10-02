@@ -1,25 +1,12 @@
 ---
 name: webapp-testing
 description: |
-  Browser-level UI verification using Playwright (Python). Triggers at Phase 4 (Verify)
-  when:
-  - A user-facing feature is built and needs functional UI verification before ship
-  - A bug fix touches UI and needs before/after browser proof
-  - A UI redesign needs state verification (loading, error, empty, success all tested)
-  - superpowers-execute is running multi-agent verification and needs a browser specialist
-
-  Part of the Dharma multi-agent verification pattern:
-    superpowers-execute delegates in parallel →
-      webapp-testing     (browser functional verification)
-      superpowers-tdd    (unit + integration tests)
-      uiux-design-qa     (visual fidelity)
-      uiux-accessibility-review (a11y on live UI)
-
-  Does NOT own: visual design fidelity screenshots (that is uiux-design-qa);
-  unit/integration tests (that is superpowers-tdd);
-  post-ship production monitoring (that is ai-observability).
-
-  Source: https://github.com/anthropics/skills/tree/main/webapp-testing
+  Verifies user-facing web UI in a real browser with Playwright (Python): functional
+  behavior, all states (loading, error, empty, success), console and network errors, and
+  before/after screenshots as evidence. Use when a UI feature or UI bug fix needs browser
+  proof before ship, or when the user says "test it in the browser", "does the form
+  work", or "check the UI end to end". Not for unit tests (superpowers-tdd) or visual
+  fidelity (reviewing-ui).
 license: MIT
 metadata:
   author: Anthropic (adapted for Dharma by Dilip Sahu)
@@ -28,23 +15,13 @@ metadata:
 
 # Web Application Testing
 
-**Core rule: Screenshots and console logs are evidence. DOM inspection before `networkidle` is not.**
+**Core rule:** screenshots and console logs are evidence. DOM inspection before
+`networkidle` is not — always `page.wait_for_load_state('networkidle')` first.
 
-This skill produces browser-level functional evidence for `superpowers-verify` to cite.
-It does not replace unit tests (`superpowers-tdd`) or visual QA (`uiux-design-qa`) —
-it fills the gap between them: does the UI actually work in a real browser?
-
----
-
-## Dharma Phase Placement
-
-| Phase | Role |
-|---|---|
-| Phase 4 — Verify | Primary phase for this skill |
-| Phase 3 — Build | Optional: use for rapid UI feedback during development |
-
-**Mandatory for:** all user-facing features (Routes A, B, D)
-**Conditional for:** bug fixes with a UI component (Route C), releases with UI changes (Route H)
+Answers one question: does the UI actually work in a real browser? Use it in Verify for
+every user-facing feature and for UI bug fixes (before/after proof); optionally in Build
+for quick feedback. Its screenshots prove functional states; `reviewing-ui` screenshots
+prove visual fidelity; unit tests belong to `superpowers-tdd`.
 
 ---
 
@@ -143,57 +120,18 @@ For any user-facing feature, test all four states:
 
 ---
 
-## Multi-Agent Integration (superpowers-execute)
+## Running as a parallel subagent
 
-When running as a subagent in a parallel verification run:
+Receives a server URL (or start command), the flows to verify, and an evidence output
+path. Produces per-flow screenshots, a console log file, and a pass/fail summary per
+state. The orchestrator (`superpowers-execute`) starts the server once, fans flows out to
+browser agents, and hands the evidence to `superpowers-verify`.
 
-```python
-# webapp-testing agent receives:
-#   - local server URL or start command
-#   - list of flows to verify
-#   - evidence output path
+## Reference files
 
-# webapp-testing agent produces:
-#   - screenshots per flow saved to output path
-#   - console.log file
-#   - pass/fail summary per state tested
-
-# superpowers-verify synthesizes all subagent outputs into final evidence claim
-```
-
-The orchestrating agent (`superpowers-execute`) should:
-1. Start server once (shared across all browser subagents)
-2. Delegate flows to browser agents in parallel
-3. Collect evidence files
-4. Pass to `superpowers-verify` for synthesis
-
----
-
-## Ownership Boundary
-
-| Owns | Does NOT Own |
-|---|---|
-| Functional state verification (does the button work, does the form submit) | Visual design fidelity (that is `uiux-design-qa`) |
-| Console error detection | Unit and integration test logic (that is `superpowers-tdd`) |
-| Browser-level DOM and network inspection | Post-ship production monitoring (that is `ai-observability`) |
-| Before/after functional screenshots | Design-to-implementation comparison screenshots (that is `uiux-design-qa`) |
-
-**Screenshot disambiguation:** `webapp-testing` screenshots prove functional states.
-`uiux-design-qa` screenshots prove visual fidelity against the design spec.
-Both can run in the same verification pass — they answer different questions.
-
----
-
-## Common Pitfall
-
-❌ **Don't** inspect the DOM before `networkidle` on dynamic apps — you will get partial renders
-✅ **Do** always call `page.wait_for_load_state('networkidle')` before any inspection or action
-
----
-
-## Reference Files
-
-- `scripts/with_server.py` — server lifecycle manager
+- `scripts/with_server.py` — server lifecycle manager (run with `--help`; use as a black box)
 - `examples/element_discovery.py` — discover buttons, links, inputs on a running page
 - `examples/static_html_automation.py` — automate static HTML via `file://` URL
 - `examples/console_logging.py` — capture and save browser console output
+
+Adapted from https://github.com/anthropics/skills/tree/main/webapp-testing.

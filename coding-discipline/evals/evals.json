@@ -1,0 +1,38 @@
+[
+  {
+    "skills": [
+      "coding-discipline"
+    ],
+    "query": "Add a retry to the fetchConsents() call in lib/api.ts.",
+    "files": [],
+    "expected_behavior": [
+      "States assumptions it is making (retry count, which errors are retryable, backoff) or asks",
+      "Changes only fetchConsents and what it strictly needs",
+      "Does not add a generic retry framework or config options nobody asked for",
+      "Defines how the change will be verified"
+    ]
+  },
+  {
+    "skills": [
+      "coding-discipline"
+    ],
+    "query": "Make the dashboard better.",
+    "files": [],
+    "expected_behavior": [
+      "Does not start coding",
+      "Names the ambiguity and offers 2-3 concrete interpretations",
+      "Asks for or proposes a verifiable success criterion"
+    ]
+  },
+  {
+    "skills": [
+      "coding-discipline"
+    ],
+    "query": "Rename the variable `usr` to `user` in components/Profile.tsx.",
+    "files": [],
+    "expected_behavior": [
+      "Renames only that variable in that file",
+      "Does not reformat, reorder imports, or fix unrelated issues it notices (it may mention them)"
+    ]
+  }
+]

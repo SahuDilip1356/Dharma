@@ -137,6 +137,6 @@ When filling out Section 7 of a PRD:
 
 ## Pairs With
 
-- `pm-prd` — use to assign P0/P1/P2 in Section 7 before finalizing the PRD
-- `churney-os` — the Constraint Check (Phase 2) uses this to validate scope decisions
+- `intent` — use to assign P0/P1/P2 in Section 7 before finalizing the PRD
+- `dharma3` — the Constraint Check (Phase 2) uses this to validate scope decisions
 - `pm-user-stories` — prioritization determines which stories go into the current sprint

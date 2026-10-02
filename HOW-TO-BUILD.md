@@ -1,5 +1,22 @@
 # How to Build Dharma From Scratch
 
+> **Restructured 2026-10-02** (per Anthropic's skill-authoring best practices): 52 skills → 25.
+> Dharma3 (`~/.claude/skills/dharma3`) is now the orchestrator. Retired skills are kept, unloaded, in `_archive/`.
+> Names below this note are the v1 names. Where each one went:
+>
+> | v1 skill(s) | Now |
+> |---|---|
+> | `lifecycle-orchestrator`, `superpowers`, `churney-os` | `dharma3` (reference files under `dharma3/reference/`) |
+> | `karpathy-discipline`, `think-before-coding`, `simplicity-first`, `surgical-changes`, `goal-driven-execution` | `coding-discipline` |
+> | `uiux-designer`, `uiux-design-intelligence`, `uiux-frontend-design-system`, `frontend-design`, `uiux-react-patterns` | `designing-ui` |
+> | `uiux-audit`, `uiux-accessibility-review`, `uiux-responsive-review`, `uiux-interaction-review`, `uiux-design-qa` | `reviewing-ui` |
+> | `ai-safety-eval`, `inference-economics`, `prompt-optimization`, `ai-observability`, `benchmark-framework`, `model-governance` | `shipping-ai-features` |
+> | `pm-prd` → `intent` · `superpowers-brainstorm` → `office-hours` · `superpowers-write-plan` → `spec-chain` | global skills in `~/.claude/skills` |
+> | `react-best-practices` | `vercel:react-best-practices` plugin |
+> | `memory-layer`, `episodic-memory`, `dharma-resume` | retired — SessionStart/SessionEnd hooks own memory |
+> | `claude-prompt-engineering` | renamed `prompt-engineering` |
+
+
 A reverse-engineered guide to recreating this framework — the reasoning behind every layer, the order they were built, and the decisions made at each stage.
 
 If you follow this guide, you will arrive at the same architecture. More importantly, you will understand *why* it is structured this way — which means you can adapt it confidently for your own context.

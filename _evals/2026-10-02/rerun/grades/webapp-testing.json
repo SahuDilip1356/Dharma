@@ -1,0 +1,194 @@
+{
+  "skill": "webapp-testing",
+  "results": [
+    {
+      "eval": 1,
+      "model": "haiku",
+      "behavior": "Uses Playwright (Python) and waits for networkidle before inspecting the DOM",
+      "grade": "PASS",
+      "reason": "sync_playwright script with page.wait_for_load_state('networkidle')  # CRITICAL before DOM inspection"
+    },
+    {
+      "eval": 1,
+      "model": "haiku",
+      "behavior": "Tests the loading, error, empty and success states",
+      "grade": "PARTIAL",
+      "reason": "Names all four states but gives no mechanism to force loading/error/empty (e.g. no page.route); 'Verify spinner appears' is vague intent"
+    },
+    {
+      "eval": 1,
+      "model": "haiku",
+      "behavior": "Captures screenshots and console logs as evidence",
+      "grade": "PASS",
+      "reason": "page.screenshot per step plus page.on('console', handler) and page.on('requestfailed', handler)"
+    },
+    {
+      "eval": 1,
+      "model": "haiku",
+      "behavior": "Reports pass/fail per state with the evidence attached",
+      "grade": "FAIL",
+      "reason": "Deliverable lists screenshots/console/network logs only; no per-state pass/fail report promised"
+    },
+    {
+      "eval": 2,
+      "model": "haiku",
+      "behavior": "Produces before/after browser evidence",
+      "grade": "PARTIAL",
+      "reason": "'before' is billing_before.png pre-click on the fixed build, not the pre-fix code; second script block is detached (no page/browser)"
+    },
+    {
+      "eval": 2,
+      "model": "haiku",
+      "behavior": "Checks console and network for errors on click",
+      "grade": "PASS",
+      "reason": "page.on('console') and page.on('requestfailed') attached before goto; checks POST returns 200 and console clean"
+    },
+    {
+      "eval": 2,
+      "model": "haiku",
+      "behavior": "Does not substitute unit tests for browser proof",
+      "grade": "PASS",
+      "reason": "Entirely browser-based Playwright proof; no unit tests offered"
+    },
+    {
+      "eval": 3,
+      "model": "haiku",
+      "behavior": "Recognizes visual fidelity is out of scope and points to reviewing-ui",
+      "grade": "PASS",
+      "reason": "'Visual fidelity and brand matching are the domain of the reviewing-ui skill'"
+    },
+    {
+      "eval": 3,
+      "model": "haiku",
+      "behavior": "Does not claim a functional Playwright run answers a visual-design question",
+      "grade": "PASS",
+      "reason": "Option (a) is explicitly 'Report functional status only - not visual/brand alignment'"
+    },
+    {
+      "eval": 1,
+      "model": "sonnet",
+      "behavior": "Uses Playwright (Python) and waits for networkidle before inspecting the DOM",
+      "grade": "PASS",
+      "reason": "Recon and test scripts call page.wait_for_load_state('networkidle') before DOM inspection"
+    },
+    {
+      "eval": 1,
+      "model": "sonnet",
+      "behavior": "Tests the loading, error, empty and success states",
+      "grade": "PASS",
+      "reason": "Forces loading (route delay), empty (route returns none), error (route.fulfill status=500), success (happy path)"
+    },
+    {
+      "eval": 1,
+      "model": "sonnet",
+      "behavior": "Captures screenshots and console logs as evidence",
+      "grade": "PASS",
+      "reason": "Screenshots per state plus /tmp/console.log from console/requestfailed handlers"
+    },
+    {
+      "eval": 1,
+      "model": "sonnet",
+      "behavior": "Reports pass/fail per state with the evidence attached",
+      "grade": "PASS",
+      "reason": "'before and after screenshots per state... and a pass/fail line per state'"
+    },
+    {
+      "eval": 2,
+      "model": "sonnet",
+      "behavior": "Produces before/after browser evidence",
+      "grade": "PASS",
+      "reason": "Same script run with tag=prefix on pre-fix code (git checkout <pre-fix-sha>) and tag=postfix; before/after-click screenshots"
+    },
+    {
+      "eval": 2,
+      "model": "sonnet",
+      "behavior": "Checks console and network for errors on click",
+      "grade": "PASS",
+      "reason": "console, requestfailed, response status>=400 and POST/PUT request logging on click"
+    },
+    {
+      "eval": 2,
+      "model": "sonnet",
+      "behavior": "Does not substitute unit tests for browser proof",
+      "grade": "PASS",
+      "reason": "Browser Playwright runs on old and new builds; no unit-test substitution"
+    },
+    {
+      "eval": 3,
+      "model": "sonnet",
+      "behavior": "Recognizes visual fidelity is out of scope and points to reviewing-ui",
+      "grade": "PASS",
+      "reason": "'visual-fidelity question, which SKILL.md excludes... I route to reviewing-ui'"
+    },
+    {
+      "eval": 3,
+      "model": "sonnet",
+      "behavior": "Does not claim a functional Playwright run answers a visual-design question",
+      "grade": "PASS",
+      "reason": "'I would not claim \"on-brand\" or \"matches Figma\" from this skill's output'"
+    },
+    {
+      "eval": 1,
+      "model": "opus",
+      "behavior": "Uses Playwright (Python) and waits for networkidle before inspecting the DOM",
+      "grade": "PASS",
+      "reason": "verify_consent.py: sync_playwright, page.wait_for_load_state('networkidle') after goto and reload"
+    },
+    {
+      "eval": 1,
+      "model": "opus",
+      "behavior": "Tests the loading, error, empty and success states",
+      "grade": "PASS",
+      "reason": "Table forces Loading (delayed route), Empty (GET returns {}), Error (save returns 500), Success (real flow)"
+    },
+    {
+      "eval": 1,
+      "model": "opus",
+      "behavior": "Captures screenshots and console logs as evidence",
+      "grade": "PASS",
+      "reason": "before/after_save/after_reload screenshots plus /tmp/q1/console.log from console and requestfailed"
+    },
+    {
+      "eval": 1,
+      "model": "opus",
+      "behavior": "Reports pass/fail per state with the evidence attached",
+      "grade": "PASS",
+      "reason": "'one screenshot per forced state... and a pass/fail line for each state'"
+    },
+    {
+      "eval": 2,
+      "model": "opus",
+      "behavior": "Produces before/after browser evidence",
+      "grade": "PASS",
+      "reason": "One script run as 'before' on HEAD~1 worktree and 'after' on fix, with pre/post-click screenshots per run"
+    },
+    {
+      "eval": 2,
+      "model": "opus",
+      "behavior": "Checks console and network for errors on click",
+      "grade": "PASS",
+      "reason": "Logs console, requestfailed and non-GET requests; checks write request 2xx and no new console errors"
+    },
+    {
+      "eval": 2,
+      "model": "opus",
+      "behavior": "Does not substitute unit tests for browser proof",
+      "grade": "PASS",
+      "reason": "Proof is Playwright runs against both builds; no unit tests substituted"
+    },
+    {
+      "eval": 3,
+      "model": "opus",
+      "behavior": "Recognizes visual fidelity is out of scope and points to reviewing-ui",
+      "grade": "PASS",
+      "reason": "'outside what this skill does... the right skill is reviewing-ui'"
+    },
+    {
+      "eval": 3,
+      "model": "opus",
+      "behavior": "Does not claim a functional Playwright run answers a visual-design question",
+      "grade": "PASS",
+      "reason": "Functional screenshots 'don't prove Figma fidelity'; 'I won't give a verdict on it here'"
+    }
+  ]
+}

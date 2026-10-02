@@ -1,0 +1,215 @@
+{
+ "skill": "intent",
+ "results": [
+  {
+   "eval": 1,
+   "model": "haiku",
+   "behavior": "Asks or answers all six forcing questions (who, problem, success, out of scope, assumptions, rollback)",
+   "grade": "PASS",
+   "reason": "Numbered questions 1-6 cover who, problem, success, out of scope, assumptions, rollback"
+  },
+  {
+   "eval": 1,
+   "model": "haiku",
+   "behavior": "Lists at least 3 assumptions",
+   "grade": "PASS",
+   "reason": "Lists 3 assumptions (CSV accepted, owners interpret fields, no new legal questions)"
+  },
+  {
+   "eval": 1,
+   "model": "haiku",
+   "behavior": "States an observable success criterion (a number, event, or log line), not 'users like it'",
+   "grade": "PARTIAL",
+   "reason": "Offers candidate metrics ('< 2 minutes', '% adoption') but asks user to pick; none committed"
+  },
+  {
+   "eval": 1,
+   "model": "haiku",
+   "behavior": "Outputs the FOR/PROBLEM/SUCCESS/OUT OF SCOPE/ASSUMPTIONS/ROLLBACK contract block",
+   "grade": "FAIL",
+   "reason": "No contract block; says 'Once you answer these, I'll produce the PRD contract'"
+  },
+  {
+   "eval": 1,
+   "model": "haiku",
+   "behavior": "Does not write code or architecture",
+   "grade": "PASS",
+   "reason": "No code or architecture written"
+  },
+  {
+   "eval": 2,
+   "model": "haiku",
+   "behavior": "Produces the six-question contract first",
+   "grade": "FAIL",
+   "reason": "Asks 5 different framing questions; no six-answer contract produced"
+  },
+  {
+   "eval": 2,
+   "model": "haiku",
+   "behavior": "Expands into the 8-section template from prd-template.md because a full PRD for stakeholders was requested",
+   "grade": "PARTIAL",
+   "reason": "Names all 8 template sections it 'will write' but fills none, pending answers"
+  },
+  {
+   "eval": 2,
+   "model": "haiku",
+   "behavior": "Assigns P0/P1/P2 priorities to features",
+   "grade": "FAIL",
+   "reason": "No P0/P1/P2 priorities assigned anywhere"
+  },
+  {
+   "eval": 3,
+   "model": "haiku",
+   "behavior": "Does not run the six-question ritual for a trivial one-line change",
+   "grade": "PASS",
+   "reason": "'This request is outside the scope of /intent'"
+  },
+  {
+   "eval": 3,
+   "model": "haiku",
+   "behavior": "Proceeds directly or says the intent step is unnecessary here",
+   "grade": "PASS",
+   "reason": "'Edit the pricing page directly... No intent, PRD, or review cycle needed'"
+  },
+  {
+   "eval": 1,
+   "model": "sonnet",
+   "behavior": "Asks or answers all six forcing questions (who, problem, success, out of scope, assumptions, rollback)",
+   "grade": "PASS",
+   "reason": "Contract answers all six fields under stated assumptions"
+  },
+  {
+   "eval": 1,
+   "model": "sonnet",
+   "behavior": "Lists at least 3 assumptions",
+   "grade": "PASS",
+   "reason": "Five numbered assumptions"
+  },
+  {
+   "eval": 1,
+   "model": "sonnet",
+   "behavior": "States an observable success criterion (a number, event, or log line), not 'users like it'",
+   "grade": "PASS",
+   "reason": "'60% of SMB accounts... export... with no support ticket'; median <60s"
+  },
+  {
+   "eval": 1,
+   "model": "sonnet",
+   "behavior": "Outputs the FOR/PROBLEM/SUCCESS/OUT OF SCOPE/ASSUMPTIONS/ROLLBACK contract block",
+   "grade": "PASS",
+   "reason": "Full FOR/PROBLEM/SUCCESS/OUT OF SCOPE/ASSUMPTIONS/ROLLBACK block"
+  },
+  {
+   "eval": 1,
+   "model": "sonnet",
+   "behavior": "Does not write code or architecture",
+   "grade": "PASS",
+   "reason": "No code; defers architecture to /plan-eng-review"
+  },
+  {
+   "eval": 2,
+   "model": "sonnet",
+   "behavior": "Produces the six-question contract first",
+   "grade": "PASS",
+   "reason": "Emits intent contract block before PRD skeleton"
+  },
+  {
+   "eval": 2,
+   "model": "sonnet",
+   "behavior": "Expands into the 8-section template from prd-template.md because a full PRD for stakeholders was requested",
+   "grade": "PASS",
+   "reason": "Reads prd-template.md; outlines all 8 sections with content"
+  },
+  {
+   "eval": 2,
+   "model": "sonnet",
+   "behavior": "Assigns P0/P1/P2 priorities to features",
+   "grade": "PASS",
+   "reason": "Solution: 'P0 reminder... P1 snooze... P2 calendar sync'"
+  },
+  {
+   "eval": 3,
+   "model": "sonnet",
+   "behavior": "Does not run the six-question ritual for a trivial one-line change",
+   "grade": "PASS",
+   "reason": "'I would not invoke /intent'"
+  },
+  {
+   "eval": 3,
+   "model": "sonnet",
+   "behavior": "Proceeds directly or says the intent step is unnecessary here",
+   "grade": "PASS",
+   "reason": "Would grep and fix recieve->receive directly"
+  },
+  {
+   "eval": 1,
+   "model": "opus",
+   "behavior": "Asks or answers all six forcing questions (who, problem, success, out of scope, assumptions, rollback)",
+   "grade": "PASS",
+   "reason": "Contract answers all six fields; clarifying questions plus assumed answers"
+  },
+  {
+   "eval": 1,
+   "model": "opus",
+   "behavior": "Lists at least 3 assumptions",
+   "grade": "PASS",
+   "reason": "Four numbered assumptions with validation notes"
+  },
+  {
+   "eval": 1,
+   "model": "opus",
+   "behavior": "States an observable success criterion (a number, event, or log line), not 'users like it'",
+   "grade": "PASS",
+   "reason": "'under 2 minutes', tickets fall to ~0 in 30 days, auditor acceptance"
+  },
+  {
+   "eval": 1,
+   "model": "opus",
+   "behavior": "Outputs the FOR/PROBLEM/SUCCESS/OUT OF SCOPE/ASSUMPTIONS/ROLLBACK contract block",
+   "grade": "PASS",
+   "reason": "Full six-field contract block present"
+  },
+  {
+   "eval": 1,
+   "model": "opus",
+   "behavior": "Does not write code or architecture",
+   "grade": "PASS",
+   "reason": "No code; architecture deferred to /plan-eng-review"
+  },
+  {
+   "eval": 2,
+   "model": "opus",
+   "behavior": "Produces the six-question contract first",
+   "grade": "PASS",
+   "reason": "'Contract (P0 Intent)' block precedes PRD outline"
+  },
+  {
+   "eval": 2,
+   "model": "opus",
+   "behavior": "Expands into the 8-section template from prd-template.md because a full PRD for stakeholders was requested",
+   "grade": "PASS",
+   "reason": "All 8 sections outlined with substantive content"
+  },
+  {
+   "eval": 2,
+   "model": "opus",
+   "behavior": "Assigns P0/P1/P2 priorities to features",
+   "grade": "PASS",
+   "reason": "Solution: 'P0: reminders... P1: weekly digest. P2: price-change alerts'"
+  },
+  {
+   "eval": 3,
+   "model": "opus",
+   "behavior": "Does not run the six-question ritual for a trivial one-line change",
+   "grade": "PASS",
+   "reason": "'This doesn't need /intent'"
+  },
+  {
+   "eval": 3,
+   "model": "opus",
+   "behavior": "Proceeds directly or says the intent step is unnecessary here",
+   "grade": "PASS",
+   "reason": "Gives exact grep, diff, verify and commit steps"
+  }
+ ]
+}

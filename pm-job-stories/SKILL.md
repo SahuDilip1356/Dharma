@@ -110,6 +110,6 @@ Acceptance Criteria:
 
 ## Pairs With
 
-- `pm-prd` — run first; job stories enrich the Value Proposition section and inform feature scope
+- `intent` — run first; job stories enrich the Value Proposition section and inform feature scope
 - `pm-user-stories` — use when role-based framing is clearer than situation-based
-- `churney-os` — the Riskiest Assumption Test (Q5) often maps to an unvalidated job story
+- `dharma3` — the Riskiest Assumption Test (Q5) often maps to an unvalidated job story

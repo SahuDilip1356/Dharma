@@ -1,0 +1,85 @@
+[
+  {
+    "query": "Kick off a new feature: SMBs can export consent logs",
+    "expected_skill": "intent"
+  },
+  {
+    "query": "Lock the requirements for the renewal reminders",
+    "expected_skill": "intent"
+  },
+  {
+    "query": "I want to build an AI tool that writes privacy policies",
+    "expected_skill": "office-hours"
+  },
+  {
+    "query": "Turn this into tasks the agents can execute",
+    "expected_skill": "spec-chain"
+  },
+  {
+    "query": "/dharma3 status",
+    "expected_skill": "dharma3"
+  },
+  {
+    "query": "where were we on the clinic SaaS?",
+    "expected_skill": "dharma3"
+  },
+  {
+    "query": "Add a retry to fetchConsents()",
+    "expected_skill": "coding-discipline"
+  },
+  {
+    "query": "Design a landing page for the clinic SaaS",
+    "expected_skill": "design-md"
+  },
+  {
+    "query": "Make this page look like Stripe",
+    "expected_skill": "design-md"
+  },
+  {
+    "query": "a11y audit on the consent banner",
+    "expected_skill": "reviewing-ui"
+  },
+  {
+    "query": "Does the dashboard work on mobile?",
+    "expected_skill": "reviewing-ui"
+  },
+  {
+    "query": "Which model should the DPDPA bot use and what will it cost per month?",
+    "expected_skill": "shipping-ai-features"
+  },
+  {
+    "query": "Write the system prompt for the DPDPA bot",
+    "expected_skill": "prompt-engineering"
+  },
+  {
+    "query": "Test the settings form in a real browser",
+    "expected_skill": "webapp-testing"
+  },
+  {
+    "query": "Is it true DPDPA fines are ₹500 crore?",
+    "expected_skill": "fact-check"
+  },
+  {
+    "query": "RICE vs ICE for our Q4 roadmap?",
+    "expected_skill": "pm-prioritization"
+  },
+  {
+    "query": "Write job stories for the export feature",
+    "expected_skill": "pm-job-stories"
+  },
+  {
+    "query": "Is there a skill for Terraform?",
+    "expected_skill": "find-skills"
+  },
+  {
+    "query": "The checkout throws a 500 and I don't know why",
+    "expected_skill": "superpowers-debug"
+  },
+  {
+    "query": "Rename usr to user in Profile.tsx",
+    "expected_skill": [
+      "coding-discipline",
+      "none"
+    ]
+  }
+]

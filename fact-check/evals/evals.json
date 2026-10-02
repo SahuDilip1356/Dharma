@@ -1,0 +1,38 @@
+[
+  {
+    "skills": [
+      "fact-check"
+    ],
+    "query": "Fact check this: 'Under DPDPA, every company must appoint a Data Protection Officer by 2025 or face a ₹500 crore fine.'",
+    "files": [],
+    "expected_behavior": [
+      "Splits the claim into separate checkable parts (who must appoint a DPO, deadline, fine amount)",
+      "Checks against primary sources (the Act/Rules) via lateral reading, or states it would",
+      "Gives a calibrated verdict per part (e.g. partly false/misleading) rather than one blanket label",
+      "Explains the manipulation technique (e.g. exaggerated penalty) so the user can spot it next time"
+    ]
+  },
+  {
+    "skills": [
+      "fact-check"
+    ],
+    "query": "Is this source reliable? A blog called 'privacyfacts-now.biz' says WhatsApp is shutting down in India next month.",
+    "files": [],
+    "expected_behavior": [
+      "Applies SIFT/lateral reading — checks what other sources say about the site and the claim",
+      "Flags the domain and the extraordinary claim as warning signs",
+      "Gives a credibility assessment with reasons, not just 'unreliable'"
+    ]
+  },
+  {
+    "skills": [
+      "fact-check"
+    ],
+    "query": "Write me a poem about privacy.",
+    "files": [],
+    "expected_behavior": [
+      "Recognizes this is creative content, not a fact-check request",
+      "Does not run the fact-check workflow"
+    ]
+  }
+]

@@ -1,0 +1,39 @@
+[
+  {
+    "skills": [
+      "reviewing-ui"
+    ],
+    "query": "Review the new consent banner component before we ship it.",
+    "files": [
+      "components/ConsentBanner.tsx"
+    ],
+    "expected_behavior": [
+      "Runs the guideline audit, accessibility, responsive and interaction reviews, then design QA last",
+      "Reports findings as [severity] file:line — rule — fix",
+      "Sorts findings critical → minor",
+      "Ends with an explicit ship/hold call"
+    ]
+  },
+  {
+    "skills": [
+      "reviewing-ui"
+    ],
+    "query": "Check if the pricing page works on mobile.",
+    "files": [],
+    "expected_behavior": [
+      "Runs only the responsive review (and anything it directly implies), not the full five-step pass",
+      "Checks the 375px breakpoint at minimum"
+    ]
+  },
+  {
+    "skills": [
+      "design-md"
+    ],
+    "query": "Design a landing page for the Healthcare Clinic SaaS.",
+    "files": [],
+    "expected_behavior": [
+      "Recognizes this is a design/build request, not a review — says reviewing-ui is the wrong skill and routes to design-md (landing pages) or designing-ui",
+      "Does not run the review checklist on a page that doesn't exist yet"
+    ]
+  }
+]

@@ -1,5 +1,22 @@
 # Dharma — AI-Native Product Development Framework
 
+> **Restructured 2026-10-02** (per Anthropic's skill-authoring best practices): 52 skills → 25.
+> Dharma3 (`~/.claude/skills/dharma3`) is now the orchestrator. Retired skills are kept, unloaded, in `_archive/`.
+> Names below this note are the v1 names. Where each one went:
+>
+> | v1 skill(s) | Now |
+> |---|---|
+> | `lifecycle-orchestrator`, `superpowers`, `churney-os` | `dharma3` (reference files under `dharma3/reference/`) |
+> | `karpathy-discipline`, `think-before-coding`, `simplicity-first`, `surgical-changes`, `goal-driven-execution` | `coding-discipline` |
+> | `uiux-designer`, `uiux-design-intelligence`, `uiux-frontend-design-system`, `frontend-design`, `uiux-react-patterns` | `designing-ui` |
+> | `uiux-audit`, `uiux-accessibility-review`, `uiux-responsive-review`, `uiux-interaction-review`, `uiux-design-qa` | `reviewing-ui` |
+> | `ai-safety-eval`, `inference-economics`, `prompt-optimization`, `ai-observability`, `benchmark-framework`, `model-governance` | `shipping-ai-features` |
+> | `pm-prd` → `intent` · `superpowers-brainstorm` → `office-hours` · `superpowers-write-plan` → `spec-chain` | global skills in `~/.claude/skills` |
+> | `react-best-practices` | `vercel:react-best-practices` plugin |
+> | `memory-layer`, `episodic-memory`, `dharma-resume` | retired — SessionStart/SessionEnd hooks own memory |
+> | `claude-prompt-engineering` | renamed `prompt-engineering` |
+
+
 > Build with discipline. Ship with evidence. Govern with intention.
 
 Dharma is a 38-skill, 8-route product development framework that runs inside Claude Code. It replaces ad-hoc AI-assisted development with a structured lifecycle: classify the work, select the right specialist skills, enforce phase gates, and require verifiable evidence before any completion claim.
@@ -258,13 +275,14 @@ Extends Dharma's reach — one skill resolves ecosystem gaps dynamically; one go
 
 ---
 
-### Layer 6 — AI & Economics (6 skills)
+### Layer 6 — AI & Economics (7 skills)
 
 Governs the full lifecycle of AI/LLM-powered features — from cost design to post-ship quality.
 
 | Skill | Phase | Purpose |
 |---|---|---|
 | `inference-economics` | Phase 2 | Model selection, token budget, cost ceiling — before writing the prompt |
+| `prompt-engineering` | Phase 3 | Prompt authoring + per-model calibration: structure, output shape, thinking/effort, tool and agentic steering |
 | `prompt-optimization` | Phase 3 | Prompt versioning, token efficiency, consistency testing |
 | `ai-safety-eval` | Phase 3 | Pre-ship gate: adversarial testing, hallucination detection, bias audit, cost validation |
 | `ai-observability` | Phase 5 | Post-ship monitoring: 5-layer stack covering latency, errors, cost, quality, drift |
@@ -276,6 +294,7 @@ Governs the full lifecycle of AI/LLM-powered features — from cost design to po
 **The AI feature lifecycle in Dharma:**
 ```
 Phase 2: inference-economics designs the cost envelope and selects the model
+Phase 3: prompt-engineering writes the prompt and calibrates it to that model
 Phase 3: prompt-optimization prepares and versions the prompt
 Phase 3: ai-safety-eval gates on safety, hallucination, bias, cost constraints
 Phase 5: ai-observability sets up post-ship monitoring before go-live
@@ -431,6 +450,7 @@ Five valid completion states — and only five:
 | Skill | File |
 |---|---|
 | `inference-economics` | `inference-economics/SKILL.md` |
+| `prompt-engineering` | `prompt-engineering/SKILL.md` |
 | `prompt-optimization` | `prompt-optimization/SKILL.md` |
 | `ai-safety-eval` | `ai-safety-eval/SKILL.md` |
 | `ai-observability` | `ai-observability/SKILL.md` |

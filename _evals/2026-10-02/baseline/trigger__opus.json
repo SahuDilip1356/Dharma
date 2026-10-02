@@ -1,0 +1,22 @@
+[
+{"n": 1, "skill": "intent", "why": "\"Kick off\" new feature matches intent triggers"},
+{"n": 2, "skill": "intent", "why": "\"Lock the requirements\" is an explicit intent trigger"},
+{"n": 3, "skill": "office-hours", "why": "Solution-first inception idea needs pain reframing"},
+{"n": 4, "skill": "spec-chain", "why": "Task breakdown for agents is spec-chain trigger"},
+{"n": 5, "skill": "dharma3", "why": "Explicit /dharma3 invocation"},
+{"n": 6, "skill": "dharma3", "why": "\"Where were we\" is a dharma3 resume trigger"},
+{"n": 7, "skill": "coding-discipline", "why": "Small code edit; minimal, surgical change"},
+{"n": 8, "skill": "design-md", "why": "Landing page design that converts named explicitly"},
+{"n": 9, "skill": "design-md", "why": "Style of known brand (Stripe) is design-md"},
+{"n": 10, "skill": "reviewing-ui", "why": "\"a11y audit\" is explicit reviewing-ui trigger"},
+{"n": 11, "skill": "reviewing-ui", "why": "Check mobile responsiveness of built UI"},
+{"n": 12, "skill": "shipping-ai-features", "why": "Model choice and cost ceilings for LLM feature"},
+{"n": 13, "skill": "prompt-engineering", "why": "Writing system prompt for Claude-powered feature"},
+{"n": 14, "skill": "webapp-testing", "why": "Real-browser form test via Playwright"},
+{"n": 15, "skill": "fact-check", "why": "\"Is it true\" claim verification"},
+{"n": 16, "skill": "pm-prioritization", "why": "\"RICE vs ICE\" is explicit trigger"},
+{"n": 17, "skill": "pm-job-stories", "why": "\"Write job stories\" is explicit trigger"},
+{"n": 18, "skill": "find-skills", "why": "\"Is there a skill for X\" explicit trigger"},
+{"n": 19, "skill": "superpowers-debug", "why": "Unknown-cause error needs root cause investigation"},
+{"n": 20, "skill": "coding-discipline", "why": "Code edit; touch only what was asked"}
+]
