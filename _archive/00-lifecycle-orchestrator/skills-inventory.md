@@ -128,15 +128,102 @@ Cross-cutting — runs before and after every Dharma skill invocation. Not route
 
 | Functional Name | Actual Skill | Status | Notes |
 |----------------|-------------|--------|-------|
-| `memory-layer` | `memory-layer` | ✅ Installed | Pre/post-flight wrapper — loads global + project memory before skills; writes decisions/learnings after |
+| `memory-layer` | `memory-layer` | ✅ Installed | Pre/post-flight wrapper — loads global + project memory before skills; writes decisions/learnings after. Owns semantic memory (global + project). |
+| `episodic-memory` | `episodic-memory` | ✅ Installed | Captures session digests into `[project]/memory/episodic/`. Owns episodic memory — past prompts, drafts, outputs, open threads. Runs post-flight before memory-layer. |
+| `dharma-resume` | `dharma-resume` | ✅ Installed | Session continuity — reads STATE.md + recent episodic digests; outputs Resume Brief; routes back into orchestrator at the right phase. Triggers on "resume", "continue", "where were we". |
+
+**Three memory types covered:**
+- Semantic (long-term): `memory-layer` (global + project-level facts)
+- Episodic (interaction history): `episodic-memory` (session digests)
+- Working (immediate): `dharma-resume` + `STATE.md` + Phase 0 evidence
+
+See `00-lifecycle-orchestrator/agent-architecture.md` for the full mapping to canonical agent architecture.
+
+---
+
+## External Runtime Plugins (Layer 0+, Optional Candidates)
+
+External plugins/runtimes that operate beneath skills. Distinct from Layer 0 (Memory) — these are **external**, **optional**, and **project-scoped by default**. Not invoked directly; they modify how tools behave when present.
+
+| Functional Name | Plugin / Source | Status | Notes |
+|----------------|----------------|--------|-------|
+| `context-compression` | `mksglu/context-mode` v1.0.107 (Elastic-2.0) | 🟡 Candidate (project-scoped, sandbox only) | MCP server installed at `~/sandboxes/context-mode-test/` without hooks. Tools available but NOT auto-redirected — `WebFetch` still bypasses Context Mode. Decision log: `decisions.md` [2026-05-04]. |
+
+---
+
+## Candidate Skills (Under Evaluation)
+
+Skills created on demand via `skill-creator` (Step 0.5 Tier 2 fallback). Each starts here until promoted to its target layer.
+
+| Skill | Created | Source brief | Eval status | Promotion target layer |
+|---|---|---|---|---|
+| _(none yet)_ | — | — | — | — |
+
+### Lifecycle of a candidate skill
+1. **Created** by `anthropic-skills:skill-creator` after find-skills returned nothing AND user approved building
+2. **Saved** to this section with creation date and the gap brief
+3. **Evaluated** per skill-creator's eval framework (≥80% pass rate target)
+4. **Validated** in 3+ real Dharma tasks (no incorrect outputs)
+5. **Annotated** with KPIs (per `skill-kpis.md`) + tool access (per `tool-access-matrix.md`) + ownership boundaries (per `ownership-boundaries.md`)
+6. **Promoted** to its target layer when all five conditions hold
+
+### What flags a candidate skill in evidence
+While in Candidate status, any output produced by the skill is flagged in the evidence ledger as `[candidate skill output — verify carefully]`. Lead Agent (G8) Final Evaluation must explicitly review candidate-skill outputs before passing the verdict.
+
+### Demotion / removal
+A candidate skill is removed if:
+- Eval pass rate stays below 80% after 2+ revision rounds
+- Produces incorrect output in 2+ real tasks
+- Better-fit installed or external skill is found via `find-skills` after creation
+- User explicitly removes (e.g., "this skill isn't pulling its weight")
+
+### Promotion criteria (Candidate → Installed)
+Move from "Candidate" to "Installed" only when ALL true:
+- Run in 3+ real Dharma projects without breaking existing skills
+- Measurable context reduction in real workloads (not synthetic tests)
+- Hook deployment question resolved (project-scoped MCP install does NOT auto-redirect tools — would require global plugin install which has higher trust surface)
+
+### Demotion / removal triggers
+- Plugin upgrade introduces breaking changes to MCP protocol
+- Maintainer becomes unresponsive (>60 days no activity)
+- Security advisory published
+
+---
+
+## Phase 5 — Release Review Gates
+
+Slash commands invoked at release time. Not skills — gates that produce evidence.
+
+| Functional Name | Command | Status | When to invoke |
+|----------------|---------|--------|---------------|
+| `code-review-gate` (G6) | `/review` | ✅ Installed (`code-review` plugin, Anthropic official) | Every meaningful change before merge — bugs, edge cases, code quality |
+| `high-risk-review-gate` (G6.5) | `/ultrareview` | ✅ Installed (Claude Code built-in) | High-stakes changes only: auth, payments, data migration, security, AI safety, production infra. Cloud-based parallel multi-agent deep review. |
+
+### When G6.5 (`/ultrareview`) is mandatory
+| Trigger | Reason |
+|---------|--------|
+| Auth/RBAC changes | Privilege escalation risk |
+| Payment flow changes | Financial / regulatory risk |
+| Database migrations | Data loss / corruption risk |
+| Security-sensitive code | Vulnerability surface |
+| AI safety changes | Compliance / harm risk |
+| Production infrastructure | Outage risk |
+| Compliance-critical paths (DPDPA, GDPR, etc.) | Legal exposure |
+
+### Routing rule
+- All PRs run G6 (`/review`) by default
+- If `Risk level: high | critical` from Step 0 classification → ALSO run G6.5 (`/ultrareview`)
+- G6 failures block merge until resolved
+- G6.5 critical findings halt the release entirely; resolve and rerun
 
 ---
 
 ## Skill Count Summary
 
-| Layer | Installed | Planned |
-|-------|-----------|---------|
-| Memory & Context (Layer 0) | 1 | 0 |
+| Layer | Installed | Planned / Candidate |
+|-------|-----------|---------------------|
+| Memory & Context (Layer 0) | 3 | 0 |
+| External Runtime Plugins (Layer 0+) | 0 | 1 candidate (context-mode) |
 | Product & Planning | 5 | 0 |
 | Engineering Discipline | 4 | 0 |
 | Execution Methodology | 8 | 0 |
@@ -144,7 +231,8 @@ Cross-cutting — runs before and after every Dharma skill invocation. Not route
 | Testing | 1 | 0 |
 | AI & Economics | 6 | 0 |
 | Developer Experience | 2 | 0 |
-| **Total** | **38** | **0** |
+| Phase 5 Release Gates | 2 | 0 |
+| **Total** | **42** | **1 candidate** |
 
 ---
 

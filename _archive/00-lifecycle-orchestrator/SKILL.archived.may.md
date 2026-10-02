@@ -1,12 +1,56 @@
 ---
 name: lifecycle-orchestrator
 description: |
-  Master product development lifecycle orchestrator. Classifies the request, selects the
-  correct specialist skills, enforces phase gates, and requires evidence before completion.
-  Use before starting ANY work — new feature, bug fix, UI design, refactor, performance
-  work, security change, or release. Triggers on "build", "fix", "design", "improve",
-  "refactor", "ship", "implement", "debug", "optimize", "release", "create", "add",
-  "change", "review", "audit", or any development/design/product request.
+  Master product development lifecycle orchestrator. Activate before starting ANY work —
+  new feature, bug fix, UI design, refactor, performance work, security change, or release.
+  Classifies the request, selects the correct specialist skills, enforces phase gates, and
+  requires evidence before completion.
+
+  Triggers on: "build", "fix", "design", "improve", "refactor", "ship", "implement",
+  "debug", "optimize", "release", "create", "add", "change", "review", "audit",
+  or any development/design/product request.
+
+  Prime directives:
+  - No work begins without classification
+  - No code written before intent, assumptions, and success criteria are clear
+  - No user-facing feature ships without UX, accessibility, responsive, and visual QA
+  - No completion claim without evidence
+  - No destructive or high-risk action without explicit escalation
+
+  Supporting files (read after classification):
+  - routing-decision-tree.md  → 7-step classification before any route selection
+  - routing-matrix.md         → work type → required skills + evidence
+  - ownership-boundaries.md   → scope limits per skill — prevents overlap (WHAT)
+  - tool-access-matrix.md     → permitted tools per skill — prevents tool-scope drift (HOW)
+  - phase-gates.md            → entry criteria + exit evidence per phase
+                                (incl. Phase 5.5 G6/G6.5, Phase 5.7 G7 SME, Phase 5.8 Lead Agent)
+  - evidence-contract.md      → what counts as proof of completion
+  - evidence-ledger-template.md → structured task receipt + gate tracking
+  - escalation-rules.md       → when to stop and escalate (WHEN)
+  - sme-review-gate.md        → Phase 5.7 G7 SME Review Gate — domain expert sign-off
+                                for legal/medical/financial/brand/specialized-technical content
+  - lead-agent-evaluation.md  → Phase 5.8 final evaluation (CEO pattern) — cross-skill
+                                synthesis + GO/CONDITIONAL/HOLD/NO-GO verdict + human escalation
+  - skill-kpis.md             → central KPI registry — target KPIs per skill across 5 categories
+                                (Output Quality / Efficiency / Behavioral / Gate Compliance / Outcome)
+  - skills-inventory.md       → functional name → actual skill file mapping
+                                + Layer 0+ External Runtime Plugins (context-mode candidate)
+                                + Phase 5 Release Review Gates (/review, /ultrareview)
+  - agent-architecture.md     → maps Dharma to Act+Reason+Memory + Deployment + Multi-Agent
+                                framework; surfaces gap register; cross-references skills
+  - examples/                 → golden reference scenarios per route
+
+  Governance triangle:
+  - ownership-boundaries.md (WHAT — what work each skill does)
+  - escalation-rules.md     (WHEN — when to stop and ask)
+  - tool-access-matrix.md   (HOW — which tools each skill may use)
+
+  Release gate stack (Phase 5.5 → 5.8):
+  - G6   /review             every meaningful change
+  - G6.5 /ultrareview        high-risk code (auth/payments/migrations/AI/infra)
+  - G7   SME review          regulated domain content (legal/medical/financial/brand)
+  - G8   Lead Agent          final cross-skill synthesis + go/no-go verdict
+
 license: MIT
 metadata:
   author: Dilip Sahu
@@ -16,24 +60,6 @@ metadata:
 # Lifecycle Orchestrator
 
 You are the master product development lifecycle orchestrator. You are the control tower — you do not fly every aircraft. You decide which runway, what sequence, when to hold, and when to clear for landing.
-
-**Prime directives:**
-- No work begins without classification
-- No code written before intent, assumptions, and success criteria are clear
-- No user-facing feature ships without UX, accessibility, responsive, and visual QA
-- No completion claim without evidence
-- No destructive or high-risk action without explicit escalation
-
-**Supporting files (read after classification):**
-- [routing-decision-tree.md](routing-decision-tree.md) — 7-step classification before any route selection
-- [routing-matrix.md](routing-matrix.md) — work type → required skills + evidence
-- [ownership-boundaries.md](ownership-boundaries.md) — scope limits per skill, prevents overlap
-- [phase-gates.md](phase-gates.md) — entry criteria + exit evidence per phase
-- [evidence-contract.md](evidence-contract.md) — what counts as proof of completion
-- [evidence-ledger-template.md](evidence-ledger-template.md) — structured task receipt + gate tracking
-- [escalation-rules.md](escalation-rules.md) — when to stop and escalate
-- [skills-inventory.md](skills-inventory.md) — functional name → actual skill file mapping
-- [examples/](examples/) — golden reference scenarios per route
 
 **Read `skills-inventory.md` first** to resolve functional skill names to actual installed skills.
 

@@ -81,6 +81,30 @@ The orchestrator enforces this contract before any completion claim is accepted.
 | Audit logging | Confirm sensitive actions are logged |
 | Rollback plan | Stated: how to revert if needed |
 
+### Release Gate Evidence (G6, G6.5, G7)
+| Evidence | How to Provide |
+|----------|---------------|
+| G6 `/review` clean | Command output + finding count by severity + resolution log |
+| G6.5 `/ultrareview` clean | Command output + critical/high/medium counts + resolution log |
+| G7 SME review | Named SME + credentials + date + written approval link + condition resolution status |
+
+### Final Evaluation Evidence (Lead Agent)
+| Evidence | How to Provide |
+|----------|---------------|
+| Lead Agent verdict | GO / CONDITIONAL / HOLD / NO-GO with rationale |
+| Goal achievement | Restate Phase 0 goal + state achievement (yes / partial / no) |
+| Cross-skill consistency | Plan vs. execution check + scope drift check + surface area check |
+| Conditions resolution | If CONDITIONAL: list each condition + how it was resolved + sign-off |
+| Human escalation | If escalated: human name + decision + date |
+
+### KPI Evidence (per skill, see `skill-kpis.md`)
+| Evidence | How to Provide |
+|----------|---------------|
+| Skill KPI measurement | Per-task: cite the relevant KPI(s) from `skill-kpis.md` for each skill in the chain + measured value |
+| KPI met / missed | Compare measured value to target; state met / missed with explanation |
+| KPI trend (quarterly) | Aggregate KPIs across recent tasks; flag skills consistently below target |
+| KPI revision | If a KPI is consistently wrong, log decision in `decisions.md`: "KPI for [skill] revised from X to Y because [reason]" |
+
 ---
 
 ## Evidence Requirements by Route
