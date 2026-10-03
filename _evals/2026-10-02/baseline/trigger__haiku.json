@@ -1,0 +1,22 @@
+[
+  {"n": 1, "skill": "intent", "why": "Start a new feature with requirements"},
+  {"n": 2, "skill": "intent", "why": "Lock requirements for renewal reminders"},
+  {"n": 3, "skill": "office-hours", "why": "Reframe AI tool idea before building"},
+  {"n": 4, "skill": "spec-chain", "why": "Break requirements into agent tasks"},
+  {"n": 5, "skill": "dharma3", "why": "Check dharma3 project status"},
+  {"n": 6, "skill": "dharma3", "why": "Resume clinic SaaS project work"},
+  {"n": 7, "skill": "coding-discipline", "why": "Write focused code change with discipline"},
+  {"n": 8, "skill": "designing-ui", "why": "Design landing page UI"},
+  {"n": 9, "skill": "design-md", "why": "Apply Stripe visual language style"},
+  {"n": 10, "skill": "reviewing-ui", "why": "Accessibility audit on component"},
+  {"n": 11, "skill": "reviewing-ui", "why": "Check responsive behavior on mobile"},
+  {"n": 12, "skill": "shipping-ai-features", "why": "Model selection and cost planning"},
+  {"n": 13, "skill": "prompt-engineering", "why": "Write system prompt for LLM feature"},
+  {"n": 14, "skill": "webapp-testing", "why": "Test form in browser with Playwright"},
+  {"n": 15, "skill": "fact-check", "why": "Verify claim about DPDPA fines"},
+  {"n": 16, "skill": "pm-prioritization", "why": "Choose RICE vs ICE framework"},
+  {"n": 17, "skill": "pm-job-stories", "why": "Write job stories for feature"},
+  {"n": 18, "skill": "find-skills", "why": "Search for Terraform skill"},
+  {"n": 19, "skill": "superpowers-debug", "why": "Investigate 500 error root cause"},
+  {"n": 20, "skill": "none", "why": "Simple straightforward code rename"}
+]

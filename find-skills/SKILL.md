@@ -1,23 +1,11 @@
 ---
 name: find-skills
 description: |
-  Skill gap resolver for the Dharma orchestrator. Activates when the Route Receipt
-  identifies a specialized domain need that no installed Dharma skill covers.
-  Searches the open agent skills ecosystem (skills.sh), verifies quality, and
-  recommends installation or falls back gracefully to general capability.
-
-  Triggers when:
-  - skills-inventory.md lookup returns no match for a functional need
-  - Orchestrator identifies a domain gap during route construction
-  - User explicitly asks "is there a skill for X" or "find a skill for X"
-  - A task requires specialized knowledge outside Dharma's 36-skill inventory
-
-  Does NOT trigger when:
-  - A Dharma skill already covers the domain (check skills-inventory.md first)
-  - The gap is trivially covered by general LLM capability
-  - The request is too novel or niche for the ecosystem
-
-  Source: https://github.com/vercel-labs/skills (adapted for Dharma by Dilip Sahu)
+  Finds, vets, and recommends installing a third-party agent skill (from skills.sh) when
+  no installed skill covers a specialized domain the task needs. Use when the user asks
+  "is there a skill for X" or "find a skill for X", or when the Dharma3 route needs a
+  capability no installed skill provides. Skip it when an installed skill already covers
+  the need or general model capability is enough.
 license: MIT
 metadata:
   author: vercel-labs (adapted for Dharma)
@@ -25,6 +13,10 @@ metadata:
 ---
 
 # Find Skills — Dharma Skill Gap Resolver
+
+Installed-skill inventory: `~/.claude/skills/dharma3/reference/lifecycle/skills-inventory.md`
+(after the 2026-10-02 restructure, also check the 25 skills listed by the Skill tool).
+Adapted from https://github.com/vercel-labs/skills.
 
 **This skill fills gaps. It does not replace installed skills. Always check `skills-inventory.md` before invoking.**
 

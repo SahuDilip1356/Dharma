@@ -1,0 +1,41 @@
+[
+  {
+    "skills": [
+      "prompt-engineering"
+    ],
+    "query": "Write the system prompt for SaralPrivacy's DPDPA Q&A bot. It runs on Claude Sonnet, answers SMB owners' compliance questions from our retrieved wiki chunks, and must not give legal advice.",
+    "files": [],
+    "expected_behavior": [
+      "Confirms or assumes a specific model and calibrates to it",
+      "Structures the prompt with clear sections (role/context, task, retrieved-context handling, constraints, output format)",
+      "Tells the model to answer only from retrieved chunks and say when the answer isn't there",
+      "States the not-legal-advice boundary as a positive instruction with a reason, not a shouted ALL-CAPS rule",
+      "Controls output shape (length/format) explicitly"
+    ]
+  },
+  {
+    "skills": [
+      "prompt-engineering"
+    ],
+    "query": "Our Claude agent keeps suggesting changes instead of making them, and it re-verifies everything three times. Fix the prompt.",
+    "files": [],
+    "expected_behavior": [
+      "Diagnoses both behaviors as prompt-steering issues",
+      "Adds explicit instructions to act rather than suggest",
+      "Adds guidance that bounds verification/exploration",
+      "Explains why each change works"
+    ]
+  },
+  {
+    "skills": [
+      "prompt-engineering"
+    ],
+    "query": "Our prompt used assistant-message prefill and budget_tokens; after moving to a newer Claude model we get a 400 error. What do we change?",
+    "files": [],
+    "expected_behavior": [
+      "Identifies prefill and/or budget_tokens as the likely cause on newer models",
+      "Gives the replacement approach (e.g. instructions/structured output instead of prefill; adaptive thinking/effort instead of budget_tokens)",
+      "Does not invent unsupported API parameters"
+    ]
+  }
+]

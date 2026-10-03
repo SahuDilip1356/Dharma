@@ -1,0 +1,37 @@
+[
+  {
+    "skills": [
+      "design-md"
+    ],
+    "query": "Make our SubSense landing page look like Linear.",
+    "files": [],
+    "expected_behavior": [
+      "Loads the Linear design system from references/ (or states which reference file it would load)",
+      "Applies concrete tokens from it (colors, type, spacing), not generic 'clean and modern' adjectives",
+      "Adapts it to SubSense's content rather than cloning Linear's copy"
+    ]
+  },
+  {
+    "skills": [
+      "design-md"
+    ],
+    "query": "Design a high-converting landing page for the healthcare clinic SaaS — we don't have a brand yet.",
+    "files": [],
+    "expected_behavior": [
+      "Generates an original design system rather than copying one brand",
+      "Applies conversion (CRO) principles to the page structure — e.g. clear value proposition, primary CTA, social proof",
+      "Outputs a page blueprint (sections in order) plus the design system"
+    ]
+  },
+  {
+    "skills": [
+      "design-md"
+    ],
+    "query": "Set up the Postgres schema for appointments.",
+    "files": [],
+    "expected_behavior": [
+      "Recognizes backend/non-visual work is out of scope",
+      "Does not apply design-md"
+    ]
+  }
+]

@@ -1,0 +1,194 @@
+{
+  "skill": "coding-discipline",
+  "results": [
+    {
+      "eval": 1,
+      "model": "haiku",
+      "behavior": "States assumptions it is making (retry count, which errors are retryable, backoff) or asks",
+      "grade": "PARTIAL",
+      "reason": "States 3-5 attempts and exponential backoff, but retryable errors left vague ('can fail transiently'); no 4xx/5xx distinction."
+    },
+    {
+      "eval": 1,
+      "model": "haiku",
+      "behavior": "Changes only fetchConsents and what it strictly needs",
+      "grade": "PARTIAL",
+      "reason": "Scoped to lib/api.ts call site, but 'added import of retry utility if it doesn't exist' implies possibly creating new utility."
+    },
+    {
+      "eval": 1,
+      "model": "haiku",
+      "behavior": "Does not add a generic retry framework or config options nobody asked for",
+      "grade": "PARTIAL",
+      "reason": "Uses retry(fn, {maxAttempts, delayMs}) from './utils/retry' 'assuming this exists'; may introduce a generic util with options."
+    },
+    {
+      "eval": 1,
+      "model": "haiku",
+      "behavior": "Defines how the change will be verified",
+      "grade": "FAIL",
+      "reason": "No tests, commands, or verification steps defined anywhere in Q1."
+    },
+    {
+      "eval": 2,
+      "model": "haiku",
+      "behavior": "Does not start coding",
+      "grade": "PASS",
+      "reason": "'I'd stop here and ask'; no code written."
+    },
+    {
+      "eval": 2,
+      "model": "haiku",
+      "behavior": "Names the ambiguity and offers 2-3 concrete interpretations",
+      "grade": "PASS",
+      "reason": "Names ambiguity and lists 5 concrete interpretations (performance, UX, features, data accuracy, code quality)."
+    },
+    {
+      "eval": 2,
+      "model": "haiku",
+      "behavior": "Asks for or proposes a verifiable success criterion",
+      "grade": "PASS",
+      "reason": "Asks 'How will we know it's better?' with examples like 'load time under 1s'."
+    },
+    {
+      "eval": 3,
+      "model": "haiku",
+      "behavior": "Renames only that variable in that file",
+      "grade": "PARTIAL",
+      "reason": "Step 3: 'Verify no other files reference this variable (if they do, rename there too)' extends beyond the named file."
+    },
+    {
+      "eval": 3,
+      "model": "haiku",
+      "behavior": "Does not reformat, reorder imports, or fix unrelated issues it notices (it may mention them)",
+      "grade": "PASS",
+      "reason": "'I would NOT touch... Whitespace or formatting elsewhere in the file'."
+    },
+    {
+      "eval": 1,
+      "model": "sonnet",
+      "behavior": "States assumptions it is making (retry count, which errors are retryable, backoff) or asks",
+      "grade": "PASS",
+      "reason": "States 3 attempts, 200/400ms backoff, retry network/5xx/429, not 4xx."
+    },
+    {
+      "eval": 1,
+      "model": "sonnet",
+      "behavior": "Changes only fetchConsents and what it strictly needs",
+      "grade": "PASS",
+      "reason": "'Changed: lib/api.ts (fetchConsents only) and one test file'; inline loop inside fetchConsents."
+    },
+    {
+      "eval": 1,
+      "model": "sonnet",
+      "behavior": "Does not add a generic retry framework or config options nobody asked for",
+      "grade": "PASS",
+      "reason": "'I won't add a generic withRetry utility, a retry library, or a config object'."
+    },
+    {
+      "eval": 1,
+      "model": "sonnet",
+      "behavior": "Defines how the change will be verified",
+      "grade": "PASS",
+      "reason": "Three named tests (503x2 then OK, 400, 3 failures) and 'npx vitest run lib/api'."
+    },
+    {
+      "eval": 2,
+      "model": "sonnet",
+      "behavior": "Does not start coding",
+      "grade": "PASS",
+      "reason": "'I would not write code for this'; only read-only exploration."
+    },
+    {
+      "eval": 2,
+      "model": "sonnet",
+      "behavior": "Names the ambiguity and offers 2-3 concrete interpretations",
+      "grade": "PASS",
+      "reason": "Names missing definition of done and lists 6 concrete interpretations."
+    },
+    {
+      "eval": 2,
+      "model": "sonnet",
+      "behavior": "Asks for or proposes a verifiable success criterion",
+      "grade": "PASS",
+      "reason": "Asks 'How will we know it is better?' with checkable examples ('loads in under 1s', 375px)."
+    },
+    {
+      "eval": 3,
+      "model": "sonnet",
+      "behavior": "Renames only that variable in that file",
+      "grade": "PASS",
+      "reason": "'rename ... in components/Profile.tsx, and nothing else'; flags rather than edits other files if exported."
+    },
+    {
+      "eval": 3,
+      "model": "sonnet",
+      "behavior": "Does not reformat, reorder imports, or fix unrelated issues it notices (it may mention them)",
+      "grade": "PASS",
+      "reason": "'I would not reformat, reorder imports, \"modernize\" nearby code'; pre-existing issues listed not changed."
+    },
+    {
+      "eval": 1,
+      "model": "opus",
+      "behavior": "States assumptions it is making (retry count, which errors are retryable, backoff) or asks",
+      "grade": "PASS",
+      "reason": "States 3 attempts, 300/600ms backoff, network/5xx/429 only, and asks open questions."
+    },
+    {
+      "eval": 1,
+      "model": "opus",
+      "behavior": "Changes only fetchConsents and what it strictly needs",
+      "grade": "PASS",
+      "reason": "'Changed: lib/api.ts (fetchConsents only); lib/api.test.ts (3 new cases)'."
+    },
+    {
+      "eval": 1,
+      "model": "opus",
+      "behavior": "Does not add a generic retry framework or config options nobody asked for",
+      "grade": "PASS",
+      "reason": "'no generic retry util, no config options, no jitter/exponential schedule'."
+    },
+    {
+      "eval": 1,
+      "model": "opus",
+      "behavior": "Defines how the change will be verified",
+      "grade": "PASS",
+      "reason": "Plan with tsc --noEmit, 3 mocked tests with fake timers, 'npm test -- lib/api'."
+    },
+    {
+      "eval": 2,
+      "model": "opus",
+      "behavior": "Does not start coding",
+      "grade": "PASS",
+      "reason": "'I won't write code until we agree on a goal'."
+    },
+    {
+      "eval": 2,
+      "model": "opus",
+      "behavior": "Names the ambiguity and offers 2-3 concrete interpretations",
+      "grade": "PASS",
+      "reason": "Lists 6 concrete interpretations with explicit ambiguity statement."
+    },
+    {
+      "eval": 2,
+      "model": "opus",
+      "behavior": "Asks for or proposes a verifiable success criterion",
+      "grade": "PASS",
+      "reason": "Table of verifiable goals (LCP under 2s, axe zero critical violations, reproducing test)."
+    },
+    {
+      "eval": 3,
+      "model": "opus",
+      "behavior": "Renames only that variable in that file",
+      "grade": "PASS",
+      "reason": "'replace each identifier usr with user in components/Profile.tsx... nothing else'; flags cross-file cases."
+    },
+    {
+      "eval": 3,
+      "model": "opus",
+      "behavior": "Does not reformat, reorder imports, or fix unrelated issues it notices (it may mention them)",
+      "grade": "PASS",
+      "reason": "'I don't reformat, and I don't reorder imports'; issues 'Mentioned only'."
+    }
+  ]
+}

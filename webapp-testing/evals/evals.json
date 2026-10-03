@@ -1,0 +1,38 @@
+[
+  {
+    "skills": [
+      "webapp-testing"
+    ],
+    "query": "Verify the new consent-preference form on http://localhost:3000/settings works in the browser before we ship.",
+    "files": [],
+    "expected_behavior": [
+      "Uses Playwright (Python) and waits for networkidle before inspecting the DOM",
+      "Tests the loading, error, empty and success states",
+      "Captures screenshots and console logs as evidence",
+      "Reports pass/fail per state with the evidence attached"
+    ]
+  },
+  {
+    "skills": [
+      "webapp-testing"
+    ],
+    "query": "The 'Save' button on the billing page did nothing before my fix. Prove the fix works.",
+    "files": [],
+    "expected_behavior": [
+      "Produces before/after browser evidence",
+      "Checks console and network for errors on click",
+      "Does not substitute unit tests for browser proof"
+    ]
+  },
+  {
+    "skills": [
+      "webapp-testing"
+    ],
+    "query": "Does the pricing page look on-brand and match the Figma?",
+    "files": [],
+    "expected_behavior": [
+      "Recognizes visual fidelity is out of scope and points to reviewing-ui",
+      "Does not claim a functional Playwright run answers a visual-design question"
+    ]
+  }
+]

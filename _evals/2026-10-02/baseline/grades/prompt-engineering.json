@@ -1,0 +1,257 @@
+{
+ "skill": "prompt-engineering",
+ "results": [
+  {
+   "eval": 1,
+   "model": "haiku",
+   "behavior": "Confirms or assumes a specific model and calibrates to it",
+   "grade": "PASS",
+   "reason": "Targets 'Claude Sonnet 5' with calibration notes (adaptive + effort high, removed anti-laziness)."
+  },
+  {
+   "eval": 1,
+   "model": "haiku",
+   "behavior": "Structures the prompt with clear sections (role/context, task, retrieved-context handling, constraints, output format)",
+   "grade": "PARTIAL",
+   "reason": "Has Role/Instructions/Output format labels, but no distinct retrieved-context section or chunk delimiters; constraints mixed into numbered list."
+  },
+  {
+   "eval": 1,
+   "model": "haiku",
+   "behavior": "Tells the model to answer only from retrieved chunks and say when the answer isn't there",
+   "grade": "PASS",
+   "reason": "'Answer only from the provided wiki chunks... say so explicitly: This topic isn't covered in our docs.'"
+  },
+  {
+   "eval": 1,
+   "model": "haiku",
+   "behavior": "States the not-legal-advice boundary as a positive instruction with a reason, not a shouted ALL-CAPS rule",
+   "grade": "FAIL",
+   "reason": "'CRITICAL BOUNDARY: You are NOT a lawyer and CANNOT provide legal advice' - shouted, negative, no reason."
+  },
+  {
+   "eval": 1,
+   "model": "haiku",
+   "behavior": "Controls output shape (length/format) explicitly",
+   "grade": "PARTIAL",
+   "reason": "'short, scannable paragraphs', 'No preamble', cite in <wiki_quotes>; no explicit length limit."
+  },
+  {
+   "eval": 2,
+   "model": "haiku",
+   "behavior": "Diagnoses both behaviors as prompt-steering issues",
+   "grade": "PASS",
+   "reason": "'Two steering problems': missing default_to_action block and over-verification instructions."
+  },
+  {
+   "eval": 2,
+   "model": "haiku",
+   "behavior": "Adds explicit instructions to act rather than suggest",
+   "grade": "PASS",
+   "reason": "Adds <default_to_action> block 'implement changes rather than only suggesting them'."
+  },
+  {
+   "eval": 2,
+   "model": "haiku",
+   "behavior": "Adds guidance that bounds verification/exploration",
+   "grade": "PARTIAL",
+   "reason": "Removes self-check instructions; commit-to-approach block only added conditionally for Opus 4.6; no positive bound on verification."
+  },
+  {
+   "eval": 2,
+   "model": "haiku",
+   "behavior": "Explains why each change works",
+   "grade": "PASS",
+   "reason": "'Why this works' explains default_to_action flips verb and removing self-checks stops loop."
+  },
+  {
+   "eval": 3,
+   "model": "haiku",
+   "behavior": "Identifies prefill and/or budget_tokens as the likely cause on newer models",
+   "grade": "PASS",
+   "reason": "Names both prefill and budget_tokens as incompatible on newer models."
+  },
+  {
+   "eval": 3,
+   "model": "haiku",
+   "behavior": "Gives the replacement approach (e.g. instructions/structured output instead of prefill; adaptive thinking/effort instead of budget_tokens)",
+   "grade": "PASS",
+   "reason": "Prefill -> instruction/structured outputs/XML tags; budget_tokens -> thinking adaptive + output_config effort."
+  },
+  {
+   "eval": 3,
+   "model": "haiku",
+   "behavior": "Does not invent unsupported API parameters",
+   "grade": "PARTIAL",
+   "reason": "Mostly sound, but suggests thinking={'type': 'off'} (API uses 'disabled') and calls prefill an 'assistant_message_prefill' param."
+  },
+  {
+   "eval": 1,
+   "model": "sonnet",
+   "behavior": "Confirms or assumes a specific model and calibrates to it",
+   "grade": "PASS",
+   "reason": "Step 0 names claude-sonnet-5, cites its row, sets adaptive thinking + effort low/medium, no budget_tokens."
+  },
+  {
+   "eval": 1,
+   "model": "sonnet",
+   "behavior": "Structures the prompt with clear sections (role/context, task, retrieved-context handling, constraints, output format)",
+   "grade": "PASS",
+   "reason": "Role line plus <how_you_answer>, <not_legal_advice>, <style>, <examples>, with <documents> layout in user turn."
+  },
+  {
+   "eval": 1,
+   "model": "sonnet",
+   "behavior": "Tells the model to answer only from retrieved chunks and say when the answer isn't there",
+   "grade": "PASS",
+   "reason": "'Answer only from those chunks'; if not covered 'say so plainly in one sentence... Do not fill the gap from memory'."
+  },
+  {
+   "eval": 1,
+   "model": "sonnet",
+   "behavior": "States the not-legal-advice boundary as a positive instruction with a reason, not a shouted ALL-CAPS rule",
+   "grade": "PASS",
+   "reason": "<not_legal_advice> 'You provide general information... not legal advice' with reason (unknown facts, real penalties); no caps."
+  },
+  {
+   "eval": 1,
+   "model": "sonnet",
+   "behavior": "Controls output shape (length/format) explicitly",
+   "grade": "PASS",
+   "reason": "'short paragraphs, 120 words or fewer', lists only for discrete steps, <quotes>/<answer> tags."
+  },
+  {
+   "eval": 2,
+   "model": "sonnet",
+   "behavior": "Diagnoses both behaviors as prompt-steering issues",
+   "grade": "PASS",
+   "reason": "Diagnoses suggesting as verb-literal phrasing and re-verifying as inherited self-check instructions on Opus 5."
+  },
+  {
+   "eval": 2,
+   "model": "sonnet",
+   "behavior": "Adds explicit instructions to act rather than suggest",
+   "grade": "PASS",
+   "reason": "Rewrites suggestion verbs to imperatives and adds <default_to_action> block."
+  },
+  {
+   "eval": 2,
+   "model": "sonnet",
+   "behavior": "Adds guidance that bounds verification/exploration",
+   "grade": "PASS",
+   "reason": "Delete self-check lines, keep a single concrete check ('run the test suite once'), commit-to-approach block, lower effort."
+  },
+  {
+   "eval": 2,
+   "model": "sonnet",
+   "behavior": "Explains why each change works",
+   "grade": "PASS",
+   "reason": "Each change tied to cause (precise instruction following; Opus 5 already self-verifies; MUST overtriggers)."
+  },
+  {
+   "eval": 3,
+   "model": "sonnet",
+   "behavior": "Identifies prefill and/or budget_tokens as the likely cause on newer models",
+   "grade": "PASS",
+   "reason": "Prefill on last turn 400s on 4.6+; budget_tokens 400s on 4.7+."
+  },
+  {
+   "eval": 3,
+   "model": "sonnet",
+   "behavior": "Gives the replacement approach (e.g. instructions/structured output instead of prefill; adaptive thinking/effort instead of budget_tokens)",
+   "grade": "PASS",
+   "reason": "Adaptive thinking + effort + max_tokens; table of prefill replacements (structured outputs, enum tool, instructions)."
+  },
+  {
+   "eval": 3,
+   "model": "sonnet",
+   "behavior": "Does not invent unsupported API parameters",
+   "grade": "PASS",
+   "reason": "Uses only thinking adaptive, output_config effort, max_tokens, structured outputs; nothing invented."
+  },
+  {
+   "eval": 1,
+   "model": "opus",
+   "behavior": "Confirms or assumes a specific model and calibrates to it",
+   "grade": "PASS",
+   "reason": "Assumes claude-sonnet-5, asks to confirm vs 4.6, calibrates adaptive + effort low."
+  },
+  {
+   "eval": 1,
+   "model": "opus",
+   "behavior": "Structures the prompt with clear sections (role/context, task, retrieved-context handling, constraints, output format)",
+   "grade": "PASS",
+   "reason": "Role paragraph plus <scope>, <grounding>, <style>, <examples>, and <wiki_chunks> user-turn layout."
+  },
+  {
+   "eval": 1,
+   "model": "opus",
+   "behavior": "Tells the model to answer only from retrieved chunks and say when the answer isn't there",
+   "grade": "PASS",
+   "reason": "'Answer only from the documents in <wiki_chunks>'; if not covered say 'Our guides don't cover this yet'."
+  },
+  {
+   "eval": 1,
+   "model": "opus",
+   "behavior": "States the not-legal-advice boundary as a positive instruction with a reason, not a shouted ALL-CAPS rule",
+   "grade": "PASS",
+   "reason": "<scope> explains general info vs fact-specific questions with reason (exposure to penalties); no caps."
+  },
+  {
+   "eval": 1,
+   "model": "opus",
+   "behavior": "Controls output shape (length/format) explicitly",
+   "grade": "PASS",
+   "reason": "'Keep answers under 200 words', short plain paragraphs, numbered list only for ordered steps, citation format."
+  },
+  {
+   "eval": 2,
+   "model": "opus",
+   "behavior": "Diagnoses both behaviors as prompt-steering issues",
+   "grade": "PASS",
+   "reason": "Both traced to prompt: literal verb following, and leftover self-check lines on Opus 5."
+  },
+  {
+   "eval": 2,
+   "model": "opus",
+   "behavior": "Adds explicit instructions to act rather than suggest",
+   "grade": "PASS",
+   "reason": "Imperative phrasing plus <default_to_action> block; removes ask-before-editing text for reversible edits."
+  },
+  {
+   "eval": 2,
+   "model": "opus",
+   "behavior": "Adds guidance that bounds verification/exploration",
+   "grade": "PASS",
+   "reason": "'Run the relevant test once after your change. If it passes, you're done.' plus commit block and lower effort."
+  },
+  {
+   "eval": 2,
+   "model": "opus",
+   "behavior": "Explains why each change works",
+   "grade": "PASS",
+   "reason": "Each fix paired with its cause; diff shape shows removed vs added lines."
+  },
+  {
+   "eval": 3,
+   "model": "opus",
+   "behavior": "Identifies prefill and/or budget_tokens as the likely cause on newer models",
+   "grade": "PASS",
+   "reason": "'two separate breaking changes': budget_tokens 400 on 4.7+, last-turn prefill 400 on 4.6+."
+  },
+  {
+   "eval": 3,
+   "model": "opus",
+   "behavior": "Gives the replacement approach (e.g. instructions/structured output instead of prefill; adaptive thinking/effort instead of budget_tokens)",
+   "grade": "PASS",
+   "reason": "Adaptive thinking + effort + max_tokens; prefill replacement table (structured outputs, enum tool, instructions)."
+  },
+  {
+   "eval": 3,
+   "model": "opus",
+   "behavior": "Does not invent unsupported API parameters",
+   "grade": "PASS",
+   "reason": "Only documented params used (thinking adaptive, output_config effort, max_tokens)."
+  }
+ ]
+}

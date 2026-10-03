@@ -1,0 +1,22 @@
+[
+  {"n": 1, "skill": "intent", "why": "\"Kick off\" new feature is an intent trigger"},
+  {"n": 2, "skill": "intent", "why": "\"Lock the requirements\" is an explicit intent trigger"},
+  {"n": 3, "skill": "office-hours", "why": "User named a solution at inception; reframe from pain"},
+  {"n": 4, "skill": "spec-chain", "why": "Task breakdown for agents is a spec-chain trigger"},
+  {"n": 5, "skill": "dharma3", "why": "Explicit /dharma3 invocation"},
+  {"n": 6, "skill": "dharma3", "why": "\"Where were we\" triggers dharma3 resume"},
+  {"n": 7, "skill": "coding-discipline", "why": "Small code edit; minimal, surgical change"},
+  {"n": 8, "skill": "design-md", "why": "Landing page design belongs to design-md, not designing-ui"},
+  {"n": 9, "skill": "design-md", "why": "\"Look like Stripe\" is a design-md brand-style trigger"},
+  {"n": 10, "skill": "reviewing-ui", "why": "\"a11y audit\" is an explicit reviewing-ui trigger"},
+  {"n": 11, "skill": "reviewing-ui", "why": "\"Check mobile\" responsive review is reviewing-ui"},
+  {"n": 12, "skill": "shipping-ai-features", "why": "LLM model choice and cost ceilings"},
+  {"n": 13, "skill": "prompt-engineering", "why": "Writing a system prompt for a Claude feature"},
+  {"n": 14, "skill": "webapp-testing", "why": "\"Test in the browser\" is a webapp-testing trigger"},
+  {"n": 15, "skill": "fact-check", "why": "\"Is it true\" claim verification"},
+  {"n": 16, "skill": "pm-prioritization", "why": "\"RICE vs ICE\" is an explicit trigger"},
+  {"n": 17, "skill": "pm-job-stories", "why": "\"Write job stories\" is an explicit trigger"},
+  {"n": 18, "skill": "find-skills", "why": "\"Is there a skill for X\" is the trigger"},
+  {"n": 19, "skill": "superpowers-debug", "why": "Error with unknown cause needs root-cause debugging"},
+  {"n": 20, "skill": "coding-discipline", "why": "Code rename edit; touch only what was asked"}
+]
