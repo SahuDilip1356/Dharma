@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DPDPA Notice Pack Builder · SaralPrivacy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#121A2E; --navy-2:#1B2540; --navy-line:#2B3654;
+  --green:#07B981; --green-d:#059669; --green-tint:#E6F7F0;
+  --teal:#35B6AE; --gold:#E8AB42; --gold-d:#B98A1E; --gold-bg:#FBF3E2;
+  --slate:#334155; --slate-2:#5B6B82; --muted:#94A3B8;
+  --cloud:#F7F9FC; --cloud-2:#EEF2F8; --line:#E4E9F1; --white:#fff;
+  --risk:#E24B4A; --risk-bg:#FCEBEB;
+  --maxw:1280px; --pad:clamp(16px,4vw,40px);
+  --r-md:12px; --r-lg:18px; --pill:100px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--slate);background:var(--cloud);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{color:var(--navy);line-height:1.15;letter-spacing:-.02em;font-weight:700;margin:0}
+p{margin:0} a{color:var(--teal);text-decoration:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;font-weight:600;font-size:15px;padding:12px 22px;border-radius:var(--pill);border:none;cursor:pointer;transition:transform .2s var(--ease),background .2s;white-space:nowrap}
+.btn:hover{background:var(--green-d);transform:translateY(-1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn--ghost{background:transparent;color:var(--navy);border:1.5px solid #CBD5E1}
+.btn--ghost:hover{background:var(--cloud-2)}
+.btn--sm{padding:9px 16px;font-size:13.5px}
+.arr{transition:transform .2s var(--ease)} .btn:hover .arr{transform:translateX(3px)}
+
+/* nav */
+.nav{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+.nav__in{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo .emblem{width:36px;height:36px;object-fit:contain;flex:0 0 auto}
+.logo .wm{display:flex;flex-direction:column;line-height:1.12}
+.logo .wm b{font-size:16px;font-weight:700;letter-spacing:-.02em}
+.logo .wm .g{color:var(--green)} .logo .wm .n{color:var(--navy)}
+.logo .wm .tl{font-size:10px;color:var(--navy);letter-spacing:.02em}
+.nav .tag{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--teal);border:1.5px solid var(--teal);padding:3px 9px;border-radius:var(--pill)}
+
+/* header */
+.head{padding:24px 0 6px}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--teal)}
+.eyebrow::before{content:"";width:16px;height:2px;background:var(--teal);border-radius:2px}
+.head h1{font-size:clamp(24px,3.2vw,34px);margin:12px 0 8px}
+.head p{font-size:16px;color:var(--slate-2);max-width:660px}
+
+/* layout */
+.app{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:22px 0 64px;align-items:start}
+@media(max-width:920px){.app{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+
+/* stepper */
+.steps{display:flex;gap:4px;padding:14px 20px;border-bottom:1px solid var(--line);overflow-x:auto}
+.pip{flex:1;min-width:22px;height:5px;border-radius:4px;background:var(--cloud-2);transition:background .3s}
+.pip.done{background:var(--green)} .pip.now{background:var(--teal)}
+.panel{padding:22px 26px 6px;min-height:340px}
+.stepmeta{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.panel h2{font-size:20px;margin-bottom:6px}
+.panel .hint{font-size:13.5px;color:var(--slate-2);margin-bottom:18px}
+.field{margin-bottom:15px}
+label.lab{display:block;font-size:13.5px;font-weight:600;color:var(--navy);margin-bottom:7px}
+.req{color:var(--green-d)}
+input[type=text],input[type=email],input[type=tel],select,textarea{width:100%;border:1px solid #CBD5E1;border-radius:var(--r-md);padding:11px 14px;font-family:inherit;font-size:14.5px;color:var(--slate);background:#fff;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-tint)}
+textarea{resize:vertical;min-height:64px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.row2{grid-template-columns:1fr}}
+
+/* chips */
+.dgroup{margin-bottom:14px}
+.dgroup__t{font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:480px){.chips{grid-template-columns:1fr}}
+.chip{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:var(--r-md);padding:10px 12px;cursor:pointer;font-size:13px;transition:border-color .15s,background .15s}
+.chip:hover{border-color:#CBD5E1}
+.chip input{appearance:none;width:17px;height:17px;border:1.5px solid #CBD5E1;border-radius:5px;flex:0 0 auto;display:grid;place-items:center;cursor:pointer;transition:.15s}
+.chip input:checked{background:var(--green);border-color:var(--green)}
+.chip input:checked::after{content:"✓";color:#fff;font-size:11px;font-weight:700}
+.chip:has(input:checked){border-color:var(--green);background:var(--green-tint)}
+.chip.sens{position:relative}
+.chip.sens:has(input:checked){border-color:var(--gold);background:var(--gold-bg)}
+.chip .sx{margin-left:auto;font-size:10px;font-weight:700;color:var(--gold-d);text-transform:uppercase;letter-spacing:.03em}
+
+/* segmented */
+.seg{display:inline-flex;border:1px solid #CBD5E1;border-radius:var(--pill);overflow:hidden;flex-wrap:wrap}
+.seg button{background:#fff;border:none;padding:9px 16px;font-family:inherit;font-size:13px;font-weight:600;color:var(--slate-2);cursor:pointer;transition:.15s}
+.seg button.on{background:var(--green);color:#fff}
+
+/* purpose table */
+.ptable{display:flex;flex-direction:column;gap:8px}
+.prow{display:grid;grid-template-columns:130px 1fr;gap:10px;align-items:center}
+.prow .pd{font-size:13px;font-weight:600;color:var(--navy)}
+.prow input{font-size:13px;padding:8px 11px}
+.prow.vague input{border-color:var(--gold);background:var(--gold-bg)}
+.pwarn{font-size:11.5px;color:var(--gold-d);margin-top:3px}
+
+.flag{display:flex;gap:9px;align-items:flex-start;background:var(--gold-bg);border:1px solid #F0D9A8;border-radius:var(--r-md);padding:11px 13px;font-size:12.5px;color:var(--gold-d);margin-top:10px}
+.flag svg{flex:0 0 auto;margin-top:1px}
+.smartnote{display:flex;gap:9px;align-items:flex-start;background:var(--green-tint);border:1px solid #B6E8D4;border-radius:var(--r-md);padding:10px 13px;font-size:12.5px;color:var(--green-d);margin-top:12px}
+
+/* footer nav */
+.foot{display:flex;justify-content:space-between;align-items:center;padding:14px 26px 20px;border-top:1px solid var(--line);margin-top:6px}
+.foot .pg{font-size:13px;color:var(--muted)}
+
+/* preview */
+.preview{position:sticky;top:78px}
+.pvtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap}
+.pvtop h3{font-size:14px;color:var(--slate-2);font-weight:600}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--green-d);background:var(--green-tint);padding:4px 10px;border-radius:var(--pill)}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.scorechip{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;padding:5px 12px;border-radius:var(--pill)}
+.langbar{display:inline-flex;border:1px solid var(--line);border-radius:var(--pill);overflow:hidden}
+.langbar button{background:#fff;border:none;padding:6px 14px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--slate-2);cursor:pointer}
+.langbar button.on{background:var(--navy);color:#fff}
+.pvacts{display:flex;gap:8px;flex-wrap:wrap}
+
+.doc{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(20px,3vw,32px);max-height:68vh;overflow:auto}
+.doc h1.dt{font-size:21px;margin-bottom:4px}
+.doc .dmeta{font-size:12px;color:var(--muted);margin-bottom:18px}
+.doc h2.dh{font-size:14.5px;color:var(--navy);margin:18px 0 6px;padding-top:13px;border-top:1px solid var(--line)}
+.doc h2.dh:first-of-type{border-top:none;padding-top:0}
+.doc p,.doc li{font-size:13px;color:var(--slate);line-height:1.6}
+.doc ul{margin:5px 0;padding-left:18px} .doc li{margin-bottom:2px}
+.doc .muted{color:var(--muted);font-style:italic}
+.doc .disc{margin-top:20px;padding-top:13px;border-top:1px dashed #CBD5E1;font-size:11.5px;color:var(--muted)}
+
+/* result */
+.result{display:none;padding:22px 0 72px}
+.result.show{display:block}
+.rhead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.rhead h1{font-size:clamp(24px,3.2vw,34px)} .rhead p{font-size:15px;color:var(--slate-2);margin-top:6px;max-width:620px}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+@media(max-width:760px){.rgrid{grid-template-columns:1fr}}
+.rcard{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:22px}
+.rcard h3{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.scoreN{font-size:54px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.scorebar{height:8px;border-radius:6px;background:var(--cloud-2);margin:14px 0 10px;overflow:hidden}
+.scorebar i{display:block;height:100%;border-radius:6px;background:var(--green)}
+.flags{display:flex;flex-direction:column;gap:10px}
+.fl{display:flex;gap:9px;align-items:flex-start;font-size:13px}
+.fl .d{width:8px;height:8px;border-radius:50%;flex:0 0 auto;margin-top:5px}
+.fl b{color:var(--navy)}
+.out{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;margin-bottom:16px}
+.out__top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.out__top h3{font-size:16px}
+.mini{border:1px solid var(--line);border-radius:var(--r-md);padding:13px 15px;margin-bottom:10px}
+.mini__t{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--teal);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.mini p{font-size:13px;color:var(--slate)}
+.codeblk{background:var(--cloud);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px;font-size:12.5px;color:var(--slate);white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace;line-height:1.5}
+.copy{background:none;border:1px solid #CBD5E1;border-radius:var(--pill);padding:5px 12px;font-size:12px;font-weight:600;color:var(--slate);cursor:pointer;font-family:inherit}
+.copy:hover{border-color:var(--green);color:var(--green-d)}
+.rcta{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px}
+
+/* modal */
+.modal{position:fixed;inset:0;z-index:60;display:none;place-items:center;padding:20px;background:rgba(18,26,46,.55);backdrop-filter:blur(3px)}
+.modal.open{display:grid}
+.modal__card{background:#fff;border-radius:var(--r-lg);padding:clamp(24px,4vw,34px);max-width:430px;width:100%;position:relative}
+.modal__close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:24px;color:var(--muted);cursor:pointer;line-height:1}
+.modal h3{margin-bottom:6px} .modal__sub{font-size:14px;color:var(--slate-2);margin-bottom:18px}
+.modal input{margin-bottom:12px} .modal .btn{width:100%;justify-content:center}
+.modal__ok{display:none;text-align:center} .modal.done .modal__form{display:none} .modal.done .modal__ok{display:block}
+.modal__ok .seal{width:52px;height:52px;border-radius:50%;background:var(--green-tint);color:var(--green-d);display:grid;place-items:center;margin:0 auto 14px}
+.consent{display:flex;gap:9px;font-size:12px;color:var(--slate-2);margin-bottom:14px;align-items:flex-start}
+.consent input{width:auto;margin-top:2px;margin-bottom:0}
+.disc-note{font-size:11.5px;color:var(--muted);margin-top:14px}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav__in">
+    <a class="logo" href="landing-page.html"><img class="emblem" src="logo-emblem.png" alt="SaralPrivacy emblem"><span class="wm"><b><span class="g">saral</span><span class="n">Privacy</span></b><span class="tl">Privacy Made Practical for India</span></span></a>
+    <span class="tag">Free tool · Beta</span>
+  </div>
+</header>
+
+<div class="wrap head" id="head">
+  <span class="eyebrow">DPDPA Notice Pack Builder</span>
+  <h1>Generate your DPDPA Notice Pack in minutes.</h1>
+  <p>Pick your business type and we pre-fill the likely data, purposes and vendors. Watch your notice build live, then export the full pack — notice, form mini-notices, consent text, a rights block and an evidence record. Preview is free; export needs an email.</p>
+</div>
+
+<!-- ============ WIZARD ============ -->
+<main class="wrap app" id="app">
+  <section class="card">
+    <div class="steps" id="pips"></div>
+    <div class="panel" id="panel"></div>
+    <div class="foot">
+      <button class="btn btn--ghost btn--sm" id="back">← Back</button>
+      <span class="pg" id="pg"></span>
+      <button class="btn btn--sm" id="next">Next <span class="arr">→</span></button>
+    </div>
+  </section>
+
+  <section class="preview">
+    <div class="pvtop">
+      <span class="live"><i></i> Live preview</span>
+      <span class="scorechip" id="scorechip"></span>
+      <div class="langbar" id="langbar"><button data-lang="en" class="on">English</button><button data-lang="hi">हिन्दी</button></div>
+    </div>
+    <article class="doc" id="doc"></article>
+  </section>
+</main>
+
+<!-- ============ RESULT ============ -->
+<section class="wrap result" id="result"></section>
+
+<!-- email gate -->
+<div class="modal" id="gate" role="dialog" aria-modal="true">
+  <div class="modal__card">
+    <button class="modal__close" id="gateClose" aria-label="Close">&times;</button>
+    <form class="modal__form" id="gateForm" action="https://formspree.io/f/your-form-id" method="POST">
+      <h3 id="gateTitle">Get your Notice Pack</h3>
+      <p class="modal__sub">Add your email and we'll unlock the export and email you a copy you can reopen anytime.</p>
+      <input type="hidden" name="source" value="notice-generator" />
+      <input type="hidden" name="business_name" id="gateBiz" value="" />
+      <input type="hidden" name="sector" id="gateSector" value="" />
+      <input type="hidden" name="export_type" id="gateExport" value="" />
+      <input type="hidden" name="readiness_score" id="gateScore" value="" />
+      <input type="email" name="email" placeholder="Work email" required />
+      <label class="consent"><input type="checkbox" required /> <span>Send me practical DPDPA updates. No spam, unsubscribe anytime.</span></label>
+      <button type="submit" class="btn">Unlock my pack <span class="arr">→</span></button>
+    </form>
+    <div class="modal__ok">
+      <span class="seal"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg></span>
+      <h3>Unlocked.</h3>
+      <p class="modal__sub" style="margin-bottom:0" id="okMsg">Your export is starting.</p>
+    </div>
+  </div>
+</div>
+
+<script src="notice-pack-data.js"></script>
+<script>
+const D=window.SPDATA;
+const S={ org:'',website:'',sector:'',data:[],contexts:[],purpose:{},
+  consentVia:'',withdrawMethod:'',withdrawContact:'',vendors:[],noVendors:false,
+  children:'',childWhy:[],retention:'',cName:'',cEmail:'',cPhone:'',slug:'',lang:'en',unlocked:false };
+
+const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const slugify=s=>(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const isVague=p=>!p||D.VAGUE.some(v=>p.trim().toLowerCase()===v||p.trim().toLowerCase().length<6);
+
+/* ---------- sector pre-fill ---------- */
+function applySector(key){
+  const sec=D.SECTORS.find(s=>s.key===key); if(!sec)return;
+  S.data=[...sec.data];
+  S.contexts=[...sec.contexts];
+  S.vendors=[...sec.vendors]; S.noVendors=false;
+  S.children=sec.children?'Yes':'No';
+  S.purpose={}; sec.data.forEach(d=>S.purpose[d]=D.DATA_PURPOSE[d]||'');
+}
+
+/* ---------- steps ---------- */
+const steps=[
+ {meta:'Step 1 of 8 · Profile',title:'About your business',hint:'Pick your sector and we pre-fill likely data, purposes and vendors. This names you as the Data Fiduciary.',render:()=>`
+   <div class="field"><label class="lab">Business name <span class="req">*</span></label><input type="text" data-k="org" value="${esc(S.org)}" placeholder="e.g. Sunrise Diagnostics"></div>
+   <div class="row2">
+     <div class="field"><label class="lab">Website / app</label><input type="text" data-k="website" value="${esc(S.website)}" placeholder="sunrisediagnostics.in"></div>
+     <div class="field"><label class="lab">Business type / sector <span class="req">*</span></label>
+       <select id="secSel"><option value="">Select sector</option>${D.SECTORS.map(s=>`<option value="${s.key}" ${S.sector===s.key?'selected':''}>${s.label}</option>`).join('')}</select></div>
+   </div>
+   ${S.sector?`<div class="smartnote">✓ Smart defaults for <b>&nbsp;${D.SECTORS.find(s=>s.key===S.sector).label}&nbsp;</b> applied — data, purposes & vendors pre-filled. Edit anything in the next steps.</div>`:''}`},
+
+ {meta:'Step 2 of 8 · Data',title:'What personal data do you collect?',hint:'Pre-ticked from your sector. Gold items are higher-sensitivity and get extra wording. Pick at least one.',render:()=>D.DATA_GROUPS.map(g=>`
+   <div class="dgroup"><div class="dgroup__t">${g.group}</div><div class="chips">${g.items.map(it=>{const sens=D.SENSITIVE.has(it);const on=S.data.includes(it);return `<label class="chip ${sens?'sens':''}"><input type="checkbox" data-cb="data" value="${esc(it)}" ${on?'checked':''}>${it}${sens?'<span class="sx">sensitive</span>':''}</label>`}).join('')}</div></div>`).join('')},
+
+ {meta:'Step 3 of 8 · Context',title:'Where do you collect this data?',hint:'Each collection point gets its own short, just-in-time mini-notice in your pack.',render:()=>`<div class="chips">${D.CONTEXTS.map(c=>{const on=S.contexts.includes(c.key);return `<label class="chip"><input type="checkbox" data-cb="contexts" value="${c.key}" ${on?'checked':''}>${c.label}</label>`}).join('')}</div>`},
+
+ {meta:'Step 4 of 8 · Purpose',title:'Why do you collect each one?',hint:'Every data type needs a specific purpose. Vague purposes (gold) are flagged — describe the actual activity.',render:()=>{
+   if(!S.data.length)return `<p class="hint">Select some data in step 2 first.</p>`;
+   return `<div class="ptable">${S.data.map(d=>{const p=S.purpose[d]??(D.DATA_PURPOSE[d]||'');const v=isVague(p);return `<div><div class="prow ${v?'vague':''}"><span class="pd">${d}</span><input type="text" data-purpose="${esc(d)}" value="${esc(p)}" placeholder="To…"></div>${v?'<div class="pwarn">Too broad — describe the specific activity.</div>':''}</div>`}).join('')}</div>`}},
+
+ {meta:'Step 5 of 8 · Consent',title:'Consent & withdrawal',hint:'How you take permission, and how people can withdraw it — withdrawal must be as easy as giving it (DPDPA §6).',render:()=>`
+   <div class="field"><label class="lab">How do you take consent?</label>${seg('consentVia',['Website checkbox','App screen','Paper form','WhatsApp opt-in','Email','Not documented'])}</div>
+   <div class="field"><label class="lab">How can people withdraw consent?</label>${seg('withdrawMethod',['Email','Web form','Account settings','WhatsApp','Phone','Not available yet'])}
+     ${S.withdrawMethod==='Not available yet'?`<div class="flag">${warn()} <span>Withdrawal should be as easy as giving consent. Add a clear channel before publishing.</span></div>`:''}</div>
+   <div class="field"><label class="lab">Withdrawal / privacy contact email</label><input type="email" data-k="withdrawContact" value="${esc(S.withdrawContact)}" placeholder="privacy@yourbiz.in"></div>`},
+
+ {meta:'Step 6 of 8 · Vendors',title:'Who do you share data with?',hint:'Third parties that process data for you. We generate a sector-tuned sharing clause.',render:()=>`
+   <label class="chip" style="margin-bottom:12px;max-width:260px"><input type="checkbox" id="noVend" ${S.noVendors?'checked':''}>We don't share with any third party</label>
+   <div class="chips" id="vendChips" style="${S.noVendors?'opacity:.4;pointer-events:none':''}">${D.VENDORS.map(v=>{const on=S.vendors.includes(v);return `<label class="chip"><input type="checkbox" data-cb="vendors" value="${esc(v)}" ${on?'checked':''}>${v}</label>`}).join('')}</div>`},
+
+ {meta:'Step 7 of 8 · Children',title:'Children’s data',hint:'Processing data of anyone under 18 needs verifiable parental consent and bans targeted ads (DPDPA §9).',render:()=>`
+   <div class="field"><label class="lab">Do you process data of children (under 18)?</label>${seg('children',['Yes','No','Not sure'])}</div>
+   ${S.children==='Yes'?`<div class="flag">${warn()} <span>High-risk. We'll add a parental-consent block and bar behavioural monitoring / targeted ads for children.</span></div>
+     <div class="field" style="margin-top:14px"><label class="lab">Why is children's data collected?</label><div class="chips">${D.CHILD_WHY.map(w=>{const on=S.childWhy.includes(w);return `<label class="chip"><input type="checkbox" data-cb="childWhy" value="${esc(w)}" ${on?'checked':''}>${w}</label>`}).join('')}</div></div>`:''}`},
+
+ {meta:'Step 8 of 8 · Retention & contact',title:'Retention & grievance contact',hint:'How long you keep data, and who answers rights requests (DPDPA §5/§13).',render:()=>`
+   <div class="field"><label class="lab">How long do you keep personal data?</label>${seg('retention',['Until service ends','1 year','3 years','5–8 yrs (tax/legal)','As required by law','Forever','Not sure'])}
+     ${['Forever','Not sure'].includes(S.retention)?`<div class="flag">${warn()} <span>"${S.retention}" is a weak position. Set a time-bound or purpose-linked period where you can.</span></div>`:''}</div>
+   <div class="row2">
+     <div class="field"><label class="lab">Grievance contact name <span class="req">*</span></label><input type="text" data-k="cName" value="${esc(S.cName)}" placeholder="e.g. Priya Nair"></div>
+     <div class="field"><label class="lab">Contact email <span class="req">*</span></label><input type="email" data-k="cEmail" value="${esc(S.cEmail)}" placeholder="privacy@yourbiz.in"></div>
+   </div>
+   <div class="field"><label class="lab">Reserve your rights-page slug (optional)</label><input type="text" data-k="slug" value="${esc(S.slug)}" placeholder="${slugify(S.org)||'your-business'}"><div class="pwarn" style="color:var(--muted)">Used in the rights block: saralprivacy.com/r/<b>${esc(S.slug||slugify(S.org)||'your-business')}</b></div></div>`}
+];
+
+let i=0;
+const panel=document.getElementById('panel'),pips=document.getElementById('pips'),pg=document.getElementById('pg');
+const back=document.getElementById('back'),next=document.getElementById('next');
+
+function seg(k,vals){return `<div class="seg" data-seg="${k}">`+vals.map(v=>`<button data-v="${esc(v)}" class="${S[k]===v?'on':''}">${v}</button>`).join('')+`</div>`}
+function warn(){return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B98A1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>`}
+
+function renderStep(){
+  panel.innerHTML=`<div class="stepmeta">${steps[i].meta}</div><h2>${steps[i].title}</h2><p class="hint">${steps[i].hint}</p>${steps[i].render()}`;
+  pips.innerHTML=steps.map((_,n)=>`<span class="pip ${n<i?'done':''} ${n===i?'now':''}"></span>`).join('');
+  pg.textContent=`${i+1} / ${steps.length}`;
+  back.style.visibility=i===0?'hidden':'visible';
+  next.innerHTML=i===steps.length-1?'View my Notice Pack ✓':'Next <span class="arr">→</span>';
+  bind();draw();
+}
+function bind(){
+  panel.querySelectorAll('[data-k]').forEach(el=>el.addEventListener('input',e=>{S[e.target.dataset.k]=e.target.value;draw();if(e.target.dataset.k==='slug'){}}));
+  const sec=document.getElementById('secSel');
+  if(sec)sec.addEventListener('change',e=>{S.sector=e.target.value;if(S.sector)applySector(S.sector);renderStep()});
+  panel.querySelectorAll('[data-cb]').forEach(el=>el.addEventListener('change',e=>{
+    const k=e.target.dataset.cb,v=e.target.value;
+    if(e.target.checked){if(!S[k].includes(v))S[k].push(v)}else S[k]=S[k].filter(x=>x!==v);
+    if(k==='data'){if(e.target.checked&&!(v in S.purpose))S.purpose[v]=D.DATA_PURPOSE[v]||'';}
+    e.target.closest('.chip').classList.toggle('on',e.target.checked);draw()}));
+  panel.querySelectorAll('[data-purpose]').forEach(el=>el.addEventListener('input',e=>{S.purpose[e.target.dataset.purpose]=e.target.value;
+    e.target.closest('.prow').classList.toggle('vague',isVague(e.target.value));draw()}));
+  panel.querySelectorAll('[data-seg]').forEach(sg=>sg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{S[sg.dataset.seg]=b.dataset.v;renderStep()})));
+  const nv=document.getElementById('noVend');
+  if(nv)nv.addEventListener('change',e=>{S.noVendors=e.target.checked;if(e.target.checked)S.vendors=[];renderStep()});
+}
+back.onclick=()=>{if(i>0){i--;renderStep()}};
+next.onclick=()=>{if(i<steps.length-1){i++;renderStep()}else{showResult()}};
+
+/* ---------- notice builder (deterministic) ---------- */
+const H={en:{title:n=>`Privacy Notice — ${n||'[Your business]'}`,eff:'Effective date',
+  intro:n=>`${n||'[Your business]'} ("we", "us") respects your privacy. This notice explains what personal data we collect, why, how, and the rights you have under India's Digital Personal Data Protection Act, 2023 (DPDPA).`,
+  h:['1. Who we are','2. Personal data we collect','3. Why we collect it','4. How we collect it','5. Sharing with service providers','6. Children’s data','7. How long we keep your data','8. Consent & withdrawal','9. Your rights','10. Grievance & Data Protection Board','11. Contact us','12. Updates to this notice'],
+  rights:'You have the right to access the data we hold about you, correct or complete it, erase it where the law allows, withdraw consent as easily as you gave it, nominate someone to exercise your rights, and raise a grievance with our Officer.',
+  child:'We process children’s data only with verifiable parental or guardian consent, and never for behavioural monitoring or targeted advertising directed at children.',
+  board:'If we do not resolve your grievance, you may complain to the Data Protection Board of India in the manner prescribed under the DPDP Act and Rules.',
+  disc:'This notice is generated for guidance and is not legal advice. Review it before publishing.'},
+ hi:{title:n=>`गोपनीयता सूचना — ${n||'[आपका व्यवसाय]'}`,eff:'प्रभावी तिथि',
+  intro:n=>`${n||'[आपका व्यवसाय]'} आपकी निजता का सम्मान करता है। यह सूचना बताती है कि हम कौन-सा व्यक्तिगत डेटा एकत्र करते हैं, क्यों, कैसे, और DPDPA, 2023 के तहत आपके अधिकार क्या हैं।`,
+  h:['1. हम कौन हैं','2. हम कौन-सा डेटा एकत्र करते हैं','3. हम इसे क्यों एकत्र करते हैं','4. हम इसे कैसे एकत्र करते हैं','5. सेवा प्रदाताओं के साथ साझा करना','6. बच्चों का डेटा','7. हम डेटा कब तक रखते हैं','8. सहमति और वापसी','9. आपके अधिकार','10. शिकायत और डेटा संरक्षण बोर्ड','11. संपर्क करें','12. इस सूचना में बदलाव'],
+  rights:'आपके पास अपने डेटा तक पहुँच, सुधार, कानून अनुमति देने पर मिटाने, सहमति वापस लेने, अधिकार हेतु किसी को नामित करने और शिकायत दर्ज करने का अधिकार है।',
+  child:'हम बच्चों का डेटा केवल माता-पिता/अभिभावक की सत्यापित सहमति से संसाधित करते हैं और उसका उपयोग ट्रैकिंग या लक्षित विज्ञापन हेतु नहीं करते।',
+  board:'यदि शिकायत हल नहीं होती, तो आप भारत के डेटा संरक्षण बोर्ड को शिकायत कर सकते हैं।',
+  disc:'यह सूचना मार्गदर्शन हेतु है, कानूनी सलाह नहीं। प्रकाशित करने से पहले समीक्षा करें।'}};
+
+function vclause(){if(S.noVendors)return 'We do not share your personal data with third parties, except where required by law.';
+  const sec=D.SECTORS.find(s=>s.key===S.sector);return D.VENDOR_CLAUSE[sec?sec.vclause:'generic']||D.VENDOR_CLAUSE.generic;}
+function retText(){const m={'Until service ends':'for as long as needed to provide the service','1 year':'for up to 1 year after your last activity','3 years':'for up to 3 years','5–8 yrs (tax/legal)':'for 5–8 years to meet tax and legal requirements','As required by law':'for as long as applicable law requires','Forever':'[set a retention period]','Not sure':'[set a retention period]'};return m[S.retention]||'for as long as needed for the purposes above';}
+
+function buildNotice(L){
+  const t=H[L],n=S.org,today=new Date().toLocaleDateString(L==='hi'?'hi-IN':'en-IN',{day:'numeric',month:'long',year:'numeric'});
+  const li=a=>a&&a.length?`<ul>${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:`<p class="muted">— not specified yet —</p>`;
+  const sec=D.SECTORS.find(s=>s.key===S.sector);
+  let h=`<h1 class="dt">${t.title(n)}</h1><div class="dmeta">SP-NOTICE-2026-(draft) · v1.0 · ${t.eff}: ${today}${S.website?' · '+esc(S.website):''}</div><p>${t.intro(n)}</p>`;
+  h+=`<h2 class="dh">${t.h[0]}</h2><p>${esc(n)||'[business]'}${sec?', '+sec.label.toLowerCase():''}.</p>`;
+  h+=`<h2 class="dh">${t.h[1]}</h2>${li(S.data)}`;
+  h+=`<h2 class="dh">${t.h[2]}</h2>${S.data.length?`<ul>${S.data.map(d=>`<li><b>${esc(d)}</b> — ${esc(S.purpose[d]||D.DATA_PURPOSE[d]||'…')}</li>`).join('')}</ul>`:'<p class="muted">— add purposes —</p>'}`;
+  h+=`<h2 class="dh">${t.h[3]}</h2>${li(S.contexts.map(k=>{const c=D.CONTEXTS.find(x=>x.key===k);return c?c.label:k}))}`;
+  h+=`<h2 class="dh">${t.h[4]}</h2><p>${vclause()}</p>`;
+  if(S.children==='Yes')h+=`<h2 class="dh">${t.h[5]}</h2><p>${t.child}</p>`;
+  h+=`<h2 class="dh">${t.h[6]}</h2><p>${L==='hi'?'हम आपका डेटा रखते हैं ':'We keep your data '}${retText()}.</p>`;
+  h+=`<h2 class="dh">${t.h[7]}</h2><p>${L==='hi'?'सहमति आधार पर। आप किसी भी समय सहमति वापस ले सकते हैं':'We process data on the basis of your consent (DPDPA §6). You can withdraw consent at any time'}${S.withdrawContact?` — ${esc(S.withdrawContact)}`:''}.</p>`;
+  h+=`<h2 class="dh">${t.h[8]}</h2><p>${t.rights}</p>`;
+  h+=`<h2 class="dh">${t.h[9]}</h2><p>${esc(S.cName)||'[Officer]'}${S.cEmail?' · '+esc(S.cEmail):''}. ${t.board}</p>`;
+  h+=`<h2 class="dh">${t.h[10]}</h2><p>${esc(S.cName)||'[name]'}${S.cEmail?' · '+esc(S.cEmail):''}${S.cPhone?' · '+esc(S.cPhone):''}</p>`;
+  h+=`<h2 class="dh">${t.h[11]}</h2><p>${L==='hi'?'हम इस सूचना को समय-समय पर अद्यतन कर सकते हैं।':'We may update this notice from time to time; the latest version is shown here.'}</p>`;
+  h+=`<p class="disc">${t.disc}</p>`;
+  return h;
+}
+
+/* ---------- score + flags ---------- */
+function score(){const w=D.SCORE_WEIGHTS;let s=0;
+  if(S.sector)s+=w.businessType;
+  if(S.data.length)s+=w.dataCategories;
+  if(S.data.length){const mapped=S.data.filter(d=>!isVague(S.purpose[d])).length;s+=Math.round(w.purposeMapped*mapped/S.data.length);}
+  if(S.contexts.length)s+=w.contexts;
+  if(S.withdrawMethod&&S.withdrawMethod!=='Not available yet'&&S.withdrawContact)s+=w.withdrawal;
+  if(S.cEmail)s+=w.rightsContact;
+  if(S.noVendors||S.vendors.length)s+=w.vendorDisclosed;
+  if(S.retention&&!['Forever','Not sure'].includes(S.retention))s+=w.retention;
+  if(S.children!=='Yes'||S.childWhy.length)s+=w.children;
+  if(S.slug||S.cEmail)s+=w.dsar;
+  return Math.min(100,s);}
+function band(s){return D.SCORE_BANDS.find(b=>s>=b.min);}
+function flags(){const f=[];
+  if(S.children==='Yes')f.push({c:'#E8AB42',t:'Children’s data selected',d:'Verifiable parental consent required; no targeted ads.'});
+  const sens=S.data.filter(d=>D.SENSITIVE.has(d));if(sens.length)f.push({c:'#E24B4A',t:'Sensitive data selected',d:sens.slice(0,4).join(', ')+(sens.length>4?'…':'')+' — handle with extra care.'});
+  const mkt=(D.SECTORS.find(s=>s.key===S.sector)||{}).purposes||[];if(mkt.some(p=>/market/i.test(p)))f.push({c:'#35B6AE',t:'Marketing in scope',d:'A separate marketing consent block is included — never bundle it into service consent.'});
+  if(!S.noVendors&&!S.vendors.length)f.push({c:'#E8AB42',t:'No vendors disclosed',d:'Add who you share data with, or tick "no third party".'});
+  if(['Forever','Not sure'].includes(S.retention))f.push({c:'#E8AB42',t:'Weak retention',d:'Set a time-bound or purpose-linked period.'});
+  if(!(S.withdrawMethod&&S.withdrawMethod!=='Not available yet'))f.push({c:'#E8AB42',t:'No withdrawal channel',d:'Add a clear way to withdraw consent.'});
+  if(!S.cEmail)f.push({c:'#E24B4A',t:'No grievance contact',d:'Add a contact email for rights requests.'});
+  if(S.data.some(d=>isVague(S.purpose[d])))f.push({c:'#E8AB42',t:'Vague purpose detected',d:'Some data has a too-broad purpose.'});
+  return f;}
+
+/* ---------- live preview ---------- */
+const doc=document.getElementById('doc'),scorechip=document.getElementById('scorechip');
+function draw(){doc.innerHTML=buildNotice(S.lang);const s=score(),b=band(s);scorechip.textContent=`Readiness ${s} · ${b.label}`;scorechip.style.color=b.color;scorechip.style.background=b.bg;}
+document.getElementById('langbar').querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>{S.lang=btn.dataset.lang;document.querySelectorAll('#langbar button').forEach(x=>x.classList.toggle('on',x===btn));draw();const r=document.getElementById('result');if(r.classList.contains('show'))showResult(true);}));
+
+/* ---------- result ---------- */
+function miniFor(k){const c=D.CONTEXTS.find(x=>x.key===k);return c?c.mini(S.org||'us'):''}
+function evidence(){return {notice_id:'SP-NOTICE-2026-(draft)',notice_version:'1.0',business_name:S.org,sector:(D.SECTORS.find(s=>s.key===S.sector)||{}).label||'',generated_at:new Date().toISOString(),language:S.lang,data_categories:S.data,purpose_mappings:S.data.map(d=>({data:d,purpose:S.purpose[d]||''})),collection_contexts:S.contexts,vendors:S.noVendors?[]:S.vendors,children_data:S.children==='Yes',retention_basis:S.retention,withdrawal_method:S.withdrawMethod,rights_contact_email:S.cEmail,dsar_link:'saralprivacy.com/r/'+(S.slug||slugify(S.org)||'your-business'),readiness_score:score(),notice_hash:'sha256:(generated on export)'};}
+function rightsBlock(){const link='saralprivacy.com/r/'+(S.slug||slugify(S.org)||'your-business');return `You may request access, correction, erasure, withdrawal of consent, grievance redressal or nomination by contacting ${S.cEmail||'[email]'}. You may also use our Data Rights Request Form: ${link}. If your grievance is not resolved, you may complain to the Data Protection Board of India.`;}
+
+function showResult(keep){
+  const s=score(),b=band(s),cb=D.consentBlocks(S.org),fl=flags();
+  document.getElementById('head').style.display='none';
+  document.getElementById('app').style.display='none';
+  const r=document.getElementById('result');r.classList.add('show');
+  const minis=S.contexts.map(k=>{const c=D.CONTEXTS.find(x=>x.key===k);return c?`<div class="mini"><div class="mini__t">${c.label}<button class="copy" data-cp="${esc(miniFor(k))}">Copy</button></div><p>${esc(miniFor(k))}</p></div>`:''}).join('')||'<p class="muted" style="font-size:13px">Pick collection contexts to get mini-notices.</p>';
+  const consents=[['Service consent',cb.service],['Marketing consent (separate)',cb.marketing],...(S.children==='Yes'?[['Parental / guardian consent',cb.parental]]:[]),['Vendor disclosure',cb.vendor]];
+  r.innerHTML=`
+   <div class="rhead"><div><h1>Your DPDPA Notice Pack is ready</h1><p>A full notice, contextual mini-notices, consent text, a rights block and an evidence record — assembled from your answers. Review before publishing.</p></div>
+     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn--ghost btn--sm" id="edit">← Edit answers</button><button class="btn btn--ghost btn--sm" data-act="copy">Copy notice HTML</button><button class="btn btn--sm" data-act="pdf">Download PDF</button></div></div>
+   <div class="rgrid">
+     <div class="rcard"><h3>Notice readiness score</h3><div style="display:flex;align-items:baseline;gap:8px"><span class="scoreN" style="color:${b.color}">${s}</span><span style="color:var(--muted)">/ 100</span><span class="scorechip" style="margin-left:auto;color:${b.color};background:${b.bg}">${b.label}</span></div><div class="scorebar"><i style="width:${s}%;background:${b.color}"></i></div><p style="font-size:13px;color:var(--slate-2)">${b.msg}</p></div>
+     <div class="rcard"><h3>Risk flags · ${fl.length}</h3><div class="flags">${fl.length?fl.map(f=>`<div class="fl"><span class="d" style="background:${f.c}"></span><span><b>${f.t}</b> — ${f.d}</span></div>`).join(''):'<p style="font-size:13px;color:var(--slate-2)">No flags. Nicely scoped.</p>'}</div></div>
+   </div>
+   <div class="out"><div class="out__top"><h3>Full privacy notice</h3><div class="langbar" id="rlang"><button data-lang="en" class="${S.lang==='en'?'on':''}">English</button><button data-lang="hi" class="${S.lang==='hi'?'on':''}">हिन्दी</button></div></div><div class="doc" style="max-height:46vh">${buildNotice(S.lang)}</div></div>
+   <div class="rgrid">
+     <div class="out" style="margin:0"><div class="out__top"><h3>Form mini-notices · ${S.contexts.length}</h3></div>${minis}</div>
+     <div class="out" style="margin:0"><div class="out__top"><h3>Consent & rights blocks</h3></div>
+       ${consents.map(([t,v])=>`<div class="mini"><div class="mini__t">${t}<button class="copy" data-cp="${esc(v)}">Copy</button></div><p>${esc(v)}</p></div>`).join('')}
+       <div class="mini"><div class="mini__t">Rights / DSAR block<button class="copy" data-cp="${esc(rightsBlock())}">Copy</button></div><p>${esc(rightsBlock())}</p></div>
+     </div>
+   </div>
+   <div class="out"><div class="out__top"><h3>Notice evidence record</h3><button class="copy" data-cp='${esc(JSON.stringify(evidence(),null,0))}'>Copy JSON</button></div><div class="codeblk">${esc(JSON.stringify(evidence(),null,2))}</div></div>
+   <div class="rcta"><a class="btn" href="#" onclick="return false">Create free Data Rights Form →</a><a class="btn btn--ghost" href="#" onclick="return false">Book a 20-minute review</a></div>
+   <p class="disc-note">This tool generates a practical draft based on your inputs. It is not legal advice. Review before publishing.</p>`;
+  document.getElementById('edit').onclick=()=>{r.classList.remove('show');document.getElementById('head').style.display='';document.getElementById('app').style.display='';renderStep();};
+  r.querySelectorAll('#rlang button').forEach(btn=>btn.addEventListener('click',()=>{S.lang=btn.dataset.lang;showResult();}));
+  r.querySelectorAll('.copy').forEach(c=>c.addEventListener('click',()=>{pending='copy';if(!S.unlocked){openGate();return;}navigator.clipboard&&navigator.clipboard.writeText(c.dataset.cp);c.textContent='Copied ✓';setTimeout(()=>c.textContent=/JSON/.test(c.textContent)?'Copy JSON':'Copy',1200);}));
+  r.querySelectorAll('[data-act]').forEach(b2=>b2.addEventListener('click',()=>{pending=b2.dataset.act;if(S.unlocked)doExport();else openGate();}));
+  if(!keep)window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ---------- email gate + export ---------- */
+const gate=document.getElementById('gate');let pending=null;
+function openGate(){gate.classList.remove('done');gate.classList.add('open');}
+document.getElementById('gateClose').onclick=()=>gate.classList.remove('open');
+gate.addEventListener('click',e=>{if(e.target===gate)gate.classList.remove('open')});
+addEventListener('keydown',e=>{if(e.key==='Escape')gate.classList.remove('open')});
+document.getElementById('gateForm').addEventListener('submit',e=>{e.preventDefault();
+  document.getElementById('gateBiz').value=S.org||'';document.getElementById('gateSector').value=(D.SECTORS.find(s=>s.key===S.sector)||{}).label||'';
+  document.getElementById('gateExport').value=pending||'';document.getElementById('gateScore').value=score();
+  fetch(e.target.action,{method:'POST',body:new FormData(e.target),headers:{Accept:'application/json'}}).catch(()=>{});
+  S.unlocked=true;gate.classList.add('done');
+  document.getElementById('okMsg').textContent=pending==='pdf'?'Your download is starting…':'Unlocked — copy buttons are live.';
+  setTimeout(()=>{gate.classList.remove('open');if(pending==='pdf'||pending==='copy')doExport();},900);});
+function fullHtml(){return `<!doctype html><meta charset="utf-8"><title>${H[S.lang].title(S.org)}</title><div style="font-family:Inter,Arial,sans-serif;max-width:760px;margin:auto;color:#334155;line-height:1.6">${buildNotice(S.lang)}</div>`}
+function doExport(){if(pending==='pdf'){const w=window.open('','_blank');if(w){w.document.write(fullHtml());w.document.close();w.focus();setTimeout(()=>w.print(),300);}}else if(pending==='copy'){navigator.clipboard&&navigator.clipboard.writeText(fullHtml());}}
+
+renderStep();
+</script>
+</body>
+</html>

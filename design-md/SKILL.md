@@ -124,6 +124,9 @@ The short version:
 5. **Self-score** against the design + CRO scorecard (playbook Step 5). **Fix any
    dimension under 7** before presenting. Report the final scores.
 
+**Worked example:** [examples/saralprivacy/](examples/saralprivacy/DESIGN.md) — a real GENERATE run
+(`DESIGN.md`, `blueprint.md`, `landing-page.html`). Read it before your first GENERATE.
+
 **Deliverable:** a synthesized `DESIGN.md` (the contract) + a section-by-section
 page blueprint + a short rationale (which exemplars, the core design bet, the CRO
 levers) + code if asked. The design is original and conversion-aware — not a
