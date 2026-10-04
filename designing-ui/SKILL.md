@@ -27,4 +27,6 @@ Work through the steps in order. Read only the file for the step you're on.
 | 5. React/Next.js component patterns (forms, data fetching, boundaries) | [react-patterns.md](react-patterns.md) |
 
 For React performance rules, use the `vercel:react-best-practices` skill.
+Before presenting any UI, run the pre-flight check in [ai-tells.md](ai-tells.md) — it lists the patterns that make output look AI-generated.
+
 When the build is done, hand off to `reviewing-ui`.
